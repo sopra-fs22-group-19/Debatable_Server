@@ -29,7 +29,7 @@ jobs:
     - name: test the project and upload test report -> sonarqube
       run: ./gradlew test jacocoTestReport sonarqube --info
 
-    https://devcenter.heroku.com/articles/authentication
+    # https://devcenter.heroku.com/articles/authentication
     - name: create .netrc file for heroku authentication
       run: |+
           cat >~/.netrc <<EOF
