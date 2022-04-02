@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * Internal User Representation
@@ -16,7 +17,7 @@ import java.io.Serializable;
  * the primary key
  */
 @Entity
-@Table(name = "USER")
+@Table(name = "USERS")
 public class User implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -25,17 +26,18 @@ public class User implements Serializable {
   @GeneratedValue
   private Long id;
 
-  @Column(nullable = false)
-  private String name;
-
   @Column(nullable = false, unique = true)
   private String username;
 
-  @Column(nullable = false, unique = true)
-  private String token;
+  //remove user and status from template, add password and creationDate
+  @Column(nullable = false)
+  private String password;
 
   @Column(nullable = false)
-  private UserStatus status;
+  private LocalDate creationDate;
+
+  @Column(nullable = false, unique = true)
+  private String token;
 
   public Long getId() {
     return id;
@@ -43,14 +45,6 @@ public class User implements Serializable {
 
   public void setId(Long id) {
     this.id = id;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
   }
 
   public String getUsername() {
@@ -61,6 +55,23 @@ public class User implements Serializable {
     this.username = username;
   }
 
+  // newly added getter and setter for password and creation_date
+  public String getPassword() {
+      return password;
+  }
+
+  public void setPassword(String password) {
+      this.password = password;
+  }
+
+  public LocalDate getCreationDate() {
+      return creationDate;
+  }
+
+  public void setCreationDate(LocalDate creationDate) {
+      this.creationDate = creationDate;
+  }
+
   public String getToken() {
     return token;
   }
@@ -69,11 +80,4 @@ public class User implements Serializable {
     this.token = token;
   }
 
-  public UserStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(UserStatus status) {
-    this.status = status;
-  }
 }

@@ -41,9 +41,8 @@ public class UserService {
 
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
 
-    checkIfUserExists(newUser);
+    checkIfUsernameExists(newUser);
 
     // saves the given entity but data is only persisted in the database once
     // flush() is called
@@ -53,6 +52,8 @@ public class UserService {
     log.debug("Created Information for User: {}", newUser);
     return newUser;
   }
+
+
 
   /**
    * This is a helper method that will check the uniqueness criteria of the
@@ -64,18 +65,19 @@ public class UserService {
    * @throws org.springframework.web.server.ResponseStatusException
    * @see User
    */
-  private void checkIfUserExists(User userToBeCreated) {
-    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-    User userByName = userRepository.findByName(userToBeCreated.getName());
 
-    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-    } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+
+  // changed to only check if username is unique, template check both username and name
+  private void checkIfUsernameExists(User userToBeCreated) {
+    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
+
+    //changed error msg to match the description
+    String baseErrorMessage = "add User failed because username already exists!";
+    if (userByUsername != null ) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT,
+          String.format(baseErrorMessage));
     }
   }
+
+
 }
