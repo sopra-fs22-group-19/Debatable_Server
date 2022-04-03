@@ -106,7 +106,7 @@ public class UserControllerTest {
 
   //us_01 test for username conflict
   @Test
-  public void createUser_failed_usernameAlreadyExist() throws Exception {
+  void createUser_failed_usernameAlreadyExist() throws Exception {
       User user = new User();
       user.setId(1L);
       user.setUsername("testUsername");

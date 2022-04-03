@@ -59,7 +59,7 @@ public class UserServiceTest {
 
   //us_01 test, template included
   @Test
-  public void createUser_duplicateUsername_throwsException() {
+  void createUser_duplicateUsername_throwsException() {
     // given -> a first user has already been created
     userService.createUser(testUser);
 
