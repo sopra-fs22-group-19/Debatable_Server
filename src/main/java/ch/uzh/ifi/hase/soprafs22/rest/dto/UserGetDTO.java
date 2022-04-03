@@ -29,11 +29,11 @@ public class UserGetDTO {
   }
 
   public String getName() {
-        return username;
+        return name;
     }
 
-  public void setName(String username) {
-        this.username = username;
+  public void setName(String name) {
+        this.name = name;
     }
 
   public LocalDate getCreationDate() {
