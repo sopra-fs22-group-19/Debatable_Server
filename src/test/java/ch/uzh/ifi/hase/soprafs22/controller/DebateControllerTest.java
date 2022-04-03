@@ -60,16 +60,9 @@ public class DebateControllerTest {
     debateRoom = new DebateRoom();
     debateRoom.setRoomId(1L);
     debateRoom.setCreatorUserId(1L);
-    debateRoom.setDebateTopicId(1L);
     debateRoom.setDebateTopic(debateTopic);
 
     // Create reference DebateRoomPutDTO
-    DebateTopicGetDTO debateTopicGetDTO = new DebateTopicGetDTO();
-    debateTopicGetDTO.setUserId(1L);
-    debateTopicGetDTO.setDebateId(1L);
-    debateTopicGetDTO.setTopic("Topic 1");
-    debateTopicGetDTO.setDescription("Topic 1' description");
-
     debateRoomPostDTO = new DebateRoomPostDTO();
     debateRoomPostDTO.setUserId(1L);
     debateRoomPostDTO.setDebateId(1L);
@@ -82,7 +75,7 @@ public class DebateControllerTest {
 
     debateRoomPostDTO.setSide(String.valueOf(DebateSide.FOR));
 
-    given(debateService.createDebateRoom(Mockito.any())).willReturn(debateRoom);
+    given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
 
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
@@ -108,7 +101,8 @@ public class DebateControllerTest {
 
       debateRoomPostDTO.setSide(String.valueOf(DebateSide.AGAINST));
 
-      given(debateService.createDebateRoom(Mockito.any())).willReturn(debateRoom);
+      given(debateService.createDebateRoom(Mockito.any(), Mockito.any()))
+              .willReturn(debateRoom);
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
@@ -130,7 +124,7 @@ public class DebateControllerTest {
 
       debateRoomPostDTO.setSide("lkasfjlaksdjgl");
 
-      given(debateService.createDebateRoom(Mockito.any())).willReturn(debateRoom);
+      given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = post("/debates/rooms")

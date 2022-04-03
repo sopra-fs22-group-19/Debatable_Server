@@ -31,15 +31,14 @@ public class DebateServiceTest {
   @InjectMocks
   private DebateService debateService;
 
-  private DebateTopic testDebateTopic;
-  private DebateRoom testDebateRoom;
+    private DebateRoom testDebateRoom;
 
   @BeforeEach
   public void setup() {
     MockitoAnnotations.openMocks(this);
 
     // given
-    testDebateTopic = new DebateTopic();
+    DebateTopic testDebateTopic = new DebateTopic();
     testDebateTopic.setCreatorUserId(1L);
     testDebateTopic.setDebateTopicId(1L);
     testDebateTopic.setTopic("Topic 1");
@@ -48,7 +47,6 @@ public class DebateServiceTest {
     testDebateRoom = new DebateRoom();
     testDebateRoom.setRoomId(1L);
     testDebateRoom.setCreatorUserId(1L);
-    testDebateRoom.setDebateTopicId(1L);
     testDebateRoom.setDebateRoomStatus(DebateState.NOT_STARTED);
     testDebateRoom.setDebateTopic(testDebateTopic);
 
@@ -63,13 +61,12 @@ public class DebateServiceTest {
   public void createDebateRoom_validInputs_success() {
     // when -> any object is being save in the userRepository -> return the dummy
     // testUser
-    DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom);
+    DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom, 1L);
 
     // then
     Mockito.verify(debateRoomRepository, Mockito.times(1)).save(Mockito.any());
 
     assertEquals(testDebateRoom.getRoomId(), createdDebateRoom.getRoomId());
-    assertEquals(testDebateRoom.getDebateTopicId(), createdDebateRoom.getDebateTopicId());
     assertEquals(testDebateRoom.getCreatorUserId(), createdDebateRoom.getCreatorUserId());
     assertEquals(testDebateRoom.getDebateRoomStatus(), createdDebateRoom.getDebateRoomStatus());
     assertEquals(testDebateRoom.getDebateTopic(), createdDebateRoom.getDebateTopic());

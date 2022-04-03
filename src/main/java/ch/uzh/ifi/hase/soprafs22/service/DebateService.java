@@ -41,9 +41,9 @@ public class DebateService {
         this.tagRepository = tagRepository;
     }
 
-    public DebateRoom createDebateRoom(DebateRoom inputDebateRoom) {
+    public DebateRoom createDebateRoom(DebateRoom inputDebateRoom, Long debateTopicId) {
 
-        Optional<DebateTopic> debateTopic = debateTopicRepository.findById(inputDebateRoom.getDebateTopicId());
+        Optional<DebateTopic> debateTopic = debateTopicRepository.findById(debateTopicId);
         // DebateTopic debateTopic = new DebateTopic();
         // debateTopic.setCreatorUserId(1L);
         // debateTopic.setDebateTopicId(1L);
@@ -53,7 +53,7 @@ public class DebateService {
         if (debateTopic.isEmpty()){
             String baseErrorMessage = "Error: reason <Debate topic with id: '%d' was not found>";
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format(baseErrorMessage, inputDebateRoom.getDebateTopicId()));
+                    String.format(baseErrorMessage, debateTopicId));
         }
 
         inputDebateRoom.setDebateTopic(debateTopic.get());

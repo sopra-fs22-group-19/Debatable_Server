@@ -30,9 +30,6 @@ public class DebateRoom implements Serializable, Room {
   private Long roomId;
 
   @Column(nullable = false)
-  private Long debateTopicId;
-
-  @Column(nullable = false)
   private Long creatorUserId;
 
   @Column(nullable = false)
@@ -53,14 +50,6 @@ public class DebateRoom implements Serializable, Room {
   public void setRoomId(Long roomId) {
     this.roomId = roomId;
   }
-
-  public Long getDebateTopicId() {
-        return debateTopicId;
-    }
-
-  public void setDebateTopicId(Long debateTopicId) {
-        this.debateTopicId = debateTopicId;
-    }
 
   public Long getCreatorUserId() { return creatorUserId; }
 
