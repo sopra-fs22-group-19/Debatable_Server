@@ -57,6 +57,23 @@ public class UserService {
 
 
 
+  public User checkCredentials(User userToCheck){
+
+      User checkedUser = userRepository.findByUsername(userToCheck.getUsername());
+
+      if(checkedUser == null){
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The provided username is invalid."));
+      }
+
+      if(checkedUser.getPassword().equals(userToCheck.getPassword())){
+          return checkedUser;
+      }
+      else{
+          throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                  String.format( "The password provided is incorrect"));
+      }
+  }
+
   /**
    * This is a helper method that will check the uniqueness criteria of the
    * username and the name
