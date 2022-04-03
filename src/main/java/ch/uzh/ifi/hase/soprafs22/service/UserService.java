@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,9 +42,9 @@ public class UserService {
 
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
+    newUser.setCreationDate(LocalDate.now());
 
-    checkIfUserExists(newUser);
+    checkIfUsernameExists(newUser);
 
     // saves the given entity but data is only persisted in the database once
     // flush() is called
@@ -71,6 +72,7 @@ public class UserService {
       }
   }
 
+
   /**
    * This is a helper method that will check the uniqueness criteria of the
    * username and the name
@@ -81,12 +83,18 @@ public class UserService {
    * @throws org.springframework.web.server.ResponseStatusException
    * @see User
    */
-  private void checkIfUserExists(User userToBeCreated) {
+
+
+  // changed to only check if username is unique, template check both username and name
+  private void checkIfUsernameExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 
     if (userByUsername != null) {
       throw new ResponseStatusException(HttpStatus.CONFLICT,
           String.format("The username provided is not unique. Therefore, the user could not be created!"));
+
     }
   }
+
+
 }

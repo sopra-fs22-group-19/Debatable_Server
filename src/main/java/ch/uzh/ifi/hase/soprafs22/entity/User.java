@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * Internal User Representation
@@ -25,20 +26,24 @@ public class User implements Serializable {
   @GeneratedValue
   private Long id;
 
+  @Column(nullable = false, unique = true)
+  private String username;
+
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false, unique = true)
-  private String username;
+  // add password and creationDate
+  @Column(nullable = false)
+  private String password;
+
+  @Column(nullable = false)
+  private LocalDate creationDate;
 
   @Column(nullable = false, unique = true)
   private String token;
 
   @Column(nullable = false)
   private UserStatus status;
-
-  @Column(nullable = false)
-  private String password;
 
   public Long getId() {
     return id;
@@ -49,11 +54,11 @@ public class User implements Serializable {
   }
 
   public String getName() {
-    return name;
+      return name;
   }
 
   public void setName(String name) {
-    this.name = name;
+      this.name = name;
   }
 
   public String getUsername() {
@@ -62,6 +67,23 @@ public class User implements Serializable {
 
   public void setUsername(String username) {
     this.username = username;
+  }
+
+  // newly added getter and setter for password and creation_date
+  public String getPassword() {
+      return password;
+  }
+
+  public void setPassword(String password) {
+      this.password = password;
+  }
+
+  public LocalDate getCreationDate() {
+      return creationDate;
+  }
+
+  public void setCreationDate(LocalDate creationDate) {
+      this.creationDate = creationDate;
   }
 
   public String getToken() {
@@ -80,11 +102,4 @@ public class User implements Serializable {
     this.status = status;
   }
 
-  public String getPassword() {
-        return password;
-    }
-
-  public void setPassword(String password) {
-        this.password = password;
-    }
 }
