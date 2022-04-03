@@ -29,10 +29,10 @@ public interface DTOMapper {
   @Mapping(source = "username", target = "username")
   User convertUserPostDTOtoEntity(UserPostDTO userPostDTO);
 
-  @Mapping(source = "id", target = "id")
+  @Mapping(source = "id", target = "userId")
   @Mapping(source = "username", target = "username")
   @Mapping(source = "name", target = "name")
-  @Mapping(source = "creationDate", target = "creationDate")
+  @Mapping(source = "creationDate", target = "creation_date")
   @Mapping(source = "token", target = "token")
   UserGetDTO convertEntityToUserGetDTO(User user);
 
@@ -48,8 +48,12 @@ public interface DTOMapper {
   DebateRoom convertDebateRoomPostDTOtoEntity(DebateRoomPostDTO debateRoomPostDTO);
 
   @Mapping(source = "roomId", target = "roomId")
-  @Mapping(source = "debateRoomStatus", target = "debateStatus")
   @Mapping(source = "debateTopic", target = "debate")
+  @Mapping(source = "user1", target = "user1")
+  @Mapping(source = "side1", target = "side1")
+  @Mapping(source = "user2", target = "user2")
+  @Mapping(source = "side2", target = "side2")
+  @Mapping(source = "debateRoomStatus", target = "debateStatus")
   DebateRoomGetDTO convertEntityToDebateRoomGetDTO(DebateRoom DebateRoom);
 
 }

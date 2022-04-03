@@ -28,7 +28,7 @@ public class DebateSpeaker implements RoomParticipant {
         return speakerId;
     }
 
-    public void setSpeakerId(Long roomId) {
+    public void setSpeakerId(Long speakerId) {
         this.speakerId = speakerId;
     }
 

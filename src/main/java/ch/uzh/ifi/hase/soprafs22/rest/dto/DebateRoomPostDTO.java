@@ -24,9 +24,7 @@ public class DebateRoomPostDTO {
         this.debateId = debateId;
     }
 
-  public String getSide() {
-        return side;
-    }
+  public String getSide() { return side; }
 
   public void setSide(String side) {
         this.side = side;
