@@ -60,12 +60,12 @@ public class UserService {
   public User checkCredentials(User verifiedUser){
 
       User checkedUser = userRepository.findByUsername(verifiedUser.getUsername());
-      String conflictErrorMessage = "add User failed because username already exists!";
-      String incorrectErrorMessage = "add User failed because username already exists!";
+      String nonexistErrorMessage = "username not exists!";
+      String incorrectErrorMessage = "incorrect password!";
 
       if (checkedUser == null ) {
           throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                  String.format(conflictErrorMessage));
+                  String.format(nonexistErrorMessage));
       }else if(checkedUser.getPassword().equals(verifiedUser.getPassword())){
           return checkedUser;
       }
