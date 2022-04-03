@@ -57,9 +57,7 @@ public class DebateRoom implements Serializable {
         this.debateTopicId = debateTopicId;
     }
 
-  public Long getCreatorUserId() {
-        return roomId;
-    }
+  public Long getCreatorUserId() { return roomId; }
 
   public void setCreatorUserId(Long creatorUserId) {
         this.creatorUserId = creatorUserId;

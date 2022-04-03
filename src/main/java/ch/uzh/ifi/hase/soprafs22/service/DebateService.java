@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
@@ -32,5 +33,14 @@ public class DebateService {
         this.debateTopicRepository = debateTopicRepository;
         this.debateRoomRepository = debateRoomRepository;
         this.tagRepository = tagRepository;
+    }
+
+    public DebateRoom createDebateRoom(DebateRoom inputDebateRoom) {
+        inputDebateRoom = debateRoomRepository.save(inputDebateRoom);
+        debateRoomRepository.flush();
+
+        // log.debug("Created DebateRoom: {}", newUser);
+        return inputDebateRoom;
+
     }
 }
