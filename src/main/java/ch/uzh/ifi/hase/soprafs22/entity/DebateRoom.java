@@ -38,8 +38,13 @@ public class DebateRoom implements Serializable, Room {
   @Column(nullable = false)
   private DebateState debateStatus;
 
-  @OneToMany(mappedBy="debateroom")
+  @OneToMany(mappedBy="debateRoom")
   private List<DebateSpeaker> speakers;
+
+  @ManyToOne
+  @JoinColumn(name = "debate_topic_debate_topic_id")
+  private DebateTopic debateTopic;
+
 
   public Long getRoomId() {
     return roomId;
@@ -74,6 +79,10 @@ public class DebateRoom implements Serializable, Room {
     }
 
   public void setSpeakers(List<DebateSpeaker> speakers) { this.speakers = speakers; }
+
+  public DebateTopic getDebateTopic() { return debateTopic; }
+
+  public void setDebateTopic(DebateTopic debateTopic) { this.debateTopic=debateTopic; }
 
   @Override
   public void registerParticipant(RoomParticipant roomParticipant) {

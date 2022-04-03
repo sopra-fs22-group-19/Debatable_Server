@@ -45,6 +45,7 @@ public interface DTOMapper {
 
   @Mapping(source = "roomId", target = "roomId")
   @Mapping(source = "debateRoomStatus", target = "debateStatus")
+  @Mapping(source = "debateTopic", target = "debateTopic")
   DebateRoomGetDTO convertEntityToDebateGetDTO(DebateRoom DebateRoom);
 
 }

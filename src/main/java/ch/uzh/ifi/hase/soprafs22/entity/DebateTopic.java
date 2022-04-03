@@ -1,9 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * Internal User Representation
@@ -33,6 +32,9 @@ public class DebateTopic implements Serializable {
 
   @Column
   private String topicDescription;
+
+  @OneToMany(mappedBy="debateTopic")
+  private Set<DebateRoom> debateRoomSet;
 
   //TODO: Iterable list of tags. How to tell JPA to store a table with the one to many realtionship
 
