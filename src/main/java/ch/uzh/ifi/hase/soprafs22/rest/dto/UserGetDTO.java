@@ -8,14 +8,12 @@ public class UserGetDTO {
 
   private Long id;
   private String username;
-<<<<<<< HEAD
   private UserStatus status;
   private String password;
-=======
   private String name;
   private LocalDate creationDate;
   private String token;
->>>>>>> origin/dev
+
 
   public Long getId() {
     return id;
@@ -64,4 +62,8 @@ public class UserGetDTO {
   public void setPassword(String password) {
         this.password = password;
     }
+
+  public UserStatus getStatus(){return this.status;}
+
+  public void setStatus(UserStatus status) {this.status = status;}
 }
