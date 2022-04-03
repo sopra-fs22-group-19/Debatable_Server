@@ -41,7 +41,7 @@ public class DebateController {
         DebateRoom createdDebateRoom = debateService.createDebateRoom(inputDebateRoom);
 
         // convert internal representation of user back to API
-        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(createdDebateRoom);
+        return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(createdDebateRoom);
     }
 
 }

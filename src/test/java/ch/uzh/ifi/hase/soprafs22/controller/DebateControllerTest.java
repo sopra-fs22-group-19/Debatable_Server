@@ -3,7 +3,9 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -47,13 +49,27 @@ public class DebateControllerTest {
 
   @BeforeEach
   public void setup() {
+    // Create Debate Topic
+    DebateTopic debateTopic = new DebateTopic();
+    debateTopic.setCreatorUserId(1L);
+    debateTopic.setDebateTopicId(1L);
+    debateTopic.setTopic("Topic 1");
+    debateTopic.setTopicDescription("Topic 1' description");
+
     // Create reference DebateRoom
     debateRoom = new DebateRoom();
     debateRoom.setRoomId(1L);
     debateRoom.setCreatorUserId(1L);
     debateRoom.setDebateTopicId(1L);
+    debateRoom.setDebateTopic(debateTopic);
 
     // Create reference DebateRoomPutDTO
+    DebateTopicGetDTO debateTopicGetDTO = new DebateTopicGetDTO();
+    debateTopicGetDTO.setUserId(1L);
+    debateTopicGetDTO.setDebateId(1L);
+    debateTopicGetDTO.setTopic("Topic 1");
+    debateTopicGetDTO.setDescription("Topic 1' description");
+
     debateRoomPostDTO = new DebateRoomPostDTO();
     debateRoomPostDTO.setUserId(1L);
     debateRoomPostDTO.setDebateId(1L);
@@ -77,7 +93,11 @@ public class DebateControllerTest {
     mockMvc.perform(postRequest)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.roomId", is(debateRoom.getRoomId().intValue())))
-        .andExpect(jsonPath("$.debateStatus", is(is(debateRoom.getDebateRoomStatus().name()))));
+        .andExpect(jsonPath("$.debate.userId", is(debateRoom.getDebateTopic().getCreatorUserId().intValue())))
+        .andExpect(jsonPath("$.debate.debateId", is(debateRoom.getDebateTopic().getDebateTopicId().intValue())))
+        .andExpect(jsonPath("$.debate.topic", is(debateRoom.getDebateTopic().getTopic())))
+        .andExpect(jsonPath("$.debate.description", is(debateRoom.getDebateTopic().getTopicDescription())))
+        .andExpect(jsonPath("$.debateStatus", is(debateRoom.getDebateRoomStatus().name())));
 
   }
 

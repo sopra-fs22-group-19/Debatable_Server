@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
@@ -10,8 +11,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.Objects;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -36,6 +42,21 @@ public class DebateService {
     }
 
     public DebateRoom createDebateRoom(DebateRoom inputDebateRoom) {
+
+        Optional<DebateTopic> debateTopic = debateTopicRepository.findById(inputDebateRoom.getDebateTopicId());
+        // DebateTopic debateTopic = new DebateTopic();
+        // debateTopic.setCreatorUserId(1L);
+        // debateTopic.setDebateTopicId(1L);
+        // debateTopic.setTopic("Tema 1");
+        // debateTopic.setTopicDescription("Tema 1 mas descrtipcion");
+
+        if (debateTopic.isEmpty()){
+            String baseErrorMessage = "Error: reason <Debate topic with id: '%d' was not found>";
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format(baseErrorMessage, inputDebateRoom.getDebateTopicId()));
+        }
+
+        inputDebateRoom.setDebateTopic(debateTopic.get());
         inputDebateRoom = debateRoomRepository.save(inputDebateRoom);
         debateRoomRepository.flush();
 

@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -34,7 +35,7 @@ public class DebateTopic implements Serializable {
   private String topicDescription;
 
   @OneToMany(mappedBy="debateTopic")
-  private Set<DebateRoom> debateRoomSet;
+  private List<DebateRoom> debateRoomSet;
 
   //TODO: Iterable list of tags. How to tell JPA to store a table with the one to many realtionship
 
@@ -58,7 +59,7 @@ public class DebateTopic implements Serializable {
     return topic;
   }
 
-  public void setTopic(String name) {
+  public void setTopic(String topic) {
     this.topic = topic;
   }
 

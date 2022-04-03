@@ -5,8 +5,11 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 public class DebateRoomGetDTO {
 
     private Long roomId;
+
+    private DebateTopicGetDTO debate;
+
     private String debateStatus;
-    private DebateTopic debateTopic;
+
 
     public Long getRoomId() {
         return roomId;
@@ -24,11 +27,11 @@ public class DebateRoomGetDTO {
         this.debateStatus = debateStatus;
     }
 
-    public DebateTopic getDebateTopic() {
-        return debateTopic;
+    public DebateTopicGetDTO getDebate() {
+        return debate;
     }
 
-    public void setDebateTopic(DebateTopic debateTopic) {
-        this.debateTopic = debateTopic;
+    public void setDebate(DebateTopicGetDTO debateTopicGetDTO) {
+        this.debate = debateTopicGetDTO;
     }
 }

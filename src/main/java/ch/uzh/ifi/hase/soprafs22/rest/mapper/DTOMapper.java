@@ -1,11 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
 
@@ -38,6 +36,13 @@ public interface DTOMapper {
   @Mapping(source = "token", target = "token")
   UserGetDTO convertEntityToUserGetDTO(User user);
 
+  // DTOs for the DebateTopic
+  @Mapping(source = "debateTopicId", target = "userId")
+  @Mapping(source = "creatorUserId", target = "debateId")
+  @Mapping(source = "topic", target = "topic")
+  @Mapping(source = "topicDescription", target = "description")
+  DebateTopicGetDTO convertEntityToDebateDTO(DebateTopic debateTopic);
+  
   // DTOs for the DebateRoom
   @Mapping(source = "userId", target = "creatorUserId")
   @Mapping(source = "debateId", target = "debateTopicId")
@@ -45,7 +50,7 @@ public interface DTOMapper {
 
   @Mapping(source = "roomId", target = "roomId")
   @Mapping(source = "debateRoomStatus", target = "debateStatus")
-  @Mapping(source = "debateTopic", target = "debateTopic")
-  DebateRoomGetDTO convertEntityToDebateGetDTO(DebateRoom DebateRoom);
+  @Mapping(source = "debateTopic", target = "debate")
+  DebateRoomGetDTO convertEntityToDebateRoomGetDTO(DebateRoom DebateRoom);
 
 }
