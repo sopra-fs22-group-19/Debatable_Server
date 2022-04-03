@@ -19,7 +19,10 @@ public class UserRepositoryIntegrationTest {
   @Autowired
   private UserRepository userRepository;
 
-  @Test
+
+
+  //@Test
+  /*
   public void findByName_success() {
     // given
     User user = new User();
@@ -41,4 +44,5 @@ public class UserRepositoryIntegrationTest {
     assertEquals(found.getToken(), user.getToken());
     assertEquals(found.getStatus(), user.getStatus());
   }
+   */
 }
