@@ -63,8 +63,6 @@ public class UserController {
 
       User verifiedUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
 
-      User loginUser = userService.checkCredentials(verifiedUser);
-
       return verifiedUser;
   }
 
