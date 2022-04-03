@@ -66,4 +66,13 @@ public class UserController {
       return verifiedUser;
   }
 
+  @GetMapping("/login")
+  @ResponseStatus(HttpStatus.OK)
+  @ResponseBody
+  public User checkUserCredentials(@PathVariable("username") String username, @PathVariable("password") String password){
+      User verifiedUser = userService.checkCredentials(username, password);
+
+      return verifiedUser;
+  }
+
 }

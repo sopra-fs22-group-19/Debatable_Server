@@ -57,7 +57,7 @@ public class UserService {
 
 
 
-  public User checkCredentials(User userToCheck){
+    public User checkCredentials(String username, String password){
 
       User checkedUser = userRepository.findByUsername(username);
 
