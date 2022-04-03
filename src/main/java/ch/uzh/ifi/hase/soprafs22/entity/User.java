@@ -32,10 +32,6 @@ public class User implements Serializable {
   @Column(nullable = false)
   private String name;
 
-  // add password and creationDate
-  @Column(nullable = false)
-  private String password;
-
   @Column(nullable = false)
   private LocalDate creationDate;
 
@@ -44,6 +40,9 @@ public class User implements Serializable {
 
   @Column(nullable = false)
   private UserStatus status;
+
+  @Column(nullable = false)
+  private String password;
 
   public Long getId() {
     return id;
@@ -69,15 +68,6 @@ public class User implements Serializable {
     this.username = username;
   }
 
-  // newly added getter and setter for password and creation_date
-  public String getPassword() {
-      return password;
-  }
-
-  public void setPassword(String password) {
-      this.password = password;
-  }
-
   public LocalDate getCreationDate() {
       return creationDate;
   }
@@ -101,5 +91,13 @@ public class User implements Serializable {
   public void setStatus(UserStatus status) {
     this.status = status;
   }
+
+  public String getPassword() {
+        return password;
+    }
+
+  public void setPassword(String password) {
+        this.password = password;
+    }
 
 }

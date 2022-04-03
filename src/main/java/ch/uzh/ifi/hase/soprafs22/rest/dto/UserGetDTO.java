@@ -63,9 +63,7 @@ public class UserGetDTO {
         this.password = password;
     }
 
-  public UserStatus getStatus() {
-        return status;
-    }
+  public UserStatus getStatus(){return this.status;}
 
   public void setStatus(UserStatus status) {this.status = status;}
 }
