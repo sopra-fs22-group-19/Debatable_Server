@@ -50,14 +50,14 @@ public class DebateRoom implements Serializable {
   }
 
   public Long getDebateTopicId() {
-        return roomId;
+        return debateTopicId;
     }
 
   public void setDebateTopicId(Long debateTopicId) {
         this.debateTopicId = debateTopicId;
     }
 
-  public Long getCreatorUserId() { return roomId; }
+  public Long getCreatorUserId() { return creatorUserId; }
 
   public void setCreatorUserId(Long creatorUserId) {
         this.creatorUserId = creatorUserId;

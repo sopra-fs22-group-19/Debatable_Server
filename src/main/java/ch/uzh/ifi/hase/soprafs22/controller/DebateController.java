@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 public class DebateController {
@@ -27,13 +28,13 @@ public class DebateController {
         DebateRoom inputDebateRoom = DTOMapper.INSTANCE.convertDebateRoomPostDTOtoEntity(debateRoomPostDTO);
 
         // Set the state of the Debate Room depending on the side of the user that created the room
-        if (inputDebateRoom.equals(DebateParticipantPosition.FOR))
+        if (debateRoomPostDTO.getSide().equalsIgnoreCase(DebateParticipantPosition.FOR.name()))
             inputDebateRoom.setDebateRoomStatus(DebateRoomStatus.ONE_USER_FOR);
-        else if (inputDebateRoom.equals(DebateParticipantPosition.AGAINST))
+        else if (debateRoomPostDTO.getSide().equalsIgnoreCase(DebateParticipantPosition.AGAINST.name()))
             inputDebateRoom.setDebateRoomStatus(DebateRoomStatus.ONE_USER_AGAINST);
         else{
-            //TODO: Return invalid input HTTP code with the error message that side has to be "FOR" or "Against"
-            System.out.println("You forgot the error code and now you get an exception!!!");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Error: reason <the 'side' field must be either 'FOR' or 'AGAINST'>");
         }
 
         // Create the debate room in the DB
