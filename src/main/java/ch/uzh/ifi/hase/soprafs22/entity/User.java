@@ -29,7 +29,10 @@ public class User implements Serializable {
   @Column(nullable = false, unique = true)
   private String username;
 
-  //remove user and status from template, add password and creationDate
+  @Column(nullable = false)
+  private String name;
+
+  // add password and creationDate
   @Column(nullable = false)
   private String password;
 
@@ -45,6 +48,14 @@ public class User implements Serializable {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getName() {
+      return name;
+  }
+
+  public void setName(String name) {
+      this.name = name;
   }
 
   public String getUsername() {

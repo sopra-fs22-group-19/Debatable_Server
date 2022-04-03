@@ -32,6 +32,7 @@ public class UserServiceTest {
     testUser.setId(1L);
     testUser.setUsername("testUsername");
     testUser.setPassword("testPassword");
+    testUser.setName("testName");
 
     // when -> any object is being save in the userRepository -> return the dummy
     // testUser
@@ -51,6 +52,7 @@ public class UserServiceTest {
     assertEquals(testUser.getId(), createdUser.getId());
     assertEquals(testUser.getPassword(), createdUser.getPassword());
     assertEquals(testUser.getUsername(), createdUser.getUsername());
+    assertEquals(testUser.getName(), createdUser.getName());
     //us_01 added test for creationDate not null
     assertNotNull(createdUser.getCreationDate());
     assertNotNull(createdUser.getToken());

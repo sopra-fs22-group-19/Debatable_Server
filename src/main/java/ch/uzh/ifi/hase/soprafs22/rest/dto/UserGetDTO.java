@@ -8,6 +8,7 @@ public class UserGetDTO {
 
   private Long id;
   private String username;
+  private String name;
   private LocalDate creationDate;
   private String token;
 
@@ -26,6 +27,14 @@ public class UserGetDTO {
   public void setUsername(String username) {
     this.username = username;
   }
+
+  public String getName() {
+        return username;
+    }
+
+  public void setName(String username) {
+        this.username = username;
+    }
 
   public LocalDate getCreationDate() {
     return creationDate;

@@ -81,11 +81,13 @@ public class UserControllerTest {
     user.setId(1L);
     user.setUsername("testUsername");
     user.setPassword("testPassword");
+    user.setName("testName");
     user.setToken("1");
     user.setCreationDate(LocalDate.parse("2019-01-21"));
 
     UserPostDTO userPostDTO = new UserPostDTO();
     userPostDTO.setUsername("testUsername");
+    userPostDTO.setName("testName");
     userPostDTO.setPassword("testPassword");
 
     doReturn(user).when(userService).createUser(Mockito.any());
@@ -101,7 +103,8 @@ public class UserControllerTest {
     mockMvc.perform(postRequest)
             .andExpect(status().isCreated())
             .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-            .andExpect(jsonPath("$.username", is(user.getUsername())));
+            .andExpect(jsonPath("$.username", is(user.getUsername())))
+            .andExpect(jsonPath("$.name", is(user.getName())));
   }
 
   //us_01 test for username conflict
@@ -111,10 +114,12 @@ public class UserControllerTest {
       user.setId(1L);
       user.setUsername("testUsername");
       user.setPassword("testPassword");
+      user.setName("testName");
       user.setToken("1");
       user.setCreationDate(LocalDate.parse("2019-01-21"));
       UserPostDTO userPostDTO = new UserPostDTO();
       userPostDTO.setUsername("testUsername");
+      userPostDTO.setName("testName");
       userPostDTO.setPassword("testPassword");
 
       Exception eConflict = new ResponseStatusException(HttpStatus.CONFLICT);
