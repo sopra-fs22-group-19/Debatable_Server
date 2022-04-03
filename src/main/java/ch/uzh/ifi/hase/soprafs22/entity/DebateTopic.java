@@ -16,7 +16,7 @@ import java.io.Serializable;
  * the primary key
  */
 @Entity
-@Table(name = "DEBATETOPIC")
+@Table(name = "DEBATETOPICS")
 public class DebateTopic implements Serializable {
 
   private static final long serialVersionUID = 1L;

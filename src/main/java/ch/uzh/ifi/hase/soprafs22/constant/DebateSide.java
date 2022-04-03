@@ -1,5 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.constant;
 
-public enum DebateParticipantPosition {
+public enum DebateSide {
   FOR, AGAINST, OBSERVER;
 }

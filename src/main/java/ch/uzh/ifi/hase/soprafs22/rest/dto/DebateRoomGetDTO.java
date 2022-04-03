@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-import ch.uzh.ifi.hase.soprafs22.constant.DebateRoomStatus;
-
 public class DebateRoomGetDTO {
 
     private Long roomId;

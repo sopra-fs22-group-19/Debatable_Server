@@ -1,21 +1,16 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.constant.DebateRoomStatus;
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,7 +35,7 @@ public class DebateServiceTest {
     testDebateRoom.setRoomId(1L);
     testDebateRoom.setCreatorUserId(1L);
     testDebateRoom.setDebateTopicId(1L);
-    testDebateRoom.setDebateRoomStatus(DebateRoomStatus.NOT_STARTED);
+    testDebateRoom.setDebateRoomStatus(DebateState.NOT_STARTED);
 
     // when -> any object is being save in the userRepository -> return the dummy
     // testUser

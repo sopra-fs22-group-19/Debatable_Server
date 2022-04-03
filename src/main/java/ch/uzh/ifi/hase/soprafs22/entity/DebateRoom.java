@@ -1,10 +1,13 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 
-import ch.uzh.ifi.hase.soprafs22.constant.DebateRoomStatus;
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.interfaces.Room;
+import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Internal User Representation
@@ -18,7 +21,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "DEBATEROOM")
-public class DebateRoom implements Serializable {
+public class DebateRoom implements Serializable, Room {
 
   private static final long serialVersionUID = 1L;
 
@@ -33,13 +36,10 @@ public class DebateRoom implements Serializable {
   private Long creatorUserId;
 
   @Column(nullable = false)
-  private DebateRoomStatus debateStatus;
+  private DebateState debateStatus;
 
-  //TODO: Iterable of SpeakersInFavor. How to tell JPA to store a table with the one to many realtionship
-
-  //TODO: Iterable of SpeakersInFavor. How to tell JPA to store a table with the one to many realtionship
-
-  //TODO: Iterable of Interventions. How to tell JPA to store a table with the one to many realtionship
+  @OneToMany(mappedBy="debateroom")
+  private List<DebateSpeaker> speakers;
 
   public Long getRoomId() {
     return roomId;
@@ -63,13 +63,30 @@ public class DebateRoom implements Serializable {
         this.creatorUserId = creatorUserId;
     }
 
-  public DebateRoomStatus getDebateRoomStatus() {
-    return debateStatus;
-  }
+  public DebateState getDebateRoomStatus() {  return debateStatus; }
 
-  public void setDebateRoomStatus(DebateRoomStatus debateStatus) {
+  public void setDebateRoomStatus(DebateState debateStatus) {
     this.debateStatus = debateStatus;
   }
 
+  public List<DebateSpeaker> getSpeakers() {
+        return this.speakers;
+    }
 
+  public void setSpeakers(List<DebateSpeaker> speakers) { this.speakers = speakers; }
+
+  @Override
+  public void registerParticipant(RoomParticipant roomParticipant) {
+      throw new RuntimeException("Function not implemented yet");
+  }
+
+  @Override
+  public void removeParticipant(RoomParticipant roomParticipant) {
+      throw new RuntimeException("Function not implemented yet");
+  }
+
+  @Override
+  public void notifyParticipants() {
+        throw new RuntimeException("Function not implemented yet");
+  }
 }
