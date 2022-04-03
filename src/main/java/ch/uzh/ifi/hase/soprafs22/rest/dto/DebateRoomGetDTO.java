@@ -5,7 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.DebateRoomStatus;
 public class DebateRoomGetDTO {
 
     private Long roomId;
-    private DebateRoomStatus status;
+    private String debateStatus;
 
     public Long getRoomId() {
         return roomId;
@@ -15,11 +15,11 @@ public class DebateRoomGetDTO {
         this.roomId = roomId;
     }
 
-    public DebateRoomStatus getDebateRoomStatus() {
-        return status;
+    public String getDebateStatus() {
+        return debateStatus;
     }
 
-    public void setDebateRoomStatus(DebateRoomStatus status) {
-        this.status = status;
+    public void setDebateStatus(String debateStatus) {
+        this.debateStatus = debateStatus;
     }
 }

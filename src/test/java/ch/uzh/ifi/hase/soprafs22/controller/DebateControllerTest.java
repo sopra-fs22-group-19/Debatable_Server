@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateParticipantPosition;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateRoomStatus;
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
@@ -57,24 +58,23 @@ public class DebateControllerTest {
     debateRoom.setDebateTopicId(1L);
     debateRoom.setDebateRoomStatus(DebateRoomStatus.ONE_USER_FOR);
 
-    DebateRoomPostDTO debateRoomPostDTO = new convertDebateRoomPostDTOtoEntity();
-    debateRoomPostDTO.setCreatorUserId(1L);
-    debateRoomPostDTO.setDebateTopicId(1L);
+    DebateRoomPostDTO debateRoomPostDTO = new DebateRoomPostDTO();
+    debateRoomPostDTO.setUserId(1L);
+    debateRoomPostDTO.setDebateId(1L);
+    debateRoomPostDTO.setSide(String.valueOf(DebateParticipantPosition.FOR));
 
     given(debateService.createDebateRoom(Mockito.any())).willReturn(debateRoom);
 
     // when/then -> do the request + validate the result
-    MockHttpServletRequestBuilder postRequest = post("/users")
+    MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(asJsonString(userPostDTO));
+        .content(asJsonString(debateRoomPostDTO));
 
     // then
     mockMvc.perform(postRequest)
         .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-        .andExpect(jsonPath("$.name", is(user.getName())))
-        .andExpect(jsonPath("$.username", is(user.getUsername())))
-        .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+        .andExpect(jsonPath("$.roomId", is(debateRoom.getRoomId())))
+        .andExpect(jsonPath("$.status", is(is(debateRoom.getDebateRoomStatus()))));
   }
 
   /**

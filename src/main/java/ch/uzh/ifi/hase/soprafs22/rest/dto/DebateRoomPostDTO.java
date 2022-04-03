@@ -4,24 +4,24 @@ import javax.persistence.Column;
 
 public class DebateRoomPostDTO {
 
-  private Long creatorUserId;
+  private Long userId;
 
-  private Long debateTopicId;
+  private Long debateId;
 
   private String side;
 
-  public Long getCreatorUserId() { return creatorUserId; }
+  public Long getUserId() { return userId; }
 
-  public void setCreatorUserId(Long creatorUserId) {
-        this.creatorUserId = creatorUserId;
+  public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
-  public Long getDebateTopicId() {
-        return debateTopicId;
+  public Long getDebateId() {
+        return debateId;
     }
 
-  public void setDebateTopicId(Long debateTopicId) {
-        this.debateTopicId = debateTopicId;
+  public void setDebateId(Long debateId) {
+        this.debateId = debateId;
     }
 
   public String getSide() {
