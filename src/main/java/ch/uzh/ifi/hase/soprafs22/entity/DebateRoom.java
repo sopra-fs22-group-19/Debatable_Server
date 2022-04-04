@@ -8,7 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,7 +25,7 @@ import java.util.Objects;
 @Table(name = "DEBATEROOM")
 public class DebateRoom implements Serializable, Room {
 
-  final static String operationNotImplemented = "Function not implemented yet";
+  static final String NOTIMPLEMENTED = "Function not implemented yet";
 
   @Id
   @GeneratedValue
@@ -39,7 +38,7 @@ public class DebateRoom implements Serializable, Room {
   private DebateState debateStatus;
 
   @OneToMany(mappedBy="debateRoom")
-  private ArrayList<DebateSpeaker> speakers;
+  private List<DebateSpeaker> speakers;
 
   @ManyToOne
   @JoinColumn(name = "debate_topic_debate_topic_id")
@@ -66,11 +65,11 @@ public class DebateRoom implements Serializable, Room {
     this.debateStatus = debateStatus;
   }
 
-  public ArrayList<DebateSpeaker> getSpeakers() {
+  public List<DebateSpeaker> getSpeakers() {
         return this.speakers;
     }
 
-  public void setSpeakers(ArrayList<DebateSpeaker> speakers) { this.speakers = speakers; }
+  public void setSpeakers(List<DebateSpeaker> speakers) { this.speakers = speakers; }
 
   public DebateTopic getDebateTopic() { return debateTopic; }
 
@@ -118,16 +117,16 @@ public class DebateRoom implements Serializable, Room {
 
     @Override
   public void registerParticipant(RoomParticipant roomParticipant) {
-      throw new RuntimeException(operationNotImplemented);
+      throw new RuntimeException(NOTIMPLEMENTED);
   }
 
   @Override
   public void removeParticipant(RoomParticipant roomParticipant) {
-      throw new RuntimeException(operationNotImplemented);
+      throw new RuntimeException(NOTIMPLEMENTED);
   }
 
   @Override
   public void notifyParticipants() {
-        throw new RuntimeException(operationNotImplemented);
+        throw new RuntimeException(NOTIMPLEMENTED);
   }
 }

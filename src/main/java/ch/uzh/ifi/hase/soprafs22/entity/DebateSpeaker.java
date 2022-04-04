@@ -8,7 +8,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "DEBATESPEAKERS")
 public class DebateSpeaker implements RoomParticipant {
-    final static String operationNotImplemented = "Function not implemented yet";
+    static final String NOTIMPLEMENTED = "Function not implemented yet";
 
     @Id
     @GeneratedValue
@@ -49,11 +49,11 @@ public class DebateSpeaker implements RoomParticipant {
 
     @Override
     public void update() {
-        throw new RuntimeException(operationNotImplemented);
+        throw new RuntimeException(NOTIMPLEMENTED);
     }
 
     @Override
     public void postIntervention(Intervention intervention, DebateRoom debateRoom) {
-        throw new RuntimeException(operationNotImplemented);
+        throw new RuntimeException(NOTIMPLEMENTED);
     }
 }
