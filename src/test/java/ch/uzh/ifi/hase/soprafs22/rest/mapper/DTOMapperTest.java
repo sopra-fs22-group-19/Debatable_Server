@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
@@ -42,7 +41,7 @@ public class DTOMapperTest {
     UserGetDTO userGetDTO = DTOMapper.INSTANCE.convertEntityToUserGetDTO(user);
 
     // check content
-    assertEquals(user.getId(), userGetDTO.getId());
+    assertEquals(user.getId(), userGetDTO.getUserId());
 
     assertEquals(user.getUsername(), userGetDTO.getUsername());
 
