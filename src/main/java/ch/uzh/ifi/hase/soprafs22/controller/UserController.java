@@ -56,14 +56,12 @@ public class UserController {
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
-  @PostMapping("/login")
+  @GetMapping("/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
-  public UserGetDTO checkUserCredentials(@RequestBody UserPostDTO userPostDTO){
+  public UserGetDTO checkUserCredentials(@RequestBody User user){
 
-      User verifiedUser = DTOMapper.INSTANCE.convertUserPostDTOtoEntity(userPostDTO);
-
-      User returnUser = userService.checkCredentials(verifiedUser);
+      User returnUser = userService.checkCredentials(user);
 
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(returnUser);
   }
