@@ -9,6 +9,7 @@ public class UserGetDTO {
   private Long id;
   private String username;
   private String name;
+  private String password;
   private LocalDate creationDate;
   private String token;
 
@@ -34,6 +35,14 @@ public class UserGetDTO {
 
   public void setName(String name) {
         this.name = name;
+    }
+
+  public String getPassword() {
+        return password;
+    }
+
+  public void setPassword(String password) {
+        this.password = password;
     }
 
   public LocalDate getCreationDate() {
