@@ -153,7 +153,7 @@ public class UserControllerTest {
         userPostDTO.setName("testName");
         userPostDTO.setPassword("testPassword");
 
-        doReturn(user).when(userService).checkCredentials(Mockito.any());
+        doReturn(user).when(userService).checkCredentials(Mockito.any(),Mockito.any());
 
         // when/then -> do the request + validate the result
         MockHttpServletRequestBuilder getRequest = get("/login")
