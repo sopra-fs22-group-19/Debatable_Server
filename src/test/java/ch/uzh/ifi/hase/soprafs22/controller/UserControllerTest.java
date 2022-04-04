@@ -156,12 +156,12 @@ public class UserControllerTest {
         doReturn(user).when(userService).checkCredentials(Mockito.any());
 
         // when/then -> do the request + validate the result
-        MockHttpServletRequestBuilder postRequest = post("/login")
+        MockHttpServletRequestBuilder getRequest = get("/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(userPostDTO));
 
         // then
-        mockMvc.perform(postRequest)
+        mockMvc.perform(getRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(user.getId().intValue())))
                 .andExpect(jsonPath("$.username", is(user.getUsername())))
