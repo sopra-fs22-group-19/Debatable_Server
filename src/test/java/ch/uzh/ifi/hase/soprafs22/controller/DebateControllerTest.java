@@ -74,7 +74,7 @@ class DebateControllerTest {
     debatesSpeaker1.setUserAssociated(creatingUser);
     debatesSpeaker1.setDebateSide(DebateSide.FOR);
 
-    List<DebateSpeaker> speakerList = new ArrayList<>();
+    ArrayList<DebateSpeaker> speakerList = new ArrayList<>();
     speakerList.add(debatesSpeaker1);
 
     // Create Debate Topic
