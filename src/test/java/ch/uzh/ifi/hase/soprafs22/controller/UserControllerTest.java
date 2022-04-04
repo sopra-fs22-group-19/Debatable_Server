@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -140,34 +139,34 @@ public class UserControllerTest {
   //test for us01
   @Test
   public void loginUser_valid() throws Exception {
-      // given
-      User user = new User();
-      user.setId(1L);
-      user.setUsername("testUsername");
-      user.setPassword("testPassword");
-      user.setName("testName");
-      user.setToken("1");
-      user.setCreationDate(LocalDate.parse("2019-01-21"));
+        // given
+        User user = new User();
+        user.setId(1L);
+        user.setUsername("testUsername");
+        user.setPassword("testPassword");
+        user.setName("testName");
+        user.setToken("1");
+        user.setCreationDate(LocalDate.parse("2019-01-21"));
 
-      UserGetDTO userGetDTO = new UserGetDTO();
-      userGetDTO.setUsername("testUsername");
-      userGetDTO.setName("testName");
-      userGetDTO.setPassword("testPassword");
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUsername("testUsername");
+        userPostDTO.setName("testName");
+        userPostDTO.setPassword("testPassword");
 
-      doReturn(user).when(userService).checkCredentials(Mockito.any(),Mockito.any());
+        doReturn(user).when(userService).checkCredentials(Mockito.any(),Mockito.any());
 
-      // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder getRequest = get("/users?username={testUsername}&password={testPassword}")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(user));
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder getRequest = get("/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPostDTO));
 
-      // then
-      mockMvc.perform(getRequest)
-              .andExpect(status().isOk())
-              .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-              .andExpect(jsonPath("$.username", is(user.getUsername())))
-              .andExpect(jsonPath("$.name", is(user.getName())));
-  }
+        // then
+        mockMvc.perform(getRequest)
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+                .andExpect(jsonPath("$.username", is(user.getUsername())))
+                .andExpect(jsonPath("$.name", is(user.getName())));
+    }
 
 
 

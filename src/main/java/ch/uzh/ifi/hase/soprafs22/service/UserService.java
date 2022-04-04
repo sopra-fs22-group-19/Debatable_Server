@@ -67,7 +67,8 @@ public class UserService {
 
       if(checkedUser.getPassword().equals(password)){
           return checkedUser;
-      }else{
+      }
+      else{
           throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                   String.format( "The password provided is incorrect"));
       }
