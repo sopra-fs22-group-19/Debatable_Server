@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-import javax.persistence.Column;
-
 public class DebateRoomPostDTO {
 
   private Long userId;

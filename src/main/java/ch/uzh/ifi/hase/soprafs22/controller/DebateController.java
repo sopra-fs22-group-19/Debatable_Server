@@ -23,7 +23,7 @@ public class DebateController {
     @PostMapping("/debates/rooms")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public DebateRoomGetDTO createUser(@RequestBody DebateRoomPostDTO debateRoomPostDTO) {
+    public DebateRoomGetDTO createDebateRoom(@RequestBody DebateRoomPostDTO debateRoomPostDTO) {
         // convert API user to internal representation
         DebateRoom inputDebateRoom = DTOMapper.INSTANCE.convertDebateRoomPostDTOtoEntity(debateRoomPostDTO);
 

@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
-import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
@@ -9,6 +8,8 @@ import javax.persistence.*;
 @Entity
 @Table(name = "DEBATESPEAKERS")
 public class DebateSpeaker implements RoomParticipant {
+    final String OPERATION_NOT_IMPLEMENTED = "Function not implemented yet";
+
     @Id
     @GeneratedValue
     private Long speakerId;
@@ -48,11 +49,11 @@ public class DebateSpeaker implements RoomParticipant {
 
     @Override
     public void update() {
-        throw new RuntimeException("Function not implemented yet");
+        throw new RuntimeException(OPERATION_NOT_IMPLEMENTED);
     }
 
     @Override
     public void postIntervention(Intervention intervention, DebateRoom debateRoom) {
-        throw new RuntimeException("Function not implemented yet");
+        throw new RuntimeException(OPERATION_NOT_IMPLEMENTED);
     }
 }

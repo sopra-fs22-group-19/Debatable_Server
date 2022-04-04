@@ -17,6 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -82,7 +83,7 @@ public class DebateServiceTest {
   }
 
   @Test
-  public void createDebateRoom_validInputs_success() {
+  void createDebateRoom_validInputs_success() {
     // when -> any object is being save in the userRepository -> return the dummy
     // testUser
     DebateRoomPostDTO debateRoomPostDTO = new DebateRoomPostDTO();
@@ -101,6 +102,35 @@ public class DebateServiceTest {
     assertEquals(testDebateRoom.getDebateTopic(), createdDebateRoom.getDebateTopic());
     assertEquals(testDebateRoom.getSpeakers(), createdDebateRoom.getSpeakers());
   }
+
+  @Test
+  void createDebateRoom_creatingUserNotFound() {
+      // when -> any object is being save in the userRepository -> return the dummy
+      DebateRoomPostDTO debateRoomPostDTO = new DebateRoomPostDTO();
+      debateRoomPostDTO.setUserId(2L);
+      debateRoomPostDTO.setDebateId(1L);
+      debateRoomPostDTO.setSide("FOR");
+
+      Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+
+      assertThrows(ResponseStatusException.class, () ->
+              debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
+  }
+
+    @Test
+    void createDebateRoom_debateTopicNotFound() {
+        // when -> any object is being save in the userRepository -> return the dummy
+        DebateRoomPostDTO debateRoomPostDTO = new DebateRoomPostDTO();
+        debateRoomPostDTO.setUserId(1L);
+        debateRoomPostDTO.setDebateId(2L);
+        debateRoomPostDTO.setSide("FOR");
+
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testDebateRoom.getUser1()));
+        Mockito.when(debateTopicRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+
+        assertThrows(ResponseStatusException.class, () ->
+                debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
+    }
 
 
 }

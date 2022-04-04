@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
@@ -13,6 +14,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -27,6 +29,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -43,13 +46,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This tests if the UserController works.
  */
 @WebMvcTest(DebateController.class)
-public class DebateControllerTest {
+class DebateControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockBean
   private DebateService debateService;
+
+  @Mock
+  private UserRepository userRepository;
 
   private DebateRoom debateRoom;
   private DebateRoomPostDTO debateRoomPostDTO;
@@ -92,7 +98,7 @@ public class DebateControllerTest {
   }
 
   @Test
-  public void createDebateRoom_UserFOR_validInput_debateRoomCreated() throws Exception {
+  void createDebateRoom_UserFOR_validInput_debateRoomCreated() throws Exception {
     // Check the end point returns the appropriate Debate Room object
     debateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
 
@@ -123,7 +129,7 @@ public class DebateControllerTest {
   }
 
   @Test
-  public void createDebateRoom_UserAGAINST_validInput_debateRoomCreated() throws Exception {
+  void createDebateRoom_UserAGAINST_validInput_debateRoomCreated() throws Exception {
       // Check the end point returns the appropriate Debate Room object
       debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
 
@@ -155,7 +161,7 @@ public class DebateControllerTest {
   }
 
   @Test
-  public void createDebateRoom_invalidInput_sideInvalid_debateRoomNotCreated() throws Exception {
+  void createDebateRoom_invalidInput_sideInvalid_debateRoomNotCreated() throws Exception {
       // Check the end point returns the appropriate Debate Room object
       debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
 
@@ -172,7 +178,7 @@ public class DebateControllerTest {
       mockMvc.perform(postRequest)
               .andExpect(status().isBadRequest());
 
-    }
+  }
 
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input

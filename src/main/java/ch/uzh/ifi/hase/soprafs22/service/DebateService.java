@@ -21,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -53,12 +52,6 @@ public class DebateService {
 
         Optional<DebateTopic> debateTopic = debateTopicRepository.findById(debateRoomPostDTO.getDebateId());
 
-        // DebateTopic debateTopic = new DebateTopic();
-        // debateTopic.setCreatorUserId(1L);
-        // debateTopic.setDebateTopicId(1L);
-        // debateTopic.setTopic("Tema 1");
-        // debateTopic.setTopicDescription("Tema 1 mas descrtipcion");
-
         if (debateTopic.isEmpty()){
             String baseErrorMessage = "Error: reason <Debate topic with id: '%d' was not found>";
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
@@ -84,7 +77,8 @@ public class DebateService {
         inputDebateRoom = debateRoomRepository.save(inputDebateRoom);
         debateRoomRepository.flush();
 
-        // log.debug("Created DebateRoom: {}", newUser);
+        log.debug("Created DebateRoom: {}", inputDebateRoom);
+
         return inputDebateRoom;
 
     }

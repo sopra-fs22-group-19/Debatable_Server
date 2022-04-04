@@ -25,7 +25,7 @@ import java.util.Objects;
 @Table(name = "DEBATEROOM")
 public class DebateRoom implements Serializable, Room {
 
-  private static final long serialVersionUID = 1L;
+  final String OPERATION_NOT_IMPLEMENTED = "Function not implemented yet";
 
   @Id
   @GeneratedValue
@@ -99,7 +99,7 @@ public class DebateRoom implements Serializable, Room {
       else if (speakers.size() < 2)
           return null;
       else
-      return speakers.get(1).getUserAssociated();
+          return speakers.get(1).getUserAssociated();
   }
 
   public void setUser2(DebateSpeaker debateSpeaker) {  speakers.add(1, debateSpeaker); }
@@ -117,16 +117,16 @@ public class DebateRoom implements Serializable, Room {
 
     @Override
   public void registerParticipant(RoomParticipant roomParticipant) {
-      throw new RuntimeException("Function not implemented yet");
+      throw new RuntimeException(OPERATION_NOT_IMPLEMENTED);
   }
 
   @Override
   public void removeParticipant(RoomParticipant roomParticipant) {
-      throw new RuntimeException("Function not implemented yet");
+      throw new RuntimeException(OPERATION_NOT_IMPLEMENTED);
   }
 
   @Override
   public void notifyParticipants() {
-        throw new RuntimeException("Function not implemented yet");
+        throw new RuntimeException(OPERATION_NOT_IMPLEMENTED);
   }
 }
