@@ -149,17 +149,17 @@ public class UserControllerTest {
       user.setToken("1");
       user.setCreationDate(LocalDate.parse("2019-01-21"));
 
-      UserGetDTO userGetDTO = new UserGetDTO();
-      userGetDTO.setUsername("testUsername");
-      userGetDTO.setName("testName");
-      userGetDTO.setPassword("testPassword");
+        UserPostDTO userPostDTO = new UserPostDTO();
+        userPostDTO.setUsername("testUsername");
+        userPostDTO.setName("testName");
+        userPostDTO.setPassword("testPassword");
 
       doReturn(user).when(userService).checkCredentials(Mockito.any(),Mockito.any());
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder getRequest = get("/users?username={testUsername}&password={testPassword}")
               .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(user));
+                .content(asJsonString(userPostDTO));
 
       // then
       mockMvc.perform(getRequest)
