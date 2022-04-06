@@ -8,7 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,9 +34,6 @@ class DebateServiceTest {
 
   @Mock
   private UserRepository userRepository;
-
-  @Mock
-  private TagRepository tagRepository;
 
   @InjectMocks
   private DebateService debateService;
@@ -131,6 +127,5 @@ class DebateServiceTest {
         assertThrows(ResponseStatusException.class, () ->
                 debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
     }
-
 
 }

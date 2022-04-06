@@ -82,4 +82,8 @@ public class DebateService {
         return inputDebateRoom;
 
     }
+
+    public Optional<DebateRoom> getDebateRoom(Long roomId) {
+        return debateRoomRepository.findById(roomId);
+    }
 }
