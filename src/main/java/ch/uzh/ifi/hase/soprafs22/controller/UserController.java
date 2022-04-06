@@ -8,8 +8,6 @@ import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * User Controller
@@ -27,21 +25,6 @@ public class UserController {
     this.userService = userService;
   }
 
-  @GetMapping("/users")
-  @ResponseStatus(HttpStatus.OK)
-  @ResponseBody
-  public List<UserGetDTO> getAllUsers() {
-    // fetch all users in the internal representation
-    List<User> users = userService.getUsers();
-    List<UserGetDTO> userGetDTOs = new ArrayList<>();
-
-    // convert each user to the API representation
-    for (User user : users) {
-      userGetDTOs.add(DTOMapper.INSTANCE.convertEntityToUserGetDTO(user));
-    }
-    return userGetDTOs;
-  }
-
   @PostMapping("/users")
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
@@ -56,10 +39,11 @@ public class UserController {
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
-  @GetMapping("/users?username={username}&password={password}")
+  @GetMapping("/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
-  public User checkUserCredentials(@PathVariable("username") String username, @PathVariable("password") String password){
+  public User checkUserCredentials(@RequestParam(name = "username") String username,
+                                   @RequestParam(name = "password") String password){
 
       User verifiedUser = userService.checkCredentials(username, password);
 

@@ -45,35 +45,7 @@ public class UserControllerTest {
   @MockBean
   private UserService userService;
 
-  // get all user from /users is not in our user story
-  /*
-  @Test
-  public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
-    // given
-    User user = new User();
-    user.setPassword("testPassword");
-    user.setUsername("testUsername");
 
-    List<User> allUsers = Collections.singletonList(user);
-
-    // this mocks the UserService -> we define above what the userService should
-    // return when getUsers() is called
-    given(userService.getUsers()).willReturn(allUsers);
-
-    // when
-    MockHttpServletRequestBuilder getRequest = get("/users").contentType(MediaType.APPLICATION_JSON);
-
-    // then
-    mockMvc.perform(getRequest).andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].name", is(user.getName())))
-        .andExpect(jsonPath("$[0].username", is(user.getUsername())))
-        .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
-  } */
-
-
-
-  //us_01 test
   @Test
   public void createUser_validInput_userCreated() throws Exception {
     // given
@@ -92,8 +64,6 @@ public class UserControllerTest {
 
     doReturn(user).when(userService).createUser(Mockito.any());
 
-    //given(userService.createUser(Mockito.any())).willReturn(user);
-
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = post("/users")
         .contentType(MediaType.APPLICATION_JSON)
@@ -107,7 +77,6 @@ public class UserControllerTest {
             .andExpect(jsonPath("$.name", is(user.getName())));
   }
 
-  //us_01 test for username conflict
   @Test
   void createUser_failed_usernameAlreadyExist() throws Exception {
       User user = new User();

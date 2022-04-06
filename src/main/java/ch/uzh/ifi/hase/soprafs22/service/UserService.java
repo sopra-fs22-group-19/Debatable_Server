@@ -46,6 +46,9 @@ public class UserService {
 
     checkIfUsernameExists(newUser);
 
+    // Create user with offline status
+    newUser.setStatus(UserStatus.ONLINE);
+
     // saves the given entity but data is only persisted in the database once
     // flush() is called
     newUser = userRepository.save(newUser);
