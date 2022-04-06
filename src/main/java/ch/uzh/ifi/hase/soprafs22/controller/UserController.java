@@ -42,12 +42,12 @@ public class UserController {
   @GetMapping("/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
-  public User checkUserCredentials(@RequestParam(name = "username") String username,
+  public UserGetDTO checkUserCredentials(@RequestParam(name = "username") String username,
                                    @RequestParam(name = "password") String password){
 
       User verifiedUser = userService.checkCredentials(username, password);
 
-      return verifiedUser;
+      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(verifiedUser);
   }
 
 }

@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -45,9 +44,6 @@ public class UserService {
     newUser.setCreationDate(LocalDate.now());
 
     checkIfUsernameExists(newUser);
-
-    // Create user with offline status
-    newUser.setStatus(UserStatus.ONLINE);
 
     // saves the given entity but data is only persisted in the database once
     // flush() is called

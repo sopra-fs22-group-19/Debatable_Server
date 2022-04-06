@@ -1,7 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -37,9 +35,6 @@ public class User implements Serializable {
 
   @Column(nullable = false, unique = true)
   private String token;
-
-  @Column(nullable = false)
-  private UserStatus status;
 
   @Column(nullable = false)
   private String password;
@@ -84,20 +79,12 @@ public class User implements Serializable {
     this.token = token;
   }
 
-  public UserStatus getStatus() {
-    return status;
-  }
-
-  public void setStatus(UserStatus status) {
-    this.status = status;
-  }
-
   public String getPassword() {
         return password;
-    }
+  }
 
   public void setPassword(String password) {
         this.password = password;
-    }
+  }
 
 }
