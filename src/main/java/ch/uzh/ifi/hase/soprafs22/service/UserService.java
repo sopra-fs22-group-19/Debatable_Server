@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -55,6 +54,22 @@ public class UserService {
     return newUser;
   }
 
+  public User checkCredentials(String username, String password){
+
+      User checkedUser = userRepository.findByUsername(username);
+
+      if(checkedUser == null){
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The provided username is invalid."));
+      }
+
+      if(checkedUser.getPassword().equals(password)){
+          return checkedUser;
+      }
+      else{
+          throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+                  String.format( "The password provided is incorrect"));
+      }
+  }
 
 
   /**
@@ -73,13 +88,11 @@ public class UserService {
   private void checkIfUsernameExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 
-    //changed error msg to match the description
-    String baseErrorMessage = "add User failed because username already exists!";
-    if (userByUsername != null ) {
+    if (userByUsername != null) {
       throw new ResponseStatusException(HttpStatus.CONFLICT,
-          String.format(baseErrorMessage));
+          String.format("The username provided is not unique. Therefore, the user could not be created!"));
+
     }
   }
-
 
 }
