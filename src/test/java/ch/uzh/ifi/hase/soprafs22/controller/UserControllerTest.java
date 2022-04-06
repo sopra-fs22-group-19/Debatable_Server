@@ -66,7 +66,7 @@ public class UserControllerTest {
     // then
     mockMvc.perform(postRequest)
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.id", is(user.getId().intValue())))
+            .andExpect(jsonPath("$.userId", is(user.getId().intValue())))
             .andExpect(jsonPath("$.username", is(user.getUsername())))
             .andExpect(jsonPath("$.name", is(user.getName())));
   }

@@ -4,20 +4,19 @@ import java.time.LocalDate;
 
 public class UserGetDTO {
 
-  private Long id;
+  private Long userId;
   private String username;
-  private String password;
   private String name;
-  private LocalDate creationDate;
+  private LocalDate creation_date;
   private String token;
 
 
-  public Long getId() {
-    return id;
+  public Long getUserId() {
+    return userId;
   }
 
-  public void setId(Long id) {
-    this.id = id;
+  public void setUserId(Long userId) {
+    this.userId = userId;
   }
 
   public String getUsername() {
@@ -36,12 +35,12 @@ public class UserGetDTO {
         this.name = name;
     }
 
-  public LocalDate getCreationDate() {
-    return creationDate;
+  public LocalDate getCreation_date() {
+    return creation_date;
   }
 
-  public void setCreationDate(LocalDate creationDate) {
-    this.creationDate = creationDate;
+  public void setCreation_date(LocalDate creation_date) {
+    this.creation_date = creation_date;
   }
 
   public String getToken() {
@@ -51,13 +50,5 @@ public class UserGetDTO {
   public void setToken(String token) {
       this.token = token;
   }
-
-  public String getPassword() {
-        return password;
-    }
-
-  public void setPassword(String password) {
-        this.password = password;
-    }
 
 }
