@@ -3,13 +3,18 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 public class DebateController {
@@ -42,6 +47,23 @@ public class DebateController {
 
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(createdDebateRoom);
+    }
+
+
+
+    @GetMapping("/debates/{userId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<DebateTopicGetDTO> getTopicByUser(@PathVariable Long userId){
+
+        List<DebateTopicGetDTO> debateGetDTOs = new ArrayList<>();
+        List<DebateTopic> debateTopics = debateService.getDebateTopicByUserId(userId);
+
+        for (DebateTopic debateTopic : debateTopics) {
+            debateGetDTOs.add(DTOMapper.INSTANCE.convertEntityToDebateGetDTO(debateTopic));
+        }
+
+        return debateGetDTOs;
     }
 
 }
