@@ -66,7 +66,7 @@ public class UserService {
   public User createGuestUser(User newUser) {
 
       newUser.setUsername(UUID.randomUUID().toString());
-      newUser.setName(UUID.randomUUID().toString());
+      newUser.setName("Guest");
       newUser.setPassword(UUID.randomUUID().toString());
       newUser.setToken(UUID.randomUUID().toString());
       newUser.setCreationDate(LocalDate.now());
