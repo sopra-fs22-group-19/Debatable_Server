@@ -84,6 +84,7 @@ public class DebateService {
 
     }
 
+
     public List<DebateTopic> getDebateTopicByUserId(Long userId){
 
         User creatorUser = userRepository.findById(userId).orElse(null);

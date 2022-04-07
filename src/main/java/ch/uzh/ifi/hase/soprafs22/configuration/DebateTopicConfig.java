@@ -18,6 +18,7 @@ public class DebateTopicConfig {
 
 
     //create one default topic for user just for testing
+    /* commented out after addDefaultTopicToUser implemented
     @Bean
     CommandLineRunner commandLineRunner(DebateTopicRepository debateTopicRepository, UserRepository userRepository){
 
@@ -39,13 +40,13 @@ public class DebateTopicConfig {
 
             DebateTopic defaultDebateTopic1 =  new DebateTopic();
             defaultDebateTopic1.setCreatorUserId(1L);
-            defaultDebateTopic1.setTopic("Test default Topic1 belongs user1");
-            defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
+            defaultDebateTopic1.setTopic("Test Topic1 belongs user1");
+            defaultDebateTopic1.setTopicDescription("Test Topic1 description");
 
             DebateTopic defaultDebateTopic2 =  new DebateTopic();
             defaultDebateTopic2.setCreatorUserId(2L);
-            defaultDebateTopic2.setTopic("Test default Topic2 belongs user2 ");
-            defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
+            defaultDebateTopic2.setTopic("Test Topic2 belongs user2 ");
+            defaultDebateTopic2.setTopicDescription("Test Topic2 description");
 
 
 
@@ -54,5 +55,7 @@ public class DebateTopicConfig {
             debateTopicRepository.saveAll(List.of(defaultDebateTopic1,defaultDebateTopic2));
         };
     }
+
+     */
 
 }
