@@ -63,6 +63,24 @@ public class UserService {
     return newUser;
   }
 
+  public User createGuestUser(User newUser) {
+
+      newUser.setUsername(UUID.randomUUID().toString());
+      newUser.setName(UUID.randomUUID().toString());
+      newUser.setPassword(UUID.randomUUID().toString());
+      newUser.setToken(UUID.randomUUID().toString());
+      newUser.setCreationDate(LocalDate.now());
+      checkIfUsernameExists(newUser);
+
+      // saves the given entity but data is only persisted in the database once
+      // flush() is called
+      newUser = userRepository.save(newUser);
+      userRepository.flush();
+
+      log.debug("Created Information for GuestUser: {}", newUser);
+      return newUser;
+  }
+
   public User checkCredentials(String username, String password){
 
       User checkedUser = userRepository.findByUsername(username);
@@ -78,6 +96,10 @@ public class UserService {
           throw new ResponseStatusException(HttpStatus.FORBIDDEN,
                   String.format( "The password provided is incorrect"));
       }
+  }
+
+  public void deleteUser(Long id) {
+      this.userRepository.deleteById(id);
   }
 
 
