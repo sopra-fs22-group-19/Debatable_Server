@@ -11,4 +11,6 @@ public interface DebateTopicRepository extends JpaRepository<DebateTopic, Long> 
 
     List<DebateTopic> findByCreatorUserId(Long creatorUserId);
 
+    List<DebateTopic> findByIsDefaultTopicIsTrue();
+
 }

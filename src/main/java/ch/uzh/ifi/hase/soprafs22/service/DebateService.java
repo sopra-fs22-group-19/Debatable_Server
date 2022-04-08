@@ -150,7 +150,9 @@ public class DebateService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,userId));
         }
 
-        return debateTopicRepository.findByCreatorUserId(userId);
+        List<DebateTopic> debateTopicList = debateTopicRepository.findByIsDefaultTopicIsTrue();
+        debateTopicList.addAll(debateTopicRepository.findByCreatorUserId(userId));
+        return debateTopicList;
     }
 
 }
