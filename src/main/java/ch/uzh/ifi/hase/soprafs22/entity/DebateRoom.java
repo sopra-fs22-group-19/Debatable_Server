@@ -88,7 +88,7 @@ public class DebateRoom implements Serializable, Room {
   public void setDebateTopic(DebateTopic debateTopic) { this.debateTopic=debateTopic; }
 
   public User getUser1() {
-      if (speakers.size() == 0)
+      if (speakers.isEmpty())
           return null;
       else
           return speakers.get(0).getUserAssociated();
@@ -97,7 +97,7 @@ public class DebateRoom implements Serializable, Room {
   public void setUser1(DebateSpeaker debateSpeaker) {  speakers.add(0, debateSpeaker); }
 
   public DebateSide getSide1() {
-      if (speakers.size() == 0)
+      if (speakers.isEmpty())
           return null;
       else
           return speakers.get(0).getDebateSide();

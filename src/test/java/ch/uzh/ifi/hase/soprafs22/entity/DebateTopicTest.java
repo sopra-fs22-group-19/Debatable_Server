@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.List;
 
 import static ch.uzh.ifi.hase.soprafs22.entity.DebateTopic.readTopicListCSV;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -20,7 +20,7 @@ class DebateTopicTest {
 
         DebateTopic.readTopicListCSV(defaultListPath.toString());
 
-        ArrayList<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
+        List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
 
         assertFalse(defaultDebateTopicsList.isEmpty());
     }
@@ -31,7 +31,7 @@ class DebateTopicTest {
 
         DebateTopic.readTopicListCSV(defaultListPath.toString());
 
-        ArrayList<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
+        List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
 
         assertTrue(defaultDebateTopicsList.size() > 5);
     }

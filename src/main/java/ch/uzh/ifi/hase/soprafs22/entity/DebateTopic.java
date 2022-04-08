@@ -100,7 +100,7 @@ public class DebateTopic implements Serializable {
         this.isDefaultTopic = isDefaultTopic;
     }
 
-  public static ArrayList<DebateTopic> readTopicListCSV(String filepath) throws IOException, CsvValidationException {
+  public static List<DebateTopic> readTopicListCSV(String filepath) throws IOException, CsvValidationException {
 
       CSVReader csvReader = new CSVReaderBuilder(new FileReader(filepath)).withSkipLines(1).build();
       ArrayList<DebateTopic> debateTopics=  new ArrayList<>();

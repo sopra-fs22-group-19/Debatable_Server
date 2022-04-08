@@ -22,7 +22,6 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -72,8 +71,8 @@ public class DebateService {
         log.info(String.format("Loading default topic list from: %s", defaultListPath));
 
         try {
-            ArrayList<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
-            if (defaultDebateTopicsList.size() == 0){
+            List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
+            if (defaultDebateTopicsList.isEmpty()){
                 log.warn("List of debate topics is empty");
             } else{
                 debateTopicRepository.saveAll(defaultDebateTopicsList);
@@ -123,9 +122,6 @@ public class DebateService {
 
         // Store new DebateRoom in the DB
         inputDebateRoom = debateRoomRepository.save(inputDebateRoom);
-        log.info("speaker one is: " + inputDebateRoom.getUser1().getName());
-        log.info("Size of speakers is: " + inputDebateRoom.getSpeakers().size());
-        log.info("Size of speakers is: " + inputDebateRoom.getSpeakers().toString());
         debateRoomRepository.flush();
 
         debateSpeakerRepository.save(debatesSpeaker1);
