@@ -1,9 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,8 +56,6 @@ public class UserService {
     newUser = userRepository.save(newUser);
     userRepository.flush();
 
-    addDefaultDebateTopicsToUser(newUser);
-
     log.debug("Created Information for User: {}", newUser);
     return newUser;
   }
@@ -106,28 +103,5 @@ public class UserService {
 
     }
   }
-
-  public List<DebateTopic> addDefaultDebateTopicsToUser(User user){
-
-      Long userId = user.getId();
-
-      DebateTopic defaultDebateTopic1 =  new DebateTopic();
-      defaultDebateTopic1.setCreatorUserId(userId);
-      defaultDebateTopic1.setTopic("Default Topic 1 added by DebateService, TBD");
-      defaultDebateTopic1.setTopicDescription("Default Topic 1 description, TBD");
-
-      DebateTopic defaultDebateTopic2 =  new DebateTopic();
-      defaultDebateTopic2.setCreatorUserId(userId);
-      defaultDebateTopic2.setTopic("Default Topic 2 added by DebateService, TBD");
-      defaultDebateTopic2.setTopicDescription("Default Topic 2 description, TBD");
-
-      List<DebateTopic> defaultDebateTopicList = List.of(defaultDebateTopic1,defaultDebateTopic2);
-
-      defaultDebateTopicList = debateTopicRepository.saveAll(defaultDebateTopicList);
-      debateTopicRepository.flush();
-
-      return defaultDebateTopicList;
-
-    }
 
 }

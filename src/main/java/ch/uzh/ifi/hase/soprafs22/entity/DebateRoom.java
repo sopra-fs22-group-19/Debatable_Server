@@ -11,6 +11,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import static javax.persistence.GenerationType.SEQUENCE;
+
 /**
  * Internal User Representation
  * This class composes the internal representation of the user and defines how
@@ -28,7 +30,17 @@ public class DebateRoom implements Serializable, Room {
   static final String NOTIMPLEMENTED = "Function not implemented yet";
 
   @Id
-  @GeneratedValue
+  @SequenceGenerator(
+          name = "room_seq",
+          sequenceName = "room_seq",
+          allocationSize = 1
+  )
+  //avoid using same generator with userid
+  //e.g.(user1 id=1 ,user2 id=2, topic1 id=3, topic2 id=4)
+  @GeneratedValue(
+          strategy = SEQUENCE,
+          generator = "room_seq"
+  )
   private Long roomId;
 
   @Column(nullable = false)
