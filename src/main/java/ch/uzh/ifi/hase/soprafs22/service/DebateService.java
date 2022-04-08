@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -82,4 +83,18 @@ public class DebateService {
         return inputDebateRoom;
 
     }
+
+
+    public List<DebateTopic> getDebateTopicByUserId(Long userId){
+
+        User creatorUser = userRepository.findById(userId).orElse(null);
+        String baseErrorMessage = "Error: reason <Can not get topics because User with id: '%d' was not found>";
+
+        if(creatorUser == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,userId));
+        }
+
+        return debateTopicRepository.findByCreatorUserId(userId);
+    }
+
 }

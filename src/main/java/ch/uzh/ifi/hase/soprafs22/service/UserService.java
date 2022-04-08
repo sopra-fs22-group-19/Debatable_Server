@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +31,15 @@ public class UserService {
   private final Logger log = LoggerFactory.getLogger(UserService.class);
 
   private final UserRepository userRepository;
+  private final DebateTopicRepository debateTopicRepository;
 
   @Autowired
-  public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+  public UserService(
+          @Qualifier("userRepository") UserRepository userRepository,
+          @Qualifier("debateTopicRepository") DebateTopicRepository debateTopicRepository
+          ) {
     this.userRepository = userRepository;
+    this.debateTopicRepository = debateTopicRepository;
   }
 
   public List<User> getUsers() {
@@ -49,6 +56,8 @@ public class UserService {
     // flush() is called
     newUser = userRepository.save(newUser);
     userRepository.flush();
+
+    addDefaultDebateTopicsToUser(newUser);
 
     log.debug("Created Information for User: {}", newUser);
     return newUser;
@@ -70,6 +79,9 @@ public class UserService {
                   String.format( "The password provided is incorrect"));
       }
   }
+
+
+
 
 
   /**
@@ -94,5 +106,28 @@ public class UserService {
 
     }
   }
+
+  public List<DebateTopic> addDefaultDebateTopicsToUser(User user){
+
+      Long userId = user.getId();
+
+      DebateTopic defaultDebateTopic1 =  new DebateTopic();
+      defaultDebateTopic1.setCreatorUserId(userId);
+      defaultDebateTopic1.setTopic("Default Topic 1 added by DebateService, TBD");
+      defaultDebateTopic1.setTopicDescription("Default Topic 1 description, TBD");
+
+      DebateTopic defaultDebateTopic2 =  new DebateTopic();
+      defaultDebateTopic2.setCreatorUserId(userId);
+      defaultDebateTopic2.setTopic("Default Topic 2 added by DebateService, TBD");
+      defaultDebateTopic2.setTopicDescription("Default Topic 2 description, TBD");
+
+      List<DebateTopic> defaultDebateTopicList = List.of(defaultDebateTopic1,defaultDebateTopic2);
+
+      defaultDebateTopicList = debateTopicRepository.saveAll(defaultDebateTopicList);
+      debateTopicRepository.flush();
+
+      return defaultDebateTopicList;
+
+    }
 
 }
