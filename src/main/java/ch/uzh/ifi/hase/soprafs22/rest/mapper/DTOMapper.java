@@ -43,12 +43,13 @@ public interface DTOMapper {
   @Mapping(source = "creatorUserId", target = "userId")
   @Mapping(source = "topic", target = "topic")
   @Mapping(source = "topicDescription", target = "description")
-  DebateTopicGetDTO convertEntityToDebateDTO(DebateTopic debateTopic);
+  DebateTopicGetDTO convertEntityToDebateGetDTO(DebateTopic debateTopic);
   
   // DTOs for the DebateRoom
   @Mapping(target = "roomId", ignore = true)
   @Mapping(target = "speakers", ignore = true)
   @Mapping(target = "debateTopic", ignore = true)
+  @Mapping(target = "debateRoomStatus", ignore = true)
   @Mapping(source = "userId", target = "creatorUserId")
   DebateRoom convertDebateRoomPostDTOtoEntity(DebateRoomPostDTO debateRoomPostDTO);
 

@@ -4,9 +4,11 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository("debateTopicRepository")
 public interface DebateTopicRepository extends JpaRepository<DebateTopic, Long> {
 
-    DebateTopic findByCreatorUserId(Long creatorUserId);
+    List<DebateTopic> findByCreatorUserId(Long creatorUserId);
 
 }

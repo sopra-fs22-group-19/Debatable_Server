@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs22.entity.Tag;
+
 public class DebateTopicGetDTO {
 
     private Long debateId;

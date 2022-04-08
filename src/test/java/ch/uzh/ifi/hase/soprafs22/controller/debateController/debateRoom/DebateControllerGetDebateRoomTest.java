@@ -114,7 +114,7 @@ class DebateControllerGetDebateRoomTest {
       given(debateService.getDebateRoom(Mockito.any())).willReturn(Optional.empty());
 
       // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = get("/debates/rooms" + debateRoom.getRoomId())
+      MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + debateRoom.getRoomId())
               .contentType(MediaType.APPLICATION_JSON);
 
       // then

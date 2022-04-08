@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static ch.uzh.ifi.hase.soprafs22.entity.DebateTopic.readTopicListCSV;
@@ -139,4 +140,17 @@ public class DebateService {
     public Optional<DebateRoom> getDebateRoom(Long roomId) {
         return debateRoomRepository.findById(roomId);
     }
+
+    public List<DebateTopic> getDebateTopicByUserId(Long userId){
+
+        User creatorUser = userRepository.findById(userId).orElse(null);
+        String baseErrorMessage = "Error: reason <Can not get topics because User with id: '%d' was not found>";
+
+        if(creatorUser == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,userId));
+        }
+
+        return debateTopicRepository.findByCreatorUserId(userId);
+    }
+
 }
