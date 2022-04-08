@@ -1,8 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.repository;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;

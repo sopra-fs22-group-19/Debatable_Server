@@ -10,6 +10,7 @@ public class UserGetDTO {
   private LocalDate creation_date;
   private String token;
 
+
   public Long getUserId() {
     return userId;
   }
@@ -49,4 +50,5 @@ public class UserGetDTO {
   public void setToken(String token) {
       this.token = token;
   }
+
 }
