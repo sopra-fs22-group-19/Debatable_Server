@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.service;
+package ch.uzh.ifi.hase.soprafs22.service.debateService;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
@@ -10,6 +10,7 @@ import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

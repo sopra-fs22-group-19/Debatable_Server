@@ -9,8 +9,6 @@ import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,12 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.annotation.PostConstruct;
-import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
+
+import static ch.uzh.ifi.hase.soprafs22.entity.DebateTopic.readTopicListCSV;
 
 @Service
 @Transactional
@@ -65,29 +64,20 @@ public class DebateService {
         }
 
         // If it is not empty load the default topics from file
+        Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
+
+        log.info(String.format("Loading default topic list from: %s", defaultListPath));
+
         try {
-
-            Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
-
-            log.info(String.format("Loading default topic list from: %s", defaultListPath));
-
-            CSVReader csvReader = new CSVReaderBuilder(new FileReader(defaultListPath.toString()))
-                    .withSkipLines(1).build();
-
-            String[] line;
-            int i = 0;
-            while ((line = csvReader.readNext()) != null) {
-                DebateTopic defaultDebateTopic = new DebateTopic();
-                defaultDebateTopic.setTopic(line[0]);
-                defaultDebateTopic.setTopicDescription(line[1]);
-                defaultDebateTopic.setCreatorUserId(-1L);
-
-                debateTopicRepository.save(defaultDebateTopic);
-                i++;
+            ArrayList<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
+            if (defaultDebateTopicsList.size() == 0){
+                log.warn("List of debate topics is empty");
+            } else{
+                debateTopicRepository.saveAll(defaultDebateTopicsList);
+                log.info(String.format("Default Topics created %d", defaultDebateTopicsList.size()));
             }
-            log.info(String.format("Default Topics created %d", i));
-        } catch (IOException | CsvValidationException e) {
-            e.printStackTrace();
+        } catch(IOException | CsvValidationException e){
+            log.error("Problem loading the default file list");
         }
     }
 
