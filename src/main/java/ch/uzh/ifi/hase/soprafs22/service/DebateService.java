@@ -6,10 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
@@ -40,12 +37,14 @@ public class DebateService {
     private final DebateRoomRepository debateRoomRepository;
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
+    private final DebateSpeakerRepository debateSpeakerRepository;
 
     @Autowired
     public DebateService(
             @Qualifier("debateTopicRepository") DebateTopicRepository debateTopicRepository,
             @Qualifier("debateRoomRepository") DebateRoomRepository debateRoomRepository,
             @Qualifier("userRepository") UserRepository userRepository,
+            @Qualifier("debateSpeakerRepository") DebateSpeakerRepository debateSpeakerRepository,
             @Qualifier("tagRepository") TagRepository tagRepository
             ) {
 
@@ -53,6 +52,7 @@ public class DebateService {
         this.debateRoomRepository = debateRoomRepository;
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
+        this.debateSpeakerRepository = debateSpeakerRepository;
     }
 
     @PostConstruct
@@ -97,6 +97,13 @@ public class DebateService {
 
         inputDebateRoom.setDebateTopic(debateTopic.get());
 
+        // Set the state of the debate
+        if (debateRoomPostDTO.getSide() == DebateSide.FOR){
+            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
+        } else{
+            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+        }
+
         // Check that user that will create the debate exists and add it as a Speaker to the debate room
         Optional<User> creatingUser = userRepository.findById(debateRoomPostDTO.getUserId());
 
@@ -110,18 +117,18 @@ public class DebateService {
         debatesSpeaker1.setUserAssociated(creatingUser.get());
         debatesSpeaker1.setDebateSide(debateRoomPostDTO.getSide());
 
+        debatesSpeaker1.setDebateRoom(inputDebateRoom);
         inputDebateRoom.setUser1(debatesSpeaker1);
-
-        // Set the state of the debate
-        if (debateRoomPostDTO.getSide() == DebateSide.FOR){
-            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
-        } else{
-            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
-        }
 
         // Store new DebateRoom in the DB
         inputDebateRoom = debateRoomRepository.save(inputDebateRoom);
+        log.info("speaker one is: " + inputDebateRoom.getUser1().getName());
+        log.info("Size of speakers is: " + inputDebateRoom.getSpeakers().size());
+        log.info("Size of speakers is: " + inputDebateRoom.getSpeakers().toString());
         debateRoomRepository.flush();
+
+        debateSpeakerRepository.save(debatesSpeaker1);
+        debateSpeakerRepository.flush();
 
         log.debug("Created DebateRoom: {}", inputDebateRoom);
 

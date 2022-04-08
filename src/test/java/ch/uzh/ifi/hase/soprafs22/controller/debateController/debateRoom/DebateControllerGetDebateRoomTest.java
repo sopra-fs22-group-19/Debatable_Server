@@ -89,11 +89,9 @@ class DebateControllerGetDebateRoomTest {
     // Check the end point returns the appropriate Debate Room object
     given(debateService.getDebateRoom(Mockito.any())).willReturn(Optional.ofNullable(debateRoom));
 
-      System.out.println("/debates/rooms/"+ debateRoom.getRoomId());
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = get("/debates/rooms/"+ debateRoom.getRoomId())
         .contentType(MediaType.APPLICATION_JSON);
-
     // then
     mockMvc.perform(postRequest)
         .andExpect(status().isOk())

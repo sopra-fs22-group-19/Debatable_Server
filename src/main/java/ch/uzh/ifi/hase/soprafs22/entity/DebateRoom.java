@@ -10,7 +10,6 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Internal User Representation
@@ -77,7 +76,7 @@ public class DebateRoom implements Serializable, Room {
   public void setDebateTopic(DebateTopic debateTopic) { this.debateTopic=debateTopic; }
 
   public User getUser1() {
-      if (Objects.isNull(speakers))
+      if (speakers.size() == 0)
           return null;
       else
           return speakers.get(0).getUserAssociated();
@@ -86,14 +85,14 @@ public class DebateRoom implements Serializable, Room {
   public void setUser1(DebateSpeaker debateSpeaker) {  speakers.add(0, debateSpeaker); }
 
   public DebateSide getSide1() {
-      if (Objects.isNull(speakers))
+      if (speakers.size() == 0)
           return null;
       else
           return speakers.get(0).getDebateSide();
   }
 
   public User getUser2() {
-      if (Objects.isNull(speakers))
+      if (speakers.size() == 1)
           return null;
       else if (speakers.size() < 2)
           return null;
@@ -101,8 +100,10 @@ public class DebateRoom implements Serializable, Room {
           return speakers.get(1).getUserAssociated();
   }
 
+    public void setUser2(DebateSpeaker debateSpeaker) {  speakers.add(1, debateSpeaker); }
+
   public DebateSide getSide2() {
-      if (Objects.isNull(speakers))
+      if (speakers.size() == 1)
           return null;
       else if (speakers.size() < 2)
           return null;

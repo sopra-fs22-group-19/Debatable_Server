@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service.debateService.debateRoom;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
-import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
@@ -22,7 +21,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class DebateServiceTest {
 
@@ -65,7 +65,6 @@ class DebateServiceTest {
     testDebateRoom = new DebateRoom();
     testDebateRoom.setRoomId(1L);
     testDebateRoom.setCreatorUserId(1L);
-    testDebateRoom.setDebateRoomStatus(DebateState.NOT_STARTED);
     testDebateRoom.setDebateTopic(testDebateTopic);
     testDebateRoom.setUser1(debatesSpeaker1);
 
@@ -90,6 +89,7 @@ class DebateServiceTest {
 
     // then
     Mockito.verify(debateRoomRepository, Mockito.times(1)).save(Mockito.any());
+
 
     assertEquals(testDebateRoom.getRoomId(), createdDebateRoom.getRoomId());
     assertEquals(testDebateRoom.getCreatorUserId(), createdDebateRoom.getCreatorUserId());
@@ -125,34 +125,6 @@ class DebateServiceTest {
 
       assertThrows(ResponseStatusException.class, () ->
               debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
-  }
-
-  @Test
-  void createRoom_defaultTopic(){
-      testDebateRoom = new DebateRoom();
-      testDebateRoom.setCreatorUserId(1L);
-
-      // The assumption is the id 1 belongs to a default debate topic
-      DebateRoomPostDTO testDebateRoomPostDTO = new DebateRoomPostDTO();
-      testDebateRoomPostDTO.setUserId(1L);
-      testDebateRoomPostDTO.setDebateId(-1L);
-      testDebateRoomPostDTO.setSide(DebateSide.FOR);
-
-      // testDebateRoom.setRoomId(1L);
-      // has to have this debate stauts testDebateRoom.setDebateRoomStatus(DebateState.NOT_STARTED);
-      // debateTopic has to match the id given of the room, user type (-1L)
-      // setCreatorUserId has to match id of User1
-
-
-      DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom, testDebateRoomPostDTO);
-
-      assertNotNull(createdDebateRoom.getRoomId());
-      assertEquals(testDebateRoom.getCreatorUserId(), createdDebateRoom.getCreatorUserId());
-      assertEquals(DebateState.ONE_USER_FOR, createdDebateRoom.getDebateRoomStatus());
-      assertEquals(testDebateRoomPostDTO.getDebateId(), createdDebateRoom.getDebateTopic().getDebateTopicId());
-
-
-
   }
 
 }
