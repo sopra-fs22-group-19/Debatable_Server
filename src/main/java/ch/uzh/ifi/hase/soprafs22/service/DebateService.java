@@ -4,13 +4,14 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
-
-
+import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
+import ch.uzh.ifi.hase.soprafs22.repository.TagRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.annotation.PostConstruct;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -47,6 +53,44 @@ public class DebateService {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
     }
+
+    @PostConstruct
+    private void setupDefaultDebateTopics(){
+        log.info("Setup default debate topics");
+
+        // Check if the debate repository is empty
+        if (debateTopicRepository.count() != 0L){
+            log.info("Default debate topics already created");
+            return;
+        }
+
+        // If it is not empty load the default topics from file
+        try {
+
+            Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
+
+            log.info(String.format("Loading default topic list from: %s", defaultListPath));
+
+            CSVReader csvReader = new CSVReaderBuilder(new FileReader(defaultListPath.toString()))
+                    .withSkipLines(1).build();
+
+            String[] line;
+            int i = 0;
+            while ((line = csvReader.readNext()) != null) {
+                DebateTopic defaultDebateTopic = new DebateTopic();
+                defaultDebateTopic.setTopic(line[0]);
+                defaultDebateTopic.setTopicDescription(line[1]);
+                defaultDebateTopic.setCreatorUserId(-1L);
+
+                debateTopicRepository.save(defaultDebateTopic);
+                i++;
+            }
+            log.info(String.format("Default Topics created %d", i));
+        } catch (IOException | CsvValidationException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public DebateRoom createDebateRoom(DebateRoom inputDebateRoom, DebateRoomPostDTO debateRoomPostDTO) {
 
