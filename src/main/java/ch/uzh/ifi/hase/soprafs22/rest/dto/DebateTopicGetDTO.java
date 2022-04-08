@@ -2,21 +2,21 @@ package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 public class DebateTopicGetDTO {
 
-    private Long userId;
     private Long debateId;
+    private Long userId;
     private String topic;
     private String description;
-
-    public Long getUserId() { return userId; }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
 
     public Long getDebateId() { return debateId; }
 
     public void setDebateId(Long debateId) {
         this.debateId = debateId;
+    }
+
+    public Long getUserId() { return userId; }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getTopic() {

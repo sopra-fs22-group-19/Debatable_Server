@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
@@ -84,6 +86,7 @@ public class DebateService {
 
     public DebateRoom createDebateRoom(DebateRoom inputDebateRoom, DebateRoomPostDTO debateRoomPostDTO) {
 
+        // Check that the debate topic exists and add it
         Optional<DebateTopic> debateTopic = debateTopicRepository.findById(debateRoomPostDTO.getDebateId());
 
         if (debateTopic.isEmpty()){
@@ -94,7 +97,7 @@ public class DebateService {
 
         inputDebateRoom.setDebateTopic(debateTopic.get());
 
-        // Create Speaker that will create the debate
+        // Check that user that will create the debate exists and add it as a Speaker to the debate room
         Optional<User> creatingUser = userRepository.findById(debateRoomPostDTO.getUserId());
 
         if (creatingUser.isEmpty()){
@@ -105,9 +108,18 @@ public class DebateService {
 
         DebateSpeaker debatesSpeaker1 = new DebateSpeaker();
         debatesSpeaker1.setUserAssociated(creatingUser.get());
+        debatesSpeaker1.setDebateSide(debateRoomPostDTO.getSide());
 
-        inputDebateRoom.setSpeakers(new ArrayList<>());
         inputDebateRoom.setUser1(debatesSpeaker1);
+
+        // Set the state of the debate
+        if (debateRoomPostDTO.getSide() == DebateSide.FOR){
+            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
+        } else{
+            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+        }
+
+        // Store new DebateRoom in the DB
         inputDebateRoom = debateRoomRepository.save(inputDebateRoom);
         debateRoomRepository.flush();
 

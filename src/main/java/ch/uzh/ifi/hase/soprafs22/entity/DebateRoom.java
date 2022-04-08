@@ -8,6 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -35,10 +36,10 @@ public class DebateRoom implements Serializable, Room {
   private Long creatorUserId;
 
   @Column(nullable = false)
-  private DebateState debateStatus;
+  private DebateState debateStatus = DebateState.NOT_STARTED;
 
   @OneToMany(mappedBy="debateRoom")
-  private List<DebateSpeaker> speakers;
+  private List<DebateSpeaker> speakers = new ArrayList<>();
 
   @ManyToOne
   @JoinColumn(name = "debate_topic_debate_topic_id")
@@ -91,8 +92,6 @@ public class DebateRoom implements Serializable, Room {
           return speakers.get(0).getDebateSide();
   }
 
-  public void setSide1(DebateSide debateSide) {  speakers.get(0).setDebateSide(debateSide); }
-
   public User getUser2() {
       if (Objects.isNull(speakers))
           return null;
@@ -101,8 +100,6 @@ public class DebateRoom implements Serializable, Room {
       else
           return speakers.get(1).getUserAssociated();
   }
-
-  public void setUser2(DebateSpeaker debateSpeaker) {  speakers.add(1, debateSpeaker); }
 
   public DebateSide getSide2() {
       if (Objects.isNull(speakers))
@@ -115,7 +112,7 @@ public class DebateRoom implements Serializable, Room {
 
   public void setSide2(DebateSide debateSide) {  speakers.get(1).setDebateSide(debateSide); }
 
-    @Override
+  @Override
   public void registerParticipant(RoomParticipant roomParticipant) {
       throw new RuntimeException(NOTIMPLEMENTED);
   }

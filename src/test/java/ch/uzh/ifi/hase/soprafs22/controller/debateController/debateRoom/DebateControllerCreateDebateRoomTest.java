@@ -93,7 +93,7 @@ class DebateControllerCreateDebateRoomTest {
     // Check the end point returns the appropriate Debate Room object
     debateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
 
-    debateRoomPostDTO.setSide(DebateSide.FOR.name());
+    debateRoomPostDTO.setSide(DebateSide.FOR);
 
     given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
 
@@ -124,7 +124,7 @@ class DebateControllerCreateDebateRoomTest {
       // Check the end point returns the appropriate Debate Room object
       debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
 
-      debateRoomPostDTO.setSide(String.valueOf(DebateSide.AGAINST));
+      debateRoomPostDTO.setSide(DebateSide.AGAINST);
 
       given(debateService.createDebateRoom(Mockito.any(), Mockito.any()))
               .willReturn(debateRoom);
@@ -151,25 +151,7 @@ class DebateControllerCreateDebateRoomTest {
 
   }
 
-  @Test
-  void createDebateRoom_invalidInput_sideInvalid_debateRoomNotCreated() throws Exception {
-      // Check the end point returns the appropriate Debate Room object
-      debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
 
-      debateRoomPostDTO.setSide("lkasfjlaksdjgl");
-
-      given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
-
-      // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(debateRoomPostDTO));
-
-      // then
-      mockMvc.perform(postRequest)
-              .andExpect(status().isBadRequest());
-
-  }
 
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input

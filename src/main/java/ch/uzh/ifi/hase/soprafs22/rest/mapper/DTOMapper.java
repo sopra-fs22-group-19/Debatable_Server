@@ -23,7 +23,9 @@ public interface DTOMapper {
 
   DTOMapper INSTANCE = Mappers.getMapper(DTOMapper.class);
 
-
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "creationDate", ignore = true)
+  @Mapping(target = "token", ignore = true)
   @Mapping(source = "password", target = "password")
   @Mapping(source = "name", target = "name")
   @Mapping(source = "username", target = "username")
@@ -37,13 +39,16 @@ public interface DTOMapper {
   UserGetDTO convertEntityToUserGetDTO(User user);
 
   // DTOs for the DebateTopic
-  @Mapping(source = "debateTopicId", target = "userId")
-  @Mapping(source = "creatorUserId", target = "debateId")
+  @Mapping(source = "debateTopicId", target = "debateId")
+  @Mapping(source = "creatorUserId", target = "userId")
   @Mapping(source = "topic", target = "topic")
   @Mapping(source = "topicDescription", target = "description")
   DebateTopicGetDTO convertEntityToDebateDTO(DebateTopic debateTopic);
   
   // DTOs for the DebateRoom
+  @Mapping(target = "roomId", ignore = true)
+  @Mapping(target = "speakers", ignore = true)
+  @Mapping(target = "debateTopic", ignore = true)
   @Mapping(source = "userId", target = "creatorUserId")
   DebateRoom convertDebateRoomPostDTOtoEntity(DebateRoomPostDTO debateRoomPostDTO);
 

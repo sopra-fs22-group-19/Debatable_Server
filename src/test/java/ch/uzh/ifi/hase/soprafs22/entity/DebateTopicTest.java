@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class DebateTopicTest {
 
     @Test
-    public void loadDefaultUserList_NotEmptyTest() throws CsvValidationException, IOException {
+    void loadDefaultUserList_NotEmptyTest() throws CsvValidationException, IOException {
         Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
 
         DebateTopic.readTopicListCSV(defaultListPath.toString());
@@ -26,7 +26,7 @@ class DebateTopicTest {
     }
 
     @Test
-    public void loadDefaultUserList_MoreThanFiveTest() throws CsvValidationException, IOException {
+    void loadDefaultUserList_MoreThanFiveTest() throws CsvValidationException, IOException {
         Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
 
         DebateTopic.readTopicListCSV(defaultListPath.toString());

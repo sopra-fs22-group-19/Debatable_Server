@@ -1,12 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
+
 public class DebateRoomPostDTO {
 
   private Long userId;
 
   private Long debateId;
 
-  private String side;
+  private DebateSide side;
 
   public Long getUserId() { return userId; }
 
@@ -22,9 +24,9 @@ public class DebateRoomPostDTO {
         this.debateId = debateId;
     }
 
-  public String getSide() { return side; }
+  public DebateSide getSide() { return side; }
 
-  public void setSide(String side) {
+  public void setSide(DebateSide side) {
         this.side = side;
     }
 

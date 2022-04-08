@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -55,5 +56,11 @@ class DefaultDebateTopicsTest {
       testDebateRoom.setSpeakers(new ArrayList<>());
       testDebateRoom.setUser1(debatesSpeaker1);
 
+  }
+
+  @Test
+  public void DefaultTopicListExistsTest(){
+      // TODO: Complete once method to get topic list is implemented
+      return;
   }
 }
