@@ -137,10 +137,6 @@ public class DebateService {
         return debateRoomRepository.findByID(roomId);
     }
 
-    public DebateSpeaker getDebateSpeakerByDebateRoom(DebateRoom debateRoom) {
-        return debateSpeakerRepository.findByDebateRoom(debateRoom);
-    }
-
     public List<DebateTopic> getDebateTopicByUserId(Long userId){
 
         User creatorUser = userRepository.findById(userId).orElse(null);
@@ -167,8 +163,12 @@ public class DebateService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else{
-            debateSpeakerRepository.delete(getDebateSpeakerByDebateRoom(roomToDelete));
-            debateSpeakerRepository.flush();
+            List<DebateSpeaker> occupiedDebateRooms = debateSpeakerRepository.findAllByDebateRoom(roomToDelete);
+
+            if(!occupiedDebateRooms.isEmpty()){
+                debateSpeakerRepository.deleteAll(occupiedDebateRooms);
+                debateSpeakerRepository.flush();
+            }
             debateRoomRepository.delete(roomToDelete);
             debateRoomRepository.flush();
         }
