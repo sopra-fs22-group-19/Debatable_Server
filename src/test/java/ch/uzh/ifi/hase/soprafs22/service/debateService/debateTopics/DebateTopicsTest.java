@@ -1,9 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.service.debateService.debateTopics;
 
-import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
-import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
@@ -11,21 +7,16 @@ import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
+import org.mockito.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.lang.reflect.Method;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doThrow;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DebateTopicsTest {
   @Mock
@@ -34,10 +25,9 @@ class DebateTopicsTest {
   @Mock
   private UserRepository userRepository;
 
+  @Spy
   @InjectMocks
   private DebateService debateService;
-
-  private DebateRoom testDebateRoom;
 
   @BeforeEach
   public void setup() {
@@ -50,24 +40,6 @@ class DebateTopicsTest {
       creatingUser.setName("test user's name");
       creatingUser.setCreationDate(LocalDate.parse("2019-01-21"));
       creatingUser.setToken("lajflfa");
-
-      DebateSpeaker debatesSpeaker1 = new DebateSpeaker();
-      debatesSpeaker1.setUserAssociated(creatingUser);
-      debatesSpeaker1.setDebateSide(DebateSide.FOR);
-
-      DebateTopic testDebateTopic = new DebateTopic();
-      testDebateTopic.setCreatorUserId(1L);
-      testDebateTopic.setDebateTopicId(1L);
-      testDebateTopic.setTopic("Topic 1");
-      testDebateTopic.setTopicDescription("Topic 1' description");
-
-      testDebateRoom = new DebateRoom();
-      testDebateRoom.setRoomId(1L);
-      testDebateRoom.setCreatorUserId(1L);
-      testDebateRoom.setDebateRoomStatus(DebateState.NOT_STARTED);
-      testDebateRoom.setDebateTopic(testDebateTopic);
-      testDebateRoom.setSpeakers(new ArrayList<>());
-      testDebateRoom.setUser1(debatesSpeaker1);
 
       Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(creatingUser));
 
@@ -103,19 +75,23 @@ class DebateTopicsTest {
   }
 
   @Test
-  void getDebateTopic_invalidId_throwNotFound() {
+  void getDebateTopic_userIdNotFound_throwNotFound() {
 
-      DebateTopic defaultDebateTopic1 =  new DebateTopic();
-      defaultDebateTopic1.setCreatorUserId(1L);
-      defaultDebateTopic1.setTopic("Test default Topic1 belongs user1");
-      defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
-
-      List<DebateTopic> testTopics = List.of(defaultDebateTopic1);
-
-      Exception excConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
-      doThrow(excConflict).when(userRepository).findById(2L);
+      Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
       assertThrows(ResponseStatusException.class, () -> debateService.getDebateTopicByUserId(2L));
 
+  }
+
+
+  @Test
+  void initializeDefaultTopics_Success_NoExceptionThrown() throws NoSuchMethodException {
+
+      Method setupDefaultDebateTopics =  DebateService.class.getDeclaredMethod(
+              "setupDefaultDebateTopics",null); // methodName,parameters
+      setupDefaultDebateTopics.setAccessible(true);
+
+      Throwable throwable = catchThrowable(() -> setupDefaultDebateTopics.invoke(debateService));
+      assertNull(throwable);
   }
 }
