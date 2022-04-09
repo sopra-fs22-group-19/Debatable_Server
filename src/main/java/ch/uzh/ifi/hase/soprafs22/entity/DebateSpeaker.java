@@ -12,7 +12,7 @@ public class DebateSpeaker implements RoomParticipant {
 
     @Id
     @GeneratedValue
-    private Long speakerId;
+    private Long ID;
 
     @ManyToOne
     @JoinColumn(name = "user_associated_id", nullable = false)
@@ -26,11 +26,11 @@ public class DebateSpeaker implements RoomParticipant {
     private DebateSide debateSide;
 
     public Long getSpeakerId() {
-        return speakerId;
+        return ID;
     }
 
     public void setSpeakerId(Long speakerId) {
-        this.speakerId = speakerId;
+        this.ID = speakerId;
     }
 
     public User getUserAssociated() { return userAssociated; }

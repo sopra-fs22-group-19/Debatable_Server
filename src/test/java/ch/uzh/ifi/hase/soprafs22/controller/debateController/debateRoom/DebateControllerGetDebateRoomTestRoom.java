@@ -2,12 +2,12 @@ package ch.uzh.ifi.hase.soprafs22.controller.debateController.debateRoom;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.controller.DebateRoomController;
+import ch.uzh.ifi.hase.soprafs22.controller.DebateController;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.service.DebateRoomService;
+import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,14 +38,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * request without actually sending them over the network.
  * This tests if the UserController works.
  */
-@WebMvcTest(DebateRoomController.class)
+@WebMvcTest(DebateController.class)
 class DebateControllerGetDebateRoomTestRoom {
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockBean
-  private DebateRoomService debateRoomService;
+  private DebateService debateService;
 
   private DebateRoom debateRoom;
 
@@ -86,7 +86,7 @@ class DebateControllerGetDebateRoomTestRoom {
   @Test
   void getDebateRoom_DebateRoomExists() throws Exception {
     // Check the end point returns the appropriate Debate Room object
-    given(debateRoomService.getDebateRoom(Mockito.any())).willReturn(debateRoom);
+    given(debateService.getDebateRoom(Mockito.any())).willReturn(debateRoom);
 
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = get("/debates/rooms/"+ debateRoom.getRoomId())
@@ -110,7 +110,7 @@ class DebateControllerGetDebateRoomTestRoom {
   @Test
   void getDebateRoom_DebateRoomNotFound() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      given(debateRoomService.getDebateRoom(Mockito.any())).willReturn(null);
+      given(debateService.getDebateRoom(Mockito.any())).willReturn(null);
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + debateRoom.getRoomId())

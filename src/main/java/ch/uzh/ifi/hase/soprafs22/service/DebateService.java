@@ -29,9 +29,9 @@ import static ch.uzh.ifi.hase.soprafs22.entity.DebateTopic.readTopicListCSV;
 
 @Service
 @Transactional
-public class DebateRoomService {
+public class DebateService {
 
-    private final Logger log = LoggerFactory.getLogger(DebateRoomService.class);
+    private final Logger log = LoggerFactory.getLogger(DebateService.class);
 
     private final DebateTopicRepository debateTopicRepository;
     private final DebateRoomRepository debateRoomRepository;
@@ -40,7 +40,7 @@ public class DebateRoomService {
     private final DebateSpeakerRepository debateSpeakerRepository;
 
     @Autowired
-    public DebateRoomService(
+    public DebateService(
             @Qualifier("debateTopicRepository") DebateTopicRepository debateTopicRepository,
             @Qualifier("debateRoomRepository") DebateRoomRepository debateRoomRepository,
             @Qualifier("userRepository") UserRepository userRepository,
@@ -137,6 +137,10 @@ public class DebateRoomService {
         return debateRoomRepository.findByID(roomId);
     }
 
+    public DebateSpeaker getDebateSpeakerByDebateRoom(DebateRoom debateRoom) {
+        return debateSpeakerRepository.findByDebateRoom(debateRoom);
+    }
+
     public List<DebateTopic> getDebateTopicByUserId(Long userId){
 
         User creatorUser = userRepository.findById(userId).orElse(null);
@@ -157,14 +161,16 @@ public class DebateRoomService {
 
     public void deleteRoom(Long roomID){
 
-        List<DebateRoom> allDebateRooms = getDebateRooms();
         DebateRoom roomToDelete = debateRoomRepository.findByID(roomID);
 
         if(roomToDelete == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         else{
-            allDebateRooms.removeIf(roomToFind -> roomToFind.equals(roomToDelete));
+            debateSpeakerRepository.delete(getDebateSpeakerByDebateRoom(roomToDelete));
+            debateSpeakerRepository.flush();
+            debateRoomRepository.delete(roomToDelete);
+            debateRoomRepository.flush();
         }
     }
 }

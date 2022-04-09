@@ -10,7 +10,7 @@ import ch.uzh.ifi.hase.soprafs22.repository.DebateSpeakerRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
-import ch.uzh.ifi.hase.soprafs22.service.DebateRoomService;
+import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class DebateRoomServiceTest {
+class DebateServiceTest {
 
   @Mock
   private DebateRoomRepository debateRoomRepository;
@@ -40,7 +40,7 @@ class DebateRoomServiceTest {
   private DebateSpeakerRepository debateSpeakerRepository;
 
   @InjectMocks
-  private DebateRoomService debateRoomService;
+  private DebateService debateService;
 
   private DebateRoom testDebateRoom;
 
@@ -90,7 +90,7 @@ class DebateRoomServiceTest {
     debateRoomPostDTO.setDebateId(1L);
     debateRoomPostDTO.setSide(DebateSide.FOR);
 
-    DebateRoom createdDebateRoom = debateRoomService.createDebateRoom(testDebateRoom, debateRoomPostDTO);
+    DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO);
 
     // then
     Mockito.verify(debateRoomRepository, Mockito.times(1)).save(Mockito.any());
@@ -115,7 +115,7 @@ class DebateRoomServiceTest {
       Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
       assertThrows(ResponseStatusException.class, () ->
-              debateRoomService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
+              debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
   }
 
   @Test
@@ -130,7 +130,7 @@ class DebateRoomServiceTest {
       Mockito.when(debateTopicRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
       assertThrows(ResponseStatusException.class, () ->
-              debateRoomService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
+              debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
   }
 
 

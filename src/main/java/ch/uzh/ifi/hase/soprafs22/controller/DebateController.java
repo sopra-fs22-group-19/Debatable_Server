@@ -6,7 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
-import ch.uzh.ifi.hase.soprafs22.service.DebateRoomService;
+import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,12 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-public class DebateRoomController {
+public class DebateController {
 
-    private final DebateRoomService debateRoomService;
+    private final DebateService debateService;
 
-    DebateRoomController(DebateRoomService debateRoomService) {
-        this.debateRoomService = debateRoomService;
+    DebateController(DebateService debateService) {
+        this.debateService = debateService;
     }
 
     @PostMapping("/debates/rooms")
@@ -31,7 +31,7 @@ public class DebateRoomController {
         DebateRoom inputDebateRoom = DTOMapper.INSTANCE.convertDebateRoomPostDTOtoEntity(debateRoomPostDTO);
 
              // Create the debate room in the DB
-        DebateRoom createdDebateRoom = debateRoomService.createDebateRoom(inputDebateRoom, debateRoomPostDTO);
+        DebateRoom createdDebateRoom = debateService.createDebateRoom(inputDebateRoom, debateRoomPostDTO);
 
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(createdDebateRoom);
@@ -42,7 +42,7 @@ public class DebateRoomController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public DebateRoomGetDTO getDebateRoom(@PathVariable Long roomId) {
-        DebateRoom debateRoom = debateRoomService.getDebateRoom(roomId);
+        DebateRoom debateRoom = debateService.getDebateRoom(roomId);
 
         if (debateRoom == null) {
             String baseErrorMessage = "Error: <the Debate Room with id: '%d' was not found>";
@@ -60,7 +60,7 @@ public class DebateRoomController {
     public List<DebateTopicGetDTO> getTopicByUser(@PathVariable Long userId){
 
         List<DebateTopicGetDTO> debateGetDTOs = new ArrayList<>();
-        List<DebateTopic> debateTopics = debateRoomService.getDebateTopicByUserId(userId);
+        List<DebateTopic> debateTopics = debateService.getDebateTopicByUserId(userId);
 
         for (DebateTopic debateTopic : debateTopics) {
             debateGetDTOs.add(DTOMapper.INSTANCE.convertEntityToDebateGetDTO(debateTopic));
@@ -73,6 +73,6 @@ public class DebateRoomController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public void deleteDebateRoomById(@PathVariable("roomId") Long roomId){
-        debateRoomService.deleteRoom(roomId);
+        debateService.deleteRoom(roomId);
     }
 }
