@@ -62,18 +62,15 @@ public class UserServiceTest {
     // then
     Mockito.verify(userRepository, Mockito.times(1)).save(Mockito.any());
 
-
     assertEquals(testUser.getId(), createdUser.getId());
     assertEquals(testUser.getPassword(), createdUser.getPassword());
     assertEquals(testUser.getUsername(), createdUser.getUsername());
     assertEquals(testUser.getName(), createdUser.getName());
-    //us_01 added test for creationDate not null
     assertNotNull(createdUser.getCreationDate());
     assertNotNull(createdUser.getToken());
 
   }
 
-  //us_01 test, template included
   @Test
   void createUser_duplicateUsername_throwsException() {
     // given -> a first user has already been created
@@ -82,10 +79,38 @@ public class UserServiceTest {
     // when -> setup additional mocks for UserRepository
     Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
 
-
     // then -> attempt to create second user with same user -> check that an error
     // is thrown
     assertThrows(ResponseStatusException.class, () -> userService.createUser(testUser));
+  }
+
+  @Test
+  void checkUserCredentials_validUser(){
+      // when -> setup additional mocks for UserRepository
+      Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
+
+      // given -> a first user has already been created
+      User autenticatedUser = userService.checkCredentials(testUser.getUsername(), testUser.getPassword());
+
+      assertEquals(autenticatedUser, testUser);
+  }
+
+  @Test
+  void checkUserCredentials_userNotFound_throwsException(){
+      // when -> setup additional mocks for UserRepository
+      Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
+
+      assertThrows(ResponseStatusException.class,
+              () -> userService.checkCredentials(testUser.getUsername(), testUser.getPassword()));
+  }
+
+  @Test
+  void checkUserCredentials_wrongPassword_throwsException(){
+      // when -> setup additional mocks for UserRepository
+      Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
+
+      assertThrows(ResponseStatusException.class,
+              () -> userService.checkCredentials(testUser.getUsername(), "wrong password"));
   }
 
 

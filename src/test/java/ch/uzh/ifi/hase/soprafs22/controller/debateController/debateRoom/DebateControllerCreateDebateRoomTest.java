@@ -1,22 +1,19 @@
-package ch.uzh.ifi.hase.soprafs22.controller;
+package ch.uzh.ifi.hase.soprafs22.controller.debateController.debateRoom;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.controller.DebateController;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -28,10 +25,8 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -50,16 +45,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This tests if the UserController works.
  */
 @WebMvcTest(DebateController.class)
-class DebateControllerTest {
+class DebateControllerCreateDebateRoomTest {
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockBean
   private DebateService debateService;
-
-  @Mock
-  private UserRepository userRepository;
 
   private DebateRoom debateRoom;
   private DebateRoomPostDTO debateRoomPostDTO;
@@ -106,7 +98,7 @@ class DebateControllerTest {
     // Check the end point returns the appropriate Debate Room object
     debateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
 
-    debateRoomPostDTO.setSide(DebateSide.FOR.name());
+    debateRoomPostDTO.setSide(DebateSide.FOR);
 
     given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
 
@@ -137,7 +129,7 @@ class DebateControllerTest {
       // Check the end point returns the appropriate Debate Room object
       debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
 
-      debateRoomPostDTO.setSide(String.valueOf(DebateSide.AGAINST));
+      debateRoomPostDTO.setSide(DebateSide.AGAINST);
 
       given(debateService.createDebateRoom(Mockito.any(), Mockito.any()))
               .willReturn(debateRoom);
@@ -164,25 +156,7 @@ class DebateControllerTest {
 
   }
 
-  @Test
-  void createDebateRoom_invalidInput_sideInvalid_debateRoomNotCreated() throws Exception {
-      // Check the end point returns the appropriate Debate Room object
-      debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
 
-      debateRoomPostDTO.setSide("lkasfjlaksdjgl");
-
-      given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
-
-      // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(debateRoomPostDTO));
-
-      // then
-      mockMvc.perform(postRequest)
-              .andExpect(status().isBadRequest());
-
-  }
 
   @Test
   void getTopicByUser_validInput_debateTopicsReturned()throws Exception {
