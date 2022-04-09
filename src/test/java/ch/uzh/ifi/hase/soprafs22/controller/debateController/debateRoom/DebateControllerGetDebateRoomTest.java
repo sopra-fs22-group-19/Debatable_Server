@@ -87,7 +87,7 @@ class DebateControllerGetDebateRoomTest {
   @Test
   void getDebateRoom_DebateRoomExists() throws Exception {
     // Check the end point returns the appropriate Debate Room object
-    given(debateService.getDebateRoom(Mockito.any())).willReturn(Optional.ofNullable(debateRoom));
+    given(debateService.getDebateRoom(Mockito.any())).willReturn(debateRoom);
 
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = get("/debates/rooms/"+ debateRoom.getRoomId())
@@ -111,7 +111,7 @@ class DebateControllerGetDebateRoomTest {
   @Test
   void getDebateRoom_DebateRoomNotFound() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      given(debateService.getDebateRoom(Mockito.any())).willReturn(Optional.empty());
+      given(debateService.getDebateRoom(Mockito.any())).willReturn(null);
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + debateRoom.getRoomId())

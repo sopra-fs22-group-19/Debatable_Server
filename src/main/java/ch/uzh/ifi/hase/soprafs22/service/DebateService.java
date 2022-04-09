@@ -133,8 +133,8 @@ public class DebateService {
 
     }
 
-    public Optional<DebateRoom> getDebateRoom(Long roomId) {
-        return debateRoomRepository.findById(roomId);
+    public DebateRoom getDebateRoom(Long roomId) {
+        return debateRoomRepository.findByID(roomId);
     }
 
     public List<DebateTopic> getDebateTopicByUserId(Long userId){
@@ -151,4 +151,20 @@ public class DebateService {
         return debateTopicList;
     }
 
+    public List<DebateRoom> getDebateRooms() {
+        return this.debateRoomRepository.findAll();
+    }
+
+    public void deleteRoom(Long roomID){
+
+        List<DebateRoom> allDebateRooms = getDebateRooms();
+        DebateRoom roomToDelete = debateRoomRepository.findByID(roomID);
+
+        if(roomToDelete == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else{
+            allDebateRooms.removeIf(roomToFind -> roomToFind.equals(roomToDelete));
+        }
+    }
 }
