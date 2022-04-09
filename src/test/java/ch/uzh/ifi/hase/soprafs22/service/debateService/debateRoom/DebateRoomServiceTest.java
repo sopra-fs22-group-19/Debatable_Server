@@ -10,7 +10,7 @@ import ch.uzh.ifi.hase.soprafs22.repository.DebateSpeakerRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
-import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.DebateRoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class DebateServiceTest {
+class DebateRoomServiceTest {
 
   @Mock
   private DebateRoomRepository debateRoomRepository;
@@ -40,7 +40,7 @@ class DebateServiceTest {
   private DebateSpeakerRepository debateSpeakerRepository;
 
   @InjectMocks
-  private DebateService debateService;
+  private DebateRoomService debateRoomService;
 
   private DebateRoom testDebateRoom;
 
@@ -90,7 +90,7 @@ class DebateServiceTest {
     debateRoomPostDTO.setDebateId(1L);
     debateRoomPostDTO.setSide(DebateSide.FOR);
 
-    DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO);
+    DebateRoom createdDebateRoom = debateRoomService.createDebateRoom(testDebateRoom, debateRoomPostDTO);
 
     // then
     Mockito.verify(debateRoomRepository, Mockito.times(1)).save(Mockito.any());
@@ -115,7 +115,7 @@ class DebateServiceTest {
       Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
       assertThrows(ResponseStatusException.class, () ->
-              debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
+              debateRoomService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
   }
 
   @Test
@@ -130,7 +130,7 @@ class DebateServiceTest {
       Mockito.when(debateTopicRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
       assertThrows(ResponseStatusException.class, () ->
-              debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
+              debateRoomService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
   }
 
 

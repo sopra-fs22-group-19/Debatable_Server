@@ -29,9 +29,9 @@ import static ch.uzh.ifi.hase.soprafs22.entity.DebateTopic.readTopicListCSV;
 
 @Service
 @Transactional
-public class DebateService {
+public class DebateRoomService {
 
-    private final Logger log = LoggerFactory.getLogger(DebateService.class);
+    private final Logger log = LoggerFactory.getLogger(DebateRoomService.class);
 
     private final DebateTopicRepository debateTopicRepository;
     private final DebateRoomRepository debateRoomRepository;
@@ -40,7 +40,7 @@ public class DebateService {
     private final DebateSpeakerRepository debateSpeakerRepository;
 
     @Autowired
-    public DebateService(
+    public DebateRoomService(
             @Qualifier("debateTopicRepository") DebateTopicRepository debateTopicRepository,
             @Qualifier("debateRoomRepository") DebateRoomRepository debateRoomRepository,
             @Qualifier("userRepository") UserRepository userRepository,

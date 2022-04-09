@@ -2,14 +2,14 @@ package ch.uzh.ifi.hase.soprafs22.controller.debateController.debateRoom;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.controller.DebateController;
+import ch.uzh.ifi.hase.soprafs22.controller.DebateRoomController;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
-import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.DebateRoomService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -44,14 +44,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * request without actually sending them over the network.
  * This tests if the UserController works.
  */
-@WebMvcTest(DebateController.class)
-class DebateControllerCreateDebateRoomTest {
+@WebMvcTest(DebateRoomController.class)
+class DebateControllerCreateDebateRoomTestRoom {
 
   @Autowired
   private MockMvc mockMvc;
 
   @MockBean
-  private DebateService debateService;
+  private DebateRoomService debateRoomService;
 
   private DebateRoom debateRoom;
   private DebateRoomPostDTO debateRoomPostDTO;
@@ -100,7 +100,7 @@ class DebateControllerCreateDebateRoomTest {
 
     debateRoomPostDTO.setSide(DebateSide.FOR);
 
-    given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
+    given(debateRoomService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
 
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
@@ -131,7 +131,7 @@ class DebateControllerCreateDebateRoomTest {
 
       debateRoomPostDTO.setSide(DebateSide.AGAINST);
 
-      given(debateService.createDebateRoom(Mockito.any(), Mockito.any()))
+      given(debateRoomService.createDebateRoom(Mockito.any(), Mockito.any()))
               .willReturn(debateRoom);
 
       // when/then -> do the request + validate the result
@@ -183,7 +183,7 @@ class DebateControllerCreateDebateRoomTest {
       debateTopicGetDTO2.setTopic("Topic2");
       debateTopicGetDTO2.setDescription("Test default Topic2 description");
 
-      doReturn(defaultDebateTopic).when(debateService).getDebateTopicByUserId(1L);
+      doReturn(defaultDebateTopic).when(debateRoomService).getDebateTopicByUserId(1L);
 
       MockHttpServletRequestBuilder getRequest = get("/debates/1")
               .contentType(MediaType.APPLICATION_JSON);
@@ -225,7 +225,7 @@ class DebateControllerCreateDebateRoomTest {
 
       Exception excNotFound = new ResponseStatusException(HttpStatus.NOT_FOUND);
 
-      doThrow(excNotFound).when(debateService).getDebateTopicByUserId(2L);
+      doThrow(excNotFound).when(debateRoomService).getDebateTopicByUserId(2L);
 
       MockHttpServletRequestBuilder getRequest = get("/debates/2")
               .contentType(MediaType.APPLICATION_JSON);

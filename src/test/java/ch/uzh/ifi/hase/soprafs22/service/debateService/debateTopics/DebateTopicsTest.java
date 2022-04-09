@@ -4,7 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
-import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.DebateRoomService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -27,7 +27,7 @@ class DebateTopicsTest {
 
   @Spy
   @InjectMocks
-  private DebateService debateService;
+  private DebateRoomService debateRoomService;
 
   @BeforeEach
   public void setup() {
@@ -64,7 +64,7 @@ class DebateTopicsTest {
       Mockito.when(debateTopicRepository.findByCreatorUserId(1L)).thenReturn(testTopics);
 
 
-      List<DebateTopic> debateTopics = debateService.getDebateTopicByUserId(1L);
+      List<DebateTopic> debateTopics = debateRoomService.getDebateTopicByUserId(1L);
 
       assertEquals(testTopics.get(0).getCreatorUserId(), debateTopics.get(0).getCreatorUserId());
       assertEquals(testTopics.get(0).getTopic(), debateTopics.get(0).getTopic());
@@ -79,7 +79,7 @@ class DebateTopicsTest {
 
       Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
-      assertThrows(ResponseStatusException.class, () -> debateService.getDebateTopicByUserId(2L));
+      assertThrows(ResponseStatusException.class, () -> debateRoomService.getDebateTopicByUserId(2L));
 
   }
 
@@ -87,11 +87,11 @@ class DebateTopicsTest {
   @Test
   void initializeDefaultTopics_Success_NoExceptionThrown() throws NoSuchMethodException {
 
-      Method setupDefaultDebateTopics =  DebateService.class.getDeclaredMethod(
+      Method setupDefaultDebateTopics =  DebateRoomService.class.getDeclaredMethod(
               "setupDefaultDebateTopics",null); // methodName,parameters
       setupDefaultDebateTopics.setAccessible(true);
 
-      Throwable throwable = catchThrowable(() -> setupDefaultDebateTopics.invoke(debateService));
+      Throwable throwable = catchThrowable(() -> setupDefaultDebateTopics.invoke(debateRoomService));
       assertNull(throwable);
   }
 }
