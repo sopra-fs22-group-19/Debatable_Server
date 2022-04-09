@@ -65,15 +65,14 @@ public class UserService {
       User checkedUser = userRepository.findByUsername(username);
 
       if(checkedUser == null){
-          throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format("The provided username is invalid."));
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided username is invalid.");
       }
 
       if(checkedUser.getPassword().equals(password)){
           return checkedUser;
       }
       else{
-          throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-                  String.format( "The password provided is incorrect"));
+          throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The password provided is incorrect");
       }
   }
 

@@ -17,16 +17,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.Optional;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.doThrow;
 
 class DebateServiceTest {
 
@@ -135,50 +132,7 @@ class DebateServiceTest {
       assertThrows(ResponseStatusException.class, () ->
               debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
   }
-    @Test
-    void getDebateTopic_returnAllTopicByUser() {
 
-        DebateTopic defaultDebateTopic1 =  new DebateTopic();
-        defaultDebateTopic1.setCreatorUserId(1L);
-        defaultDebateTopic1.setTopic("Test default Topic1 belongs user1");
-        defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
-
-        DebateTopic defaultDebateTopic2 =  new DebateTopic();
-        defaultDebateTopic2.setCreatorUserId(1L);
-        defaultDebateTopic2.setTopic("Test default Topic2 belongs user2 ");
-        defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
-
-        List<DebateTopic> testTopics = List.of(defaultDebateTopic1,defaultDebateTopic2);
-
-        Mockito.when(debateTopicRepository.findByCreatorUserId(1L)).thenReturn(testTopics);
-
-        List<DebateTopic> debateTopics = debateService.getDebateTopicByUserId(1L);
-
-        assertEquals(testTopics.get(0).getCreatorUserId(), debateTopics.get(0).getCreatorUserId());
-        assertEquals(testTopics.get(0).getTopic(), debateTopics.get(0).getTopic());
-        assertEquals(testTopics.get(0).getTopicDescription(), debateTopics.get(0).getTopicDescription());
-        assertEquals(testTopics.get(1).getCreatorUserId(), debateTopics.get(1).getCreatorUserId());
-        assertEquals(testTopics.get(1).getTopic(), debateTopics.get(1).getTopic());
-        assertEquals(testTopics.get(1).getTopicDescription(), debateTopics.get(1).getTopicDescription());
-
-    }
-
-    @Test
-    void getDebateTopic_invalidId_throwNotFound() {
-
-        DebateTopic defaultDebateTopic1 =  new DebateTopic();
-        defaultDebateTopic1.setCreatorUserId(1L);
-        defaultDebateTopic1.setTopic("Test default Topic1 belongs user1");
-        defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
-
-        List<DebateTopic> testTopics = List.of(defaultDebateTopic1);
-
-        Exception excConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
-        doThrow(excConflict).when(userRepository).findById(2L);
-
-        assertThrows(ResponseStatusException.class, () -> debateService.getDebateTopicByUserId(2L));
-
-    }
 
 
 }

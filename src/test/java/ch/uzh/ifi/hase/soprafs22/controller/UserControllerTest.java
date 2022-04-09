@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,59 +40,54 @@ public class UserControllerTest {
   @MockBean
   private UserService userService;
 
+  private User testUser;
+
+  private UserPostDTO testUserPostDTO;
+
+  @BeforeEach
+  public void setup() {
+      testUser = new User();
+      testUser.setId(1L);
+      testUser.setUsername("testUsername");
+      testUser.setPassword("testPassword");
+      testUser.setName("testName");
+      testUser.setToken("1");
+      testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+
+      testUserPostDTO = new UserPostDTO();
+      testUserPostDTO.setUsername("testUsername");
+      testUserPostDTO.setName("testName");
+      testUserPostDTO.setPassword("testPassword");
+  }
+
 
   @Test
   public void createUser_validInput_userCreated() throws Exception {
     // given
-    User user = new User();
-    user.setId(1L);
-    user.setUsername("testUsername");
-    user.setPassword("testPassword");
-    user.setName("testName");
-    user.setToken("1");
-    user.setCreationDate(LocalDate.parse("2019-01-21"));
-
-    UserPostDTO userPostDTO = new UserPostDTO();
-    userPostDTO.setUsername("testUsername");
-    userPostDTO.setName("testName");
-    userPostDTO.setPassword("testPassword");
-
-    doReturn(user).when(userService).createUser(Mockito.any());
+    doReturn(testUser).when(userService).createUser(Mockito.any());
 
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = post("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(asJsonString(userPostDTO));
+        .content(asJsonString(testUserPostDTO));
 
     // then
     mockMvc.perform(postRequest)
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.userId", is(user.getId().intValue())))
-            .andExpect(jsonPath("$.username", is(user.getUsername())))
-            .andExpect(jsonPath("$.name", is(user.getName())));
+            .andExpect(jsonPath("$.userId", is(testUser.getId().intValue())))
+            .andExpect(jsonPath("$.username", is(testUser.getUsername())))
+            .andExpect(jsonPath("$.name", is(testUser.getName())));
   }
 
   @Test
   void createUser_failed_usernameAlreadyExist() throws Exception {
-      User user = new User();
-      user.setId(1L);
-      user.setUsername("testUsername");
-      user.setPassword("testPassword");
-      user.setName("testName");
-      user.setToken("1");
-      user.setCreationDate(LocalDate.parse("2019-01-21"));
-      UserPostDTO userPostDTO = new UserPostDTO();
-      userPostDTO.setUsername("testUsername");
-      userPostDTO.setName("testName");
-      userPostDTO.setPassword("testPassword");
-
       Exception eConflict = new ResponseStatusException(HttpStatus.CONFLICT);
       doThrow(eConflict).when(userService).createUser(Mockito.any());
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = post("/users")
               .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(userPostDTO));
+              .content(asJsonString(testUserPostDTO));
 
       // then
       mockMvc.perform(postRequest)

@@ -68,7 +68,7 @@ public class DebateService {
         // If it is not empty load the default topics from file
         Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
 
-        log.info(String.format("Loading default topic list from: %s", defaultListPath));
+        if (log.isDebugEnabled()) { log.info(String.format("Loading default topic list from: %s", defaultListPath)); }
 
         try {
             List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
@@ -76,7 +76,7 @@ public class DebateService {
                 log.warn("List of debate topics is empty");
             } else{
                 debateTopicRepository.saveAll(defaultDebateTopicsList);
-                log.info(String.format("Default Topics created %d", defaultDebateTopicsList.size()));
+                if (log.isDebugEnabled()) { log.info(String.format("Default Topics created %d", defaultDebateTopicsList.size())); }
             }
         } catch(IOException | CsvValidationException e){
             log.error("Problem loading the default file list");
