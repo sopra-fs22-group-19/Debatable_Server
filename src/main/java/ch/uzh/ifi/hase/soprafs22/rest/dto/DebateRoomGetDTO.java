@@ -1,31 +1,29 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+
 
 public class DebateRoomGetDTO {
-
     private Long roomId;
     private DebateTopicGetDTO debate;
-    private String debateStatus;
+    private DebateState debateStatus;
     private UserGetDTO user1;
     private DebateSide side1;
     private UserGetDTO user2;
     private DebateSide side2;
 
-    public Long getRoomId() {
-        return roomId;
-    }
 
-    public void setRoomId(Long roomId) {
-        this.roomId = roomId;
-    }
+    public void setRoomId(Long roomId){ this.roomId = roomId; }
 
-    public String getDebateStatus() {
-        return debateStatus;
-    }
+    public Long getRoomId(){ return this.roomId; }
 
-    public void setDebateStatus(String debateStatus) {
+    public void setDebateStatus(DebateState debateStatus) {
         this.debateStatus = debateStatus;
+    }
+
+    public DebateState getDebateStatus() {
+        return this.debateStatus;
     }
 
     public DebateTopicGetDTO getDebate() {
