@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Optional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,15 +42,15 @@ public class DebateController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public DebateRoomGetDTO getDebateRoom(@PathVariable Long roomId) {
-        Optional<DebateRoom> debateRoom = debateService.getDebateRoom(roomId);
+        DebateRoom debateRoom = debateService.getDebateRoom(roomId);
 
-        if (debateRoom.isEmpty()) {
+        if (debateRoom == null) {
             String baseErrorMessage = "Error: <the Debate Room with id: '%d' was not found>";
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format(baseErrorMessage, roomId));
         }
         else{
-            return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(debateRoom.get());
+            return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(debateRoom);
         }
     }
 
@@ -70,4 +69,10 @@ public class DebateController {
         return debateGetDTOs;
     }
 
+    @DeleteMapping("/debates/rooms/{roomId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public void deleteDebateRoomById(@PathVariable("roomId") Long roomId){
+        debateService.deleteRoom(roomId);
+    }
 }

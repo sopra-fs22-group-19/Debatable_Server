@@ -88,7 +88,7 @@ class DebateTopicsTest {
   void initializeDefaultTopics_Success_NoExceptionThrown() throws NoSuchMethodException {
 
       Method setupDefaultDebateTopics =  DebateService.class.getDeclaredMethod(
-              "setupDefaultDebateTopics",null); // methodName,parameters
+              "setupDefaultDebateTopics"); // methodName,parameters
       setupDefaultDebateTopics.setAccessible(true);
 
       Throwable throwable = catchThrowable(() -> setupDefaultDebateTopics.invoke(debateService));
