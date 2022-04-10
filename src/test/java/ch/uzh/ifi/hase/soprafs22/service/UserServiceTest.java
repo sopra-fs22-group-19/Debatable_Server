@@ -12,9 +12,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -116,28 +114,27 @@ public class UserServiceTest {
   }
 
 
-    @Test
-    public void createGuestUser_validInputs_success() {
-      User guestUser = new User();
-      Mockito.when(userRepository.save(Mockito.any())).thenReturn(guestUser);
+  @Test
+  void createGuestUser_validInputs_success() {
+    User guestUser = new User();
+    Mockito.when(userRepository.save(Mockito.any())).thenReturn(guestUser);
 
-      User createdGuestUser = userService.createGuestUser(guestUser);
+    User createdGuestUser = userService.createGuestUser(guestUser);
 
+    assertEquals("Guest", createdGuestUser.getName());
+    assertNotNull(createdGuestUser.getCreationDate());
+    assertNotNull(createdGuestUser.getToken());
+  }
 
-      assertEquals("Guest", createdGuestUser.getName());
-      assertNotNull(createdGuestUser.getCreationDate());
-      assertNotNull(createdGuestUser.getToken());
-    }
-
-    @Test
-    public void deleteGuestUser(){
-        // for given input
-        Long id = 1L;
-        // when the desired action performed
-        userService.deleteUser(id);
-        // then verify
-        Mockito.verify(userRepository).deleteById(id);
-    }
+  @Test
+  void deleteGuestUser(){
+      // for given input
+      Long id = 1L;
+      // when the desired action performed
+      userService.deleteUser(id);
+      // then verify
+      Mockito.verify(userRepository).deleteById(id);
+  }
 
 
 }
