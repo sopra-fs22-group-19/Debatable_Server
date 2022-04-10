@@ -134,7 +134,7 @@ public class DebateService {
     }
 
     public DebateRoom getDebateRoom(Long roomId) {
-        return debateRoomRepository.findByID(roomId);
+        return debateRoomRepository.findByRoomId(roomId);
     }
 
     public List<DebateTopic> getDebateTopicByUserId(Long userId){
@@ -155,9 +155,9 @@ public class DebateService {
         return this.debateRoomRepository.findAll();
     }
 
-    public void deleteRoom(Long roomID){
+    public DebateRoom deleteRoom(Long roomID){
 
-        DebateRoom roomToDelete = debateRoomRepository.findByID(roomID);
+        DebateRoom roomToDelete = debateRoomRepository.findByRoomId(roomID);
 
         if(roomToDelete == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
@@ -172,5 +172,6 @@ public class DebateService {
             debateRoomRepository.delete(roomToDelete);
             debateRoomRepository.flush();
         }
+        return roomToDelete;
     }
 }

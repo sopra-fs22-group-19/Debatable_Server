@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.controller.debateController.debateRoom;
+package ch.uzh.ifi.hase.soprafs22.controller.debateController.debatTopic;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
@@ -7,12 +7,12 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,8 +26,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This tests if the UserController works.
  */
 @WebMvcTest(DebateController.class)
-class DebateControllerGetDebateRoomTestRoom {
+class DebateControllerDebateTopicTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -84,41 +86,80 @@ class DebateControllerGetDebateRoomTestRoom {
   }
 
   @Test
-  void getDebateRoom_DebateRoomExists() throws Exception {
-    // Check the end point returns the appropriate Debate Room object
-    given(debateService.getDebateRoom(Mockito.any())).willReturn(debateRoom);
+  void getTopicByUser_validInput_debateTopicsReturned()throws Exception {
 
-    // when/then -> do the request + validate the result
-    MockHttpServletRequestBuilder postRequest = get("/debates/rooms/"+ debateRoom.getRoomId())
-        .contentType(MediaType.APPLICATION_JSON);
-    // then
-    mockMvc.perform(postRequest)
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.roomId", is(debateRoom.getRoomId().intValue())))
-        .andExpect(jsonPath("$.debate.userId", is(debateRoom.getDebateTopic().getCreatorUserId().intValue())))
-        .andExpect(jsonPath("$.debate.debateId", is(debateRoom.getDebateTopic().getDebateTopicId().intValue())))
-        .andExpect(jsonPath("$.debate.topic", is(debateRoom.getDebateTopic().getTopic())))
-        .andExpect(jsonPath("$.debate.description", is(debateRoom.getDebateTopic().getTopicDescription())))
-        .andExpect(jsonPath("$.user1.userId", is(debateRoom.getUser1().getId().intValue())))
-        .andExpect(jsonPath("$.user1.username", is(debateRoom.getUser1().getUsername())))
-        .andExpect(jsonPath("$.user1.name", is(debateRoom.getUser1().getName())))
-        .andExpect(jsonPath("$.user1.creation_date", is(debateRoom.getUser1().getCreationDate().toString())))
-        .andExpect(jsonPath("$.side1", is(debateRoom.getSide1().name())))
-        .andExpect(jsonPath("$.debateStatus", is(debateRoom.getDebateRoomStatus().name())));
+      DebateTopic defaultDebateTopic1 =  new DebateTopic();
+      defaultDebateTopic1.setCreatorUserId(1L);
+      defaultDebateTopic1.setTopic("Topic1");
+      defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
+
+      DebateTopic defaultDebateTopic2 =  new DebateTopic();
+      defaultDebateTopic2.setCreatorUserId(1L);
+      defaultDebateTopic2.setTopic("Topic2");
+      defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
+
+      List<DebateTopic> defaultDebateTopic= List.of(defaultDebateTopic1,defaultDebateTopic2);
+
+      DebateTopicGetDTO debateTopicGetDTO1 = new DebateTopicGetDTO();
+      debateTopicGetDTO1.setUserId(1L);
+      debateTopicGetDTO1.setTopic("Topic1");
+      debateTopicGetDTO1.setDescription("Test default Topic1 description");
+
+      DebateTopicGetDTO debateTopicGetDTO2 = new DebateTopicGetDTO();
+      debateTopicGetDTO2.setUserId(1L);
+      debateTopicGetDTO2.setTopic("Topic2");
+      debateTopicGetDTO2.setDescription("Test default Topic2 description");
+
+      doReturn(defaultDebateTopic).when(debateService).getDebateTopicByUserId(1L);
+
+      MockHttpServletRequestBuilder getRequest = get("/debates/1")
+              .contentType(MediaType.APPLICATION_JSON);
+
+      mockMvc.perform(getRequest).andExpect(status().isOk())
+              .andExpect(jsonPath("$", hasSize(2)))
+              .andExpect(jsonPath("$[0].topic", is(defaultDebateTopic1.getTopic())))
+              .andExpect(jsonPath("$[0].description", is(defaultDebateTopic1.getTopicDescription())))
+              .andExpect(jsonPath("$[1].topic", is(defaultDebateTopic2.getTopic())))
+              .andExpect(jsonPath("$[1].description", is(defaultDebateTopic2.getTopicDescription())));
+
   }
 
   @Test
-  void getDebateRoom_DebateRoomNotFound() throws Exception {
-      // Check the end point returns the appropriate Debate Room object
-      given(debateService.getDebateRoom(Mockito.any())).willReturn(null);
+  void getTopicByUser_invalidUserId_UserNotFound()throws Exception {
 
-      // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + debateRoom.getRoomId())
+      DebateTopic defaultDebateTopic1 =  new DebateTopic();
+      defaultDebateTopic1.setCreatorUserId(1L);
+      defaultDebateTopic1.setTopic("Topic1");
+      defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
+
+      DebateTopic defaultDebateTopic2 =  new DebateTopic();
+      defaultDebateTopic2.setCreatorUserId(1L);
+      defaultDebateTopic2.setTopic("Topic2");
+      defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
+
+      List<DebateTopic> defaultDebateTopic= List.of(defaultDebateTopic1,defaultDebateTopic2);
+
+
+      DebateTopicGetDTO debateTopicGetDTO1 = new DebateTopicGetDTO();
+      debateTopicGetDTO1.setUserId(1L);
+      debateTopicGetDTO1.setTopic("Topic1");
+      debateTopicGetDTO1.setDescription("Test default Topic1 description");
+
+      DebateTopicGetDTO debateTopicGetDTO2 = new DebateTopicGetDTO();
+      debateTopicGetDTO2.setUserId(1L);
+      debateTopicGetDTO2.setTopic("Topic2");
+      debateTopicGetDTO2.setDescription("Test default Topic2 description");
+
+      Exception excNotFound = new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+      doThrow(excNotFound).when(debateService).getDebateTopicByUserId(2L);
+
+      MockHttpServletRequestBuilder getRequest = get("/debates/2")
               .contentType(MediaType.APPLICATION_JSON);
 
-      // then
-      mockMvc.perform(postRequest)
-              .andExpect(status().isNotFound());
+      mockMvc.perform(getRequest).andExpect(status().isNotFound());
+
+
   }
 
   /**

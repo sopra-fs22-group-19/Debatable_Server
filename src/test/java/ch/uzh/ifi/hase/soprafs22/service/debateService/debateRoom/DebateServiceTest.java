@@ -22,8 +22,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.catchThrowable;
+import static org.junit.jupiter.api.Assertions.*;
 
 class DebateServiceTest {
 
@@ -131,6 +131,25 @@ class DebateServiceTest {
 
       assertThrows(ResponseStatusException.class, () ->
               debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO));
+  }
+
+  @Test
+  void deleteDebateRoom_Sucess() {
+      Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.ofNullable(testDebateRoom.getUser1()));
+      Mockito.when(debateTopicRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+      Mockito.when(debateSpeakerRepository.findAllByDebateRoom(Mockito.any())).thenReturn(testDebateRoom.getSpeakers());
+
+      Throwable throwable = catchThrowable(() -> debateService.deleteRoom(testDebateRoom.getRoomId()));
+      assertNull(throwable);
+  }
+
+  @Test
+  void deleteDebateRoom_RoomNotFound() {
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(null);
+
+      assertThrows(ResponseStatusException.class, () -> debateService.deleteRoom(testDebateRoom.getRoomId()));
   }
 
 

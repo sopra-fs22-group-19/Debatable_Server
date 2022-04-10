@@ -41,7 +41,7 @@ public class DebateRoom implements Serializable, Room {
           strategy = SEQUENCE,
           generator = "room_seq"
   )
-  private Long ID;
+  private Long roomId;
 
   @Column(nullable = false)
   private Long creatorUserId;
@@ -58,11 +58,11 @@ public class DebateRoom implements Serializable, Room {
 
 
   public Long getRoomId() {
-    return ID;
+    return roomId;
   }
 
   public void setRoomId(Long roomId) {
-    this.ID = roomId;
+    this.roomId = roomId;
   }
 
   public Long getCreatorUserId() { return creatorUserId; }
