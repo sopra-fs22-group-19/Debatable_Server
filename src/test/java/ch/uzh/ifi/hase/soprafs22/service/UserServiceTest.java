@@ -129,5 +129,15 @@ public class UserServiceTest {
       assertNotNull(createdGuestUser.getToken());
     }
 
+    @Test
+    public void deleteGuestUser(){
+        // for given input
+        Long id = 1L;
+        // when the desired action performed
+        userService.deleteUser(id);
+        // then verify
+        Mockito.verify(userRepository).deleteById(id);
+    }
+
 
 }

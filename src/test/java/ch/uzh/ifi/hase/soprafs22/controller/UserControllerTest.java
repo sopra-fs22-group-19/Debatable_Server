@@ -23,6 +23,7 @@ import java.util.UUID;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -118,6 +119,18 @@ public class UserControllerTest {
         mockMvc.perform(postRequest)
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.name", is(guestUserPostDTO.getName())));
+    }
+
+    @Test
+    public void deleteUser() throws Exception {
+
+        doNothing().when(userService).deleteUser(Mockito.any());
+
+        MockHttpServletRequestBuilder deleteRequest = delete("/users/1")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(deleteRequest)
+                .andExpect(status().isOk());
     }
 
 

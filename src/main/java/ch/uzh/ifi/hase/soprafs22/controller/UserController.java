@@ -66,6 +66,7 @@ public class UserController {
 
   //to delete guest user
   @DeleteMapping("/users/{id}")
+  @ResponseStatus(HttpStatus.OK)
   public void deleteUser(@PathVariable Long id) {
       userService.deleteUser(id);
   }
