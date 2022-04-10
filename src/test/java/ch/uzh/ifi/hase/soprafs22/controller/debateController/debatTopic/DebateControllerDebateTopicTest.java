@@ -1,4 +1,4 @@
-package ch.uzh.ifi.hase.soprafs22.controller.debateController.debateRoom;
+package ch.uzh.ifi.hase.soprafs22.controller.debateController.debatTopic;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
@@ -7,14 +7,12 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -30,11 +28,9 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -45,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This tests if the UserController works.
  */
 @WebMvcTest(DebateController.class)
-class DebateControllerCreateDebateRoomTest {
+class DebateControllerDebateTopicTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -54,7 +50,6 @@ class DebateControllerCreateDebateRoomTest {
   private DebateService debateService;
 
   private DebateRoom debateRoom;
-  private DebateRoomPostDTO debateRoomPostDTO;
 
   @BeforeEach
   public void setup() {
@@ -86,77 +81,9 @@ class DebateControllerCreateDebateRoomTest {
     debateRoom.setCreatorUserId(1L);
     debateRoom.setDebateTopic(debateTopic);
     debateRoom.setSpeakers(speakerList);
-
-    // Create reference DebateRoomPutDTO
-    debateRoomPostDTO = new DebateRoomPostDTO();
-    debateRoomPostDTO.setUserId(1L);
-    debateRoomPostDTO.setDebateId(1L);
-  }
-
-  @Test
-  void createDebateRoom_UserFOR_validInput_debateRoomCreated() throws Exception {
-    // Check the end point returns the appropriate Debate Room object
-    debateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
-
-    debateRoomPostDTO.setSide(DebateSide.FOR);
-
-    given(debateService.createDebateRoom(Mockito.any(), Mockito.any())).willReturn(debateRoom);
-
-    // when/then -> do the request + validate the result
-    MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content(asJsonString(debateRoomPostDTO));
-
-    // then
-    mockMvc.perform(postRequest)
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.roomId", is(debateRoom.getRoomId().intValue())))
-        .andExpect(jsonPath("$.debate.userId", is(debateRoom.getDebateTopic().getCreatorUserId().intValue())))
-        .andExpect(jsonPath("$.debate.debateId", is(debateRoom.getDebateTopic().getDebateTopicId().intValue())))
-        .andExpect(jsonPath("$.debate.topic", is(debateRoom.getDebateTopic().getTopic())))
-        .andExpect(jsonPath("$.debate.description", is(debateRoom.getDebateTopic().getTopicDescription())))
-        .andExpect(jsonPath("$.user1.userId", is(debateRoom.getUser1().getId().intValue())))
-        .andExpect(jsonPath("$.user1.username", is(debateRoom.getUser1().getUsername())))
-        .andExpect(jsonPath("$.user1.name", is(debateRoom.getUser1().getName())))
-        .andExpect(jsonPath("$.user1.creation_date", is(debateRoom.getUser1().getCreationDate().toString())))
-        .andExpect(jsonPath("$.side1", is(debateRoom.getSide1().name())))
-        .andExpect(jsonPath("$.debateStatus", is(debateRoom.getDebateRoomStatus().name())));
+    debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
 
   }
-
-  @Test
-  void createDebateRoom_UserAGAINST_validInput_debateRoomCreated() throws Exception {
-      // Check the end point returns the appropriate Debate Room object
-      debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
-
-      debateRoomPostDTO.setSide(DebateSide.AGAINST);
-
-      given(debateService.createDebateRoom(Mockito.any(), Mockito.any()))
-              .willReturn(debateRoom);
-
-      // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = post("/debates/rooms")
-              .contentType(MediaType.APPLICATION_JSON)
-              .content(asJsonString(debateRoomPostDTO));
-
-      // then
-      mockMvc.perform(postRequest)
-              .andExpect(status().isCreated())
-              .andExpect(jsonPath("$.roomId", is(debateRoom.getRoomId().intValue())))
-              .andExpect(jsonPath("$.debate.userId", is(debateRoom.getDebateTopic().getCreatorUserId().intValue())))
-              .andExpect(jsonPath("$.debate.debateId", is(debateRoom.getDebateTopic().getDebateTopicId().intValue())))
-              .andExpect(jsonPath("$.debate.topic", is(debateRoom.getDebateTopic().getTopic())))
-              .andExpect(jsonPath("$.debate.description", is(debateRoom.getDebateTopic().getTopicDescription())))
-              .andExpect(jsonPath("$.user1.userId", is(debateRoom.getUser1().getId().intValue())))
-              .andExpect(jsonPath("$.user1.username", is(debateRoom.getUser1().getUsername())))
-              .andExpect(jsonPath("$.user1.name", is(debateRoom.getUser1().getName())))
-              .andExpect(jsonPath("$.user1.creation_date", is(debateRoom.getUser1().getCreationDate().toString())))
-              .andExpect(jsonPath("$.side1", is(debateRoom.getSide1().name())))
-              .andExpect(jsonPath("$.debateStatus", is(debateRoom.getDebateRoomStatus().name())));
-
-  }
-
-
 
   @Test
   void getTopicByUser_validInput_debateTopicsReturned()throws Exception {
@@ -234,7 +161,6 @@ class DebateControllerCreateDebateRoomTest {
 
 
   }
-
 
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input
