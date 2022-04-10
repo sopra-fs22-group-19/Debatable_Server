@@ -37,7 +37,6 @@ public class DebateService {
     private final TagRepository tagRepository;
     private final DebateSpeakerRepository debateSpeakerRepository;
     private final InterventionRepository interventionRepository;
-    private final UserService userService;
 
     @Autowired
     public DebateService(
@@ -55,8 +54,8 @@ public class DebateService {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.debateSpeakerRepository = debateSpeakerRepository;
-        this.interventionRepository = interventionRepository;
         this.userService = userService;
+        this.interventionRepository = interventionRepository;
     }
 
     @PostConstruct
