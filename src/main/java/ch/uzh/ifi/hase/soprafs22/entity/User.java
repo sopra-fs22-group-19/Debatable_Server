@@ -15,7 +15,7 @@ import java.time.LocalDate;
  * the primary key
  */
 @Entity
-@Table(name = "DEBATABLE_USER")
+@Table(name = "CUSTOMER")
 public class User implements Serializable {
 
   private static final long serialVersionUID = 1L;
