@@ -18,10 +18,12 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -62,7 +64,7 @@ public class UserControllerTest {
 
 
   @Test
-  public void createUser_validInput_userCreated() throws Exception {
+  void createUser_validInput_userCreated() throws Exception {
     // given
     doReturn(testUser).when(userService).createUser(Mockito.any());
 
@@ -94,6 +96,42 @@ public class UserControllerTest {
               .andExpect(status().isConflict());
   }
 
+  @Test
+  void createGuest_validInput_guestCreated() throws Exception {
+      User guestUser = new User();
+
+      guestUser.setUsername(UUID.randomUUID().toString());
+      guestUser.setName("Guest");
+      guestUser.setPassword(UUID.randomUUID().toString());
+      guestUser.setToken(UUID.randomUUID().toString());
+      guestUser.setCreationDate(LocalDate.now());
+
+      UserPostDTO guestUserPostDTO = new UserPostDTO();
+      guestUserPostDTO.setName("Guest");
+        // given
+      doReturn(guestUser).when(userService).createGuestUser(Mockito.any());
+
+        // when/then -> do the request + validate the result
+      MockHttpServletRequestBuilder postRequest = post("/users/guests")
+              .contentType(MediaType.APPLICATION_JSON);
+
+        // then
+      mockMvc.perform(postRequest)
+              .andExpect(status().isCreated())
+              .andExpect(jsonPath("$.name", is(guestUserPostDTO.getName())));
+  }
+
+  @Test
+  void deleteUser() throws Exception {
+
+      doNothing().when(userService).deleteUser(Mockito.any());
+
+      MockHttpServletRequestBuilder deleteRequest = delete("/users/1")
+              .contentType(MediaType.APPLICATION_JSON);
+
+      mockMvc.perform(deleteRequest)
+              .andExpect(status().isOk());
+  }
 
   /**
    * Helper Method to convert userPostDTO into a JSON string such that the input

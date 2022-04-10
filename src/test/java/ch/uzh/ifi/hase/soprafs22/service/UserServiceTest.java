@@ -114,4 +114,27 @@ public class UserServiceTest {
   }
 
 
+  @Test
+  void createGuestUser_validInputs_success() {
+    User guestUser = new User();
+    Mockito.when(userRepository.save(Mockito.any())).thenReturn(guestUser);
+
+    User createdGuestUser = userService.createGuestUser(guestUser);
+
+    assertEquals("Guest", createdGuestUser.getName());
+    assertNotNull(createdGuestUser.getCreationDate());
+    assertNotNull(createdGuestUser.getToken());
+  }
+
+  @Test
+  void deleteGuestUser(){
+      // for given input
+      Long id = 1L;
+      // when the desired action performed
+      userService.deleteUser(id);
+      // then verify
+      Mockito.verify(userRepository).deleteById(id);
+  }
+
+
 }

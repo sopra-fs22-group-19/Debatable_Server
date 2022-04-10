@@ -50,4 +50,26 @@ public class UserController {
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(verifiedUser);
   }
 
+
+  //create temp guest user
+  @PostMapping("/users/guests")
+  @ResponseStatus(HttpStatus.CREATED)
+  @ResponseBody
+  public UserGetDTO createGuestUser() {
+
+      User guestUser = new User();
+
+      User createdUser = userService.createGuestUser(guestUser);
+
+      return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
+  }
+
+  //to delete guest user
+  @DeleteMapping("/users/{id}")
+  @ResponseStatus(HttpStatus.OK)
+  public void deleteUser(@PathVariable Long id) {
+      userService.deleteUser(id);
+  }
+
+
 }
