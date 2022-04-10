@@ -46,6 +46,8 @@ public class DebateService {
             @Qualifier("debateSpeakerRepository") DebateSpeakerRepository debateSpeakerRepository,
             @Qualifier("tagRepository") TagRepository tagRepository,
             @Qualifier("interventionRepository") InterventionRepository interventionRepository
+            @Qualifier("tagRepository") TagRepository tagRepository,
+            @Qualifier("userService") UserService userService
             ) {
 
         this.debateTopicRepository = debateTopicRepository;
@@ -53,6 +55,7 @@ public class DebateService {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.debateSpeakerRepository = debateSpeakerRepository;
+        this.userService = userService;
         this.interventionRepository = interventionRepository;
     }
 
@@ -159,9 +162,10 @@ public class DebateService {
     public DebateRoom deleteRoom(Long roomID){
 
         DebateRoom roomToDelete = debateRoomRepository.findByRoomId(roomID);
+        String baseErrorMessage = "Error: reason <Can not delete the room because Room with id: '%d' was not found>";
 
         if(roomToDelete == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,roomID));
         }
         else{
             List<DebateSpeaker> occupiedDebateRooms = debateSpeakerRepository.findAllByDebateRoom(roomToDelete);
@@ -175,6 +179,76 @@ public class DebateService {
         }
         return roomToDelete;
     }
+
+    public DebateRoom addParticipantToRoom(DebateRoom actualRoom, User userToAdd){
+
+        User checkUser = userRepository.findByid(userToAdd.getId());
+
+        if(checkUser == null){
+            User guestUser = new User();
+            checkUser = userService.createGuestUser(guestUser);
+        }
+
+        DebateRoom updatedRoom = debateRoomRepository.findByRoomId(actualRoom.getRoomId());
+        String baseErrorMessage = "Error: reason <Can not add Participant because Room with id: '%d' was not found>";
+
+        if(updatedRoom == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,actualRoom.getRoomId()));
+        }
+
+        DebateSpeaker debatesSpeaker = new DebateSpeaker();
+        debatesSpeaker.setUserAssociated(checkUser);
+
+        debatesSpeaker.setDebateRoom(updatedRoom);
+        updatedRoom.setUser2(debatesSpeaker);
+
+        if(updatedRoom.getSpeakers().get(0).getDebateSide() == DebateSide.FOR){
+            debatesSpeaker.setDebateSide(DebateSide.AGAINST);
+        }
+        else{
+            debatesSpeaker.setDebateSide(DebateSide.FOR);
+        }
+
+        updatedRoom.setDebateRoomStatus(DebateState.READY_TO_START);
+
+        debateRoomRepository.save(updatedRoom);
+        debateRoomRepository.flush();
+
+        debateSpeakerRepository.save(debatesSpeaker);
+        debateSpeakerRepository.flush();
+
+        log.debug("Participant added to the DebateRoom: {}", updatedRoom);
+
+        return updatedRoom;
+    }
+
+    public DebateRoom setStatus(Long roomID, Integer status){
+
+        DebateRoom updatedRoom = debateRoomRepository.findByRoomId(roomID);
+
+        String baseErrorMessage = "Error: reason <Can not update status because Room with id: '%d' was not found>";
+        String baseErrorMessageUnauthorized = "Error: reason <Status with index '%d' does not exist>";
+
+        if(updatedRoom == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,roomID));
+        }
+
+        DebateState[] toSet = DebateState.values();
+
+        if(status >= 0 && status < 6){
+            updatedRoom.setDebateRoomStatus(toSet[status]);
+            debateRoomRepository.save(updatedRoom);
+            debateRoomRepository.flush();
+
+            log.debug("Status Set to the DebateRoom: {}", updatedRoom);
+        }
+        else{
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format(baseErrorMessageUnauthorized,status));
+        }
+
+        return updatedRoom;
+    }
+
 
 
     public Intervention createIntervention(Intervention inputIntervention, InterventionPostDTO interventionPostDTO) {
