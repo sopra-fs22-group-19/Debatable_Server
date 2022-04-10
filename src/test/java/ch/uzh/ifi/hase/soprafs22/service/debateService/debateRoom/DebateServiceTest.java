@@ -149,7 +149,8 @@ class DebateServiceTest {
   void deleteDebateRoom_RoomNotFound() {
       Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(null);
 
-      assertThrows(ResponseStatusException.class, () -> debateService.deleteRoom(testDebateRoom.getRoomId()));
+      Long roomId = testDebateRoom.getRoomId();
+      assertThrows(ResponseStatusException.class, () -> debateService.deleteRoom(roomId));
   }
 
 
