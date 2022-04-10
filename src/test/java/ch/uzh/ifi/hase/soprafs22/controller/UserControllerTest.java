@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
@@ -93,6 +94,31 @@ public class UserControllerTest {
       mockMvc.perform(postRequest)
               .andExpect(status().isConflict());
   }
+
+    @Test
+    public void createGuest_validInput_guestCreated() throws Exception {
+        User guestUser = new User();
+
+        guestUser.setUsername(UUID.randomUUID().toString());
+        guestUser.setName("Guest");
+        guestUser.setPassword(UUID.randomUUID().toString());
+        guestUser.setToken(UUID.randomUUID().toString());
+        guestUser.setCreationDate(LocalDate.now());
+
+        UserPostDTO guestUserPostDTO = new UserPostDTO();
+        guestUserPostDTO.setName("Guest");
+        // given
+        doReturn(guestUser).when(userService).createGuestUser(Mockito.any());
+
+        // when/then -> do the request + validate the result
+        MockHttpServletRequestBuilder postRequest = post("/users/guests")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        // then
+        mockMvc.perform(postRequest)
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.name", is(guestUserPostDTO.getName())));
+    }
 
 
   /**

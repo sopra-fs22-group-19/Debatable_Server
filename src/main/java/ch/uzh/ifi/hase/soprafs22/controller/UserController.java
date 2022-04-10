@@ -52,10 +52,10 @@ public class UserController {
 
 
   //create temp guest user
-  @PostMapping("/users/guest")
+  @PostMapping("/users/guests")
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
-  public UserGetDTO createUser() {
+  public UserGetDTO createGuestUser() {
 
       User guestUser = new User();
 
