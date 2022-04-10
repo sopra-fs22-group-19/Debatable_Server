@@ -123,6 +123,7 @@ public class UserServiceTest {
 
       User createdGuestUser = userService.createGuestUser(guestUser);
 
+
       assertEquals("Guest", createdGuestUser.getName());
       assertNotNull(createdGuestUser.getCreationDate());
       assertNotNull(createdGuestUser.getToken());
