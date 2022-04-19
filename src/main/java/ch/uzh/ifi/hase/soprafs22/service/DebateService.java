@@ -38,6 +38,7 @@ public class DebateService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final DebateSpeakerRepository debateSpeakerRepository;
+    private final UserService userService;
 
     @Autowired
     public DebateService(
@@ -45,7 +46,8 @@ public class DebateService {
             @Qualifier("debateRoomRepository") DebateRoomRepository debateRoomRepository,
             @Qualifier("userRepository") UserRepository userRepository,
             @Qualifier("debateSpeakerRepository") DebateSpeakerRepository debateSpeakerRepository,
-            @Qualifier("tagRepository") TagRepository tagRepository
+            @Qualifier("tagRepository") TagRepository tagRepository,
+            @Qualifier("userService") UserService userService
             ) {
 
         this.debateTopicRepository = debateTopicRepository;
@@ -53,6 +55,7 @@ public class DebateService {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.debateSpeakerRepository = debateSpeakerRepository;
+        this.userService = userService;
     }
 
     @PostConstruct
@@ -174,4 +177,61 @@ public class DebateService {
         }
         return roomToDelete;
     }
+
+    public DebateRoom addParticipantToRoom(DebateRoom actualRoom, User userToAdd){
+
+        User checkUser = userRepository.findByid(userToAdd.getId());
+
+        if(checkUser == null){
+            User guestUser = new User();
+            checkUser = userService.createGuestUser(guestUser);
+        }
+
+        DebateRoom updatedRoom = debateRoomRepository.findByRoomId(actualRoom.getRoomId());
+
+        DebateSpeaker debatesSpeaker = new DebateSpeaker();
+        debatesSpeaker.setUserAssociated(checkUser);
+
+        debatesSpeaker.setDebateRoom(updatedRoom);
+        updatedRoom.setUser2(debatesSpeaker);
+
+        if(updatedRoom.getSpeakers().get(0).getDebateSide() == DebateSide.FOR){
+            debatesSpeaker.setDebateSide(DebateSide.AGAINST);
+        }
+        else{
+            debatesSpeaker.setDebateSide(DebateSide.FOR);
+        }
+
+        updatedRoom.setDebateRoomStatus(DebateState.READY_TO_START);
+
+        debateRoomRepository.save(updatedRoom);
+        debateRoomRepository.flush();
+
+        debateSpeakerRepository.save(debatesSpeaker);
+        debateSpeakerRepository.flush();
+
+        log.debug("Created DebateRoom: {}", updatedRoom);
+
+        return updatedRoom;
+    }
+
+    public DebateRoom setStatus(Long roomID, String status){
+
+        DebateRoom updatedRoom = debateRoomRepository.findByRoomId(roomID);
+
+        if(status.equals("ONGOING")){
+            updatedRoom.setDebateRoomStatus(DebateState.ONGOING);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        else if(status.equals("ENDED")){
+            updatedRoom.setDebateRoomStatus(DebateState.ENDED);
+        }
+
+        debateRoomRepository.save(updatedRoom);
+        debateRoomRepository.flush();
+
+        return updatedRoom;
+
+    }
+
 }
