@@ -3,7 +3,11 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.springframework.http.HttpStatus;
@@ -74,6 +78,35 @@ public class DebateController {
     public void deleteDebateRoomById(@PathVariable("roomId") Long roomId){
         debateService.deleteRoom(roomId);
     }
+
+    @PutMapping("/debates/rooms")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public DebateRoomGetDTO addSecondParticipantById(@RequestParam(name = "roomId") Long roomId,
+                                                     @RequestParam(name = "userId") Long userId){
+
+        DebateRoom toUpdateRoom = new DebateRoom();
+        toUpdateRoom.setRoomId(roomId);
+        User userToAdd = new User();
+        userToAdd.setId(userId);
+
+        DebateRoom updatedRoom = debateService.addParticipantToRoom(toUpdateRoom, userToAdd);
+        DebateRoomGetDTO sentRoom = DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
+
+        return sentRoom;
+    }
+
+    @PutMapping("/debates/status/{roomId}")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public DebateRoomGetDTO updateStatus(@PathVariable("roomId") Long roomId, @RequestBody String status){
+
+        DebateRoom updatedRoom = debateService.setStatus(roomId, status);
+        DebateRoomGetDTO sentRoom = DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
+
+        return sentRoom;
+    }
+
 
 
     @PostMapping("/debates/rooms/{roomId}/msg")
