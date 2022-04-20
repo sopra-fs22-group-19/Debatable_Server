@@ -38,6 +38,8 @@ public class DebateService {
     private final DebateSpeakerRepository debateSpeakerRepository;
     private final InterventionRepository interventionRepository;
 
+    private final UserService userService;
+
     @Autowired
     public DebateService(
             @Qualifier("debateTopicRepository") DebateTopicRepository debateTopicRepository,
@@ -45,8 +47,7 @@ public class DebateService {
             @Qualifier("userRepository") UserRepository userRepository,
             @Qualifier("debateSpeakerRepository") DebateSpeakerRepository debateSpeakerRepository,
             @Qualifier("tagRepository") TagRepository tagRepository,
-            @Qualifier("interventionRepository") InterventionRepository interventionRepository
-            @Qualifier("tagRepository") TagRepository tagRepository,
+            @Qualifier("interventionRepository") InterventionRepository interventionRepository,
             @Qualifier("userService") UserService userService
             ) {
 
