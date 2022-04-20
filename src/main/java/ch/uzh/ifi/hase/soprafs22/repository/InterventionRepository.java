@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InterventionRepository extends JpaRepository<Intervention, Long>{
-    
+
 
 }
