@@ -210,28 +210,23 @@ public class DebateService {
         debateSpeakerRepository.save(debatesSpeaker);
         debateSpeakerRepository.flush();
 
-        log.debug("Created DebateRoom: {}", updatedRoom);
+        log.debug("Participant added to the DebateRoom: {}", updatedRoom);
 
         return updatedRoom;
     }
 
-    public DebateRoom setStatus(Long roomID, String status){
+    public DebateRoom setStatus(Long roomID, Integer status){
 
         DebateRoom updatedRoom = debateRoomRepository.findByRoomId(roomID);
-
-        if(status.equals("ONGOING")){
-            updatedRoom.setDebateRoomStatus(DebateState.ONGOING);
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        else if(status.equals("ENDED")){
-            updatedRoom.setDebateRoomStatus(DebateState.ENDED);
-        }
+        DebateState[] toSet = DebateState.values();
+        updatedRoom.setDebateRoomStatus(toSet[status]);
 
         debateRoomRepository.save(updatedRoom);
         debateRoomRepository.flush();
 
-        return updatedRoom;
+        log.debug("Status Set to the DebateRoom: {}", updatedRoom);
 
+        return updatedRoom;
     }
 
 }
