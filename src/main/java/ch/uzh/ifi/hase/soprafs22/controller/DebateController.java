@@ -84,7 +84,7 @@ public class DebateController {
         Intervention inputIntervention = DTOMapper.INSTANCE.convertInterventionPostDTOtoEntity(interventionPostDTO);
 
         // Create the intervention in the DB
-        Intervention newIntervention = debateService.createIntervention(inputIntervention, interventionPostDTO);
+        debateService.createIntervention(inputIntervention, interventionPostDTO);
 
         // convert internal representation of user back to API
     }

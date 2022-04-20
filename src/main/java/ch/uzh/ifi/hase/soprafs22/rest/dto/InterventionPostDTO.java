@@ -1,12 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
-import java.util.Date;
-
 public class InterventionPostDTO {
 
 
     private Long roomId;
-    private Long UserId;
+    private Long userId;
     private String messageContent;
 
 
@@ -19,11 +17,11 @@ public class InterventionPostDTO {
     }
 
     public Long getUserId() {
-        return UserId;
+        return userId;
     }
 
     public void setUserId(Long userId) {
-        UserId = userId;
+        this.userId = userId;
     }
 
     public String getMessageContent() {

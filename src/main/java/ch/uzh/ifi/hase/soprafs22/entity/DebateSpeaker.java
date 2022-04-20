@@ -4,8 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Entity
 @Table(name = "DEBATESPEAKERS")

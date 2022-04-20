@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @WebMvcTest(DebateController.class)
-public class DebateControllerInterventionTest {
+class DebateControllerInterventionTest {
 
     @Autowired
     private MockMvc mockMvc;
