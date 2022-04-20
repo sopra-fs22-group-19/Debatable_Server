@@ -80,7 +80,7 @@ public class DebateController {
     }
 
     @PutMapping("/debates/rooms")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
     public DebateRoomGetDTO addSecondParticipantById(@RequestParam(name = "roomId") Long roomId,
                                                      @RequestParam(name = "userId") Long userId){
@@ -91,20 +91,18 @@ public class DebateController {
         userToAdd.setId(userId);
 
         DebateRoom updatedRoom = debateService.addParticipantToRoom(toUpdateRoom, userToAdd);
-        DebateRoomGetDTO sentRoom = DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
 
-        return sentRoom;
+        return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
     }
 
-    @PutMapping("/debates/status/{roomId}")
-    @ResponseStatus(HttpStatus.OK)
+    @PutMapping("/debates/rooms/{roomId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public DebateRoomGetDTO updateStatus(@PathVariable("roomId") Long roomId, @RequestBody String status){
+    public DebateRoomGetDTO updateStatus(@PathVariable("roomId") Long roomId, @RequestBody Integer status){
 
         DebateRoom updatedRoom = debateService.setStatus(roomId, status);
-        DebateRoomGetDTO sentRoom = DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
 
-        return sentRoom;
+        return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
     }
 
 
