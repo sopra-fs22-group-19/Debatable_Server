@@ -2,12 +2,10 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +36,7 @@ public class DebateService {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final DebateSpeakerRepository debateSpeakerRepository;
+    private final InterventionRepository interventionRepository;
 
     @Autowired
     public DebateService(
@@ -45,7 +44,8 @@ public class DebateService {
             @Qualifier("debateRoomRepository") DebateRoomRepository debateRoomRepository,
             @Qualifier("userRepository") UserRepository userRepository,
             @Qualifier("debateSpeakerRepository") DebateSpeakerRepository debateSpeakerRepository,
-            @Qualifier("tagRepository") TagRepository tagRepository
+            @Qualifier("tagRepository") TagRepository tagRepository,
+            @Qualifier("interventionRepository") InterventionRepository interventionRepository
             ) {
 
         this.debateTopicRepository = debateTopicRepository;
@@ -53,6 +53,7 @@ public class DebateService {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.debateSpeakerRepository = debateSpeakerRepository;
+        this.interventionRepository = interventionRepository;
     }
 
     @PostConstruct
@@ -174,4 +175,35 @@ public class DebateService {
         }
         return roomToDelete;
     }
+
+
+    public Intervention createIntervention(Intervention inputIntervention, InterventionPostDTO interventionPostDTO) {
+
+        DebateRoom debateRoom = debateRoomRepository.findByRoomId(interventionPostDTO.getRoomId());
+
+        if(debateRoom == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Error: reason <Can not post message because Debate room was not found>");
+        }else {
+            inputIntervention.setDebateRoom(debateRoom);
+        }
+
+        User postUser = userRepository.findById(interventionPostDTO.getUserId()).orElse(null);
+
+        String baseErrorMessage = "Error: reason <Can not post message because User with id: '%d' was not found>";
+
+        if(postUser == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,interventionPostDTO.getUserId()));
+        }else{
+            inputIntervention.setPostUser(postUser);
+        }
+
+        Intervention newIntervention = interventionRepository.save(inputIntervention);
+        interventionRepository.flush();
+
+
+        return newIntervention;
+    }
+
+
+
 }

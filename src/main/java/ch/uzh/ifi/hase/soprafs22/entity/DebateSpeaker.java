@@ -5,6 +5,7 @@ import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
 
+
 @Entity
 @Table(name = "DEBATESPEAKERS")
 public class DebateSpeaker implements RoomParticipant {

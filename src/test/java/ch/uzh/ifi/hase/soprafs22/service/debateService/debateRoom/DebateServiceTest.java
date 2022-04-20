@@ -1,15 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.service.debateService.debateRoom;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.DebateSpeakerRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
-import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,6 +15,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -35,6 +32,9 @@ class DebateServiceTest {
 
   @Mock
   private UserRepository userRepository;
+
+  @Mock
+  private InterventionRepository interventionRepository;
 
   @Mock
   private DebateSpeakerRepository debateSpeakerRepository;
@@ -153,6 +153,65 @@ class DebateServiceTest {
       assertThrows(ResponseStatusException.class, () -> debateService.deleteRoom(roomId));
   }
 
+    @Test
+    void createIntervention_validInputs_success() {
+        // when -> any object is being save in the userRepository -> return the dummy
+        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+        interventionPostDTO.setRoomId(1L);
+        interventionPostDTO.setUserId(1L);
+        interventionPostDTO.setMessageContent("test_msg");
 
+        Intervention inputIntervention = new Intervention();
+        inputIntervention.setMessage("test_msg");
+
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        User testUser = new User();
+        testUser.setId(1L);
+        testUser.setUsername("test username");
+        testUser.setName("test user's name");
+        testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+        testUser.setToken("lajflfa");
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
+
+        Intervention newIntervention = new Intervention();
+        newIntervention.setMsgId(1L);
+        newIntervention.setPostUser(testUser);
+        newIntervention.setDebateRoom(testDebateRoom);
+        newIntervention.setMessage("test_msg");
+        newIntervention.setTimestamp(Date.valueOf("2019-01-21"));
+
+        Mockito.when(interventionRepository.save(Mockito.any())).thenReturn(newIntervention);
+
+        Intervention savedIntervention = debateService.createIntervention(inputIntervention, interventionPostDTO);
+
+        assertEquals(interventionPostDTO.getMessageContent(), savedIntervention.getMessage());
+        assertEquals(interventionPostDTO.getUserId(),savedIntervention.getPostUser().getId());
+        assertEquals(interventionPostDTO.getRoomId(),savedIntervention.getDebateRoom().getRoomId());
+    }
+
+    @Test
+    void createIntervention_wrongRoomId_notfound(){
+        // when -> setup additional mocks for UserRepository
+        Intervention inputIntervention = new Intervention();
+        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(null);
+
+        assertThrows(ResponseStatusException.class,
+                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+    }
+
+    @Test
+    void createIntervention_wrongUserId_notfound(){
+        // when -> setup additional mocks for UserRepository
+        Intervention inputIntervention = new Intervention();
+        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(null);
+
+        assertThrows(ResponseStatusException.class,
+                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+    }
 
 }
