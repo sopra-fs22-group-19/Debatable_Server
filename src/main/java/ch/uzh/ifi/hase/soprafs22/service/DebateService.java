@@ -38,6 +38,8 @@ public class DebateService {
     private final DebateSpeakerRepository debateSpeakerRepository;
     private final InterventionRepository interventionRepository;
 
+    private final UserService userService;
+
     @Autowired
     public DebateService(
             @Qualifier("debateTopicRepository") DebateTopicRepository debateTopicRepository,
