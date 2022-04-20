@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStatusChange;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import com.opencsv.exceptions.CsvValidationException;
@@ -46,7 +47,7 @@ public class DebateService {
             @Qualifier("userRepository") UserRepository userRepository,
             @Qualifier("debateSpeakerRepository") DebateSpeakerRepository debateSpeakerRepository,
             @Qualifier("tagRepository") TagRepository tagRepository
-            ) {
+    ) {
 
         this.debateTopicRepository = debateTopicRepository;
         this.debateRoomRepository = debateRoomRepository;
@@ -56,11 +57,11 @@ public class DebateService {
     }
 
     @PostConstruct
-    private void setupDefaultDebateTopics(){
+    private void setupDefaultDebateTopics() {
         log.info("Setup default debate topics");
 
         // Check if the debate repository is empty
-        if (debateTopicRepository.count() != 0L){
+        if (debateTopicRepository.count() != 0L) {
             log.info("Default debate topics already created");
             return;
         }
@@ -68,17 +69,23 @@ public class DebateService {
         // If it is not empty load the default topics from file
         Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
 
-        if (log.isDebugEnabled()) { log.info(String.format("Loading default topic list from: %s", defaultListPath)); }
+        if (log.isDebugEnabled()) {
+            log.info(String.format("Loading default topic list from: %s", defaultListPath));
+        }
 
         try {
             List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
-            if (defaultDebateTopicsList.isEmpty()){
+            if (defaultDebateTopicsList.isEmpty()) {
                 log.warn("List of debate topics is empty");
-            } else{
-                debateTopicRepository.saveAll(defaultDebateTopicsList);
-                if (log.isDebugEnabled()) { log.info(String.format("Default Topics created %d", defaultDebateTopicsList.size())); }
             }
-        } catch(IOException | CsvValidationException e){
+            else {
+                debateTopicRepository.saveAll(defaultDebateTopicsList);
+                if (log.isDebugEnabled()) {
+                    log.info(String.format("Default Topics created %d", defaultDebateTopicsList.size()));
+                }
+            }
+        }
+        catch (IOException | CsvValidationException e) {
             log.error("Problem loading the default file list");
         }
     }
@@ -89,7 +96,7 @@ public class DebateService {
         // Check that the debate topic exists and add it
         Optional<DebateTopic> debateTopic = debateTopicRepository.findById(debateRoomPostDTO.getDebateId());
 
-        if (debateTopic.isEmpty()){
+        if (debateTopic.isEmpty()) {
             String baseErrorMessage = "Error: reason <Debate topic with id: '%d' was not found>";
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format(baseErrorMessage, debateRoomPostDTO.getDebateId()));
@@ -98,16 +105,17 @@ public class DebateService {
         inputDebateRoom.setDebateTopic(debateTopic.get());
 
         // Set the state of the debate
-        if (debateRoomPostDTO.getSide() == DebateSide.FOR){
+        if (debateRoomPostDTO.getSide() == DebateSide.FOR) {
             inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
-        } else{
+        }
+        else {
             inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
         }
 
         // Check that user that will create the debate exists and add it as a Speaker to the debate room
         Optional<User> creatingUser = userRepository.findById(debateRoomPostDTO.getUserId());
 
-        if (creatingUser.isEmpty()){
+        if (creatingUser.isEmpty()) {
             String baseErrorMessage = "Error: reason <User with id: '%d' was not found>";
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format(baseErrorMessage, debateRoomPostDTO.getUserId()));
@@ -137,13 +145,13 @@ public class DebateService {
         return debateRoomRepository.findByRoomId(roomId);
     }
 
-    public List<DebateTopic> getDebateTopicByUserId(Long userId){
+    public List<DebateTopic> getDebateTopicByUserId(Long userId) {
 
         User creatorUser = userRepository.findById(userId).orElse(null);
         String baseErrorMessage = "Error: reason <Can not get topics because User with id: '%d' was not found>";
 
-        if(creatorUser == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,userId));
+        if (creatorUser == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage, userId));
         }
 
         List<DebateTopic> debateTopicList = debateTopicRepository.findByIsDefaultTopicIsTrue();
@@ -155,17 +163,17 @@ public class DebateService {
         return this.debateRoomRepository.findAll();
     }
 
-    public DebateRoom deleteRoom(Long roomID){
+    public DebateRoom deleteRoom(Long roomID) {
 
         DebateRoom roomToDelete = debateRoomRepository.findByRoomId(roomID);
 
-        if(roomToDelete == null){
+        if (roomToDelete == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
-        else{
+        else {
             List<DebateSpeaker> occupiedDebateRooms = debateSpeakerRepository.findAllByDebateRoom(roomToDelete);
 
-            if(!occupiedDebateRooms.isEmpty()){
+            if (!occupiedDebateRooms.isEmpty()) {
                 debateSpeakerRepository.deleteAll(occupiedDebateRooms);
                 debateSpeakerRepository.flush();
             }
@@ -174,4 +182,26 @@ public class DebateService {
         }
         return roomToDelete;
     }
+
+    public DebateRoom startDebate(Long roomID) {
+        DebateRoom room = debateRoomRepository.findByRoomId(roomID);
+
+        if (room == null)
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        try {
+            room.startDebate();
+
+            // Launch timer to change turns in X minutes
+            return room;
+        }
+        catch (InvalidDebateStatusChange e) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, String.format("Error: <%s>", e));
+        }
+
+
+
+    }
+
 }

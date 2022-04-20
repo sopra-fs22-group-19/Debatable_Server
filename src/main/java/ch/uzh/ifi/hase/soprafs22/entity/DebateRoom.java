@@ -3,6 +3,7 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStatusChange;
 import ch.uzh.ifi.hase.soprafs22.interfaces.Room;
 import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
@@ -124,6 +125,32 @@ public class DebateRoom implements Serializable, Room {
   }
 
   public void setSide2(DebateSide debateSide) {  speakers.get(1).setDebateSide(debateSide); }
+
+  public void startDebate() throws InvalidDebateStatusChange {
+      if (debateStatus != DebateState.READY_TO_START){
+          String errorMessage = "The debate was not ready to start. The state of the " +
+                  "debate room before starting should be: %s";
+          errorMessage = String.format(errorMessage, DebateState.READY_TO_START);
+          throw new InvalidDebateStatusChange(errorMessage);
+      }
+
+     setDebateRoomStatus(DebateState.ONGOING_FOR);
+
+  }
+
+  public void changeTurns() throws InvalidDebateStatusChange {
+      if (debateStatus == DebateState.ONGOING_FOR)
+          setDebateRoomStatus(DebateState.ONGOING_AGAINST);
+      else if (debateStatus == DebateState.ONGOING_AGAINST)
+          setDebateRoomStatus(DebateState.ONGOING_FOR);
+      else{
+          String errorMessage = "The debate has not started yet. The state of the debate room should be: %s or %s";
+          errorMessage = String.format(errorMessage, DebateState.ONGOING_FOR, DebateState.ONGOING_AGAINST);
+          throw new InvalidDebateStatusChange(errorMessage);
+      }
+
+      // TOOO: Reset timer
+  }
 
   @Override
   public void registerParticipant(RoomParticipant roomParticipant) {
