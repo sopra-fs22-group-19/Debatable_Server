@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
+import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.mapstruct.*;
@@ -66,6 +67,23 @@ public interface DTOMapper {
   DebateRoom convertDebateRoomPutDTOtoEntity(DebateRoomPutDTO debateRoomPutDTO);
 
   @Mapping(source = "userId", target = "id")
+<<<<<<< HEAD
   User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
+=======
+  @Mapping(source = "username", target = "username")
+  User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+
+
+  // DTOs for the Intervention
+  @Mapping(target = "msgId", ignore = true)
+  @Mapping(target = "postUser", ignore = true)
+  @Mapping(target = "debateRoom", ignore = true)
+  @Mapping(source = "messageContent", target = "message")
+  @Mapping(target = "timestamp", ignore = true)
+  Intervention convertInterventionPostDTOtoEntity(InterventionPostDTO interventionPostDTO);
+
+
+
+>>>>>>> 1636a424a31bef1a2052d8503518db9eb5196df2
 }

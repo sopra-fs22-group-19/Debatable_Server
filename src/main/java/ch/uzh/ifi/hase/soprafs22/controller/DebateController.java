@@ -3,6 +3,8 @@ package ch.uzh.ifi.hase.soprafs22.controller;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
+import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
@@ -84,7 +86,6 @@ public class DebateController {
         DebateRoom toUpdateRoom = new DebateRoom();
         toUpdateRoom.setRoomId(roomId);
         User userToAdd = DTOMapper.INSTANCE.convertUserPutDTOtoEntity(userPutDTO);
-
         DebateRoom updatedRoom = debateService.addParticipantToRoom(toUpdateRoom, userToAdd);
 
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
@@ -98,6 +99,19 @@ public class DebateController {
         DebateRoom updatedRoom = debateService.setStatus(roomId, status);
 
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
+    }
+
+    @PostMapping("/debates/rooms/{roomId}/msg")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public void postMessage(@PathVariable("roomId") Long roomId, @RequestBody InterventionPostDTO interventionPostDTO) {
+        // convert API user to internal representation
+        Intervention inputIntervention = DTOMapper.INSTANCE.convertInterventionPostDTOtoEntity(interventionPostDTO);
+
+        // Create the intervention in the DB
+        debateService.createIntervention(inputIntervention, interventionPostDTO);
+
+        // convert internal representation of user back to API
     }
 
 }
