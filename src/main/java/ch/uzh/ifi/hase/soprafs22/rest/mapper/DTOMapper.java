@@ -67,7 +67,6 @@ public interface DTOMapper {
   DebateRoom convertDebateRoomPutDTOtoEntity(DebateRoomPutDTO debateRoomPutDTO);
 
   @Mapping(source = "userId", target = "id")
-  @Mapping(source = "username", target = "username")
   User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
 
