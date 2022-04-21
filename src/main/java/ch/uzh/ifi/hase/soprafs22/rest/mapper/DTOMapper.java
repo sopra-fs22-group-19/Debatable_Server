@@ -66,8 +66,8 @@ public interface DTOMapper {
   @Mapping(source = "roomId", target = "roomId")
   DebateRoom convertDebateRoomPutDTOtoEntity(DebateRoomPutDTO debateRoomPutDTO);
 
+
   @Mapping(source = "userId", target = "id")
-  @Mapping(source = "username", target = "username")
   User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
 
@@ -81,4 +81,5 @@ public interface DTOMapper {
 
 
 
+>>>>>>> 1636a424a31bef1a2052d8503518db9eb5196df2
 }
