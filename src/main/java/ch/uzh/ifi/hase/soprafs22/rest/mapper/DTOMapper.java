@@ -79,7 +79,4 @@ public interface DTOMapper {
   @Mapping(target = "timestamp", ignore = true)
   Intervention convertInterventionPostDTOtoEntity(InterventionPostDTO interventionPostDTO);
 
-
-
->>>>>>> 1636a424a31bef1a2052d8503518db9eb5196df2
 }
