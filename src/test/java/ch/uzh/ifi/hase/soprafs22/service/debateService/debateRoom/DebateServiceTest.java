@@ -287,7 +287,7 @@ class DebateServiceTest {
         testUser.setCreationDate(LocalDate.parse("2019-01-21"));
         testUser.setToken("lajflfa");
 
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
         DebateRoom updatedRoom = debateService.addParticipantToRoom(testDebateRoom, testUser);
