@@ -183,11 +183,14 @@ public class DebateService {
 
     public DebateRoom addParticipantToRoom(DebateRoom actualRoom, User userToAdd){
 
-        User checkUser = userRepository.findByid(userToAdd.getId());
+        User checkUser;
 
-        if(Objects.isNull(checkUser)){
+        if(Objects.isNull(userToAdd.getId())){
             User guestUser = new User();
             checkUser = userService.createGuestUser(guestUser);
+        }
+        else{
+            checkUser = userRepository.findByid(userToAdd.getId());
         }
 
         DebateRoom updatedRoom = debateRoomRepository.findByRoomId(actualRoom.getRoomId());
