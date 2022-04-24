@@ -96,7 +96,12 @@ public class DebateRoom implements Serializable, Room {
           return speakers.get(0).getUserAssociated();
   }
 
-  public void setUser1(DebateSpeaker debateSpeaker) {  speakers.add(0, debateSpeaker); }
+  public void setUser1(DebateSpeaker debateSpeaker) {
+      if (speakers.isEmpty())
+          speakers.add(debateSpeaker);
+      else
+          speakers.set(0, debateSpeaker);
+  }
 
   public DebateSide getSide1() {
       if (speakers.isEmpty())
@@ -106,20 +111,21 @@ public class DebateRoom implements Serializable, Room {
   }
 
   public User getUser2() {
-      if (speakers.size() == 1)
-          return null;
-      else if (speakers.size() < 2)
+      if (speakers.size() < 2)
           return null;
       else
           return speakers.get(1).getUserAssociated();
   }
 
-  public void setUser2(DebateSpeaker debateSpeaker) {  speakers.add(1, debateSpeaker); }
+  public void setUser2(DebateSpeaker debateSpeaker) {
+      if (speakers.size() < 2)
+          speakers.add(debateSpeaker);
+      else
+          speakers.set(1, debateSpeaker);
+  }
 
   public DebateSide getSide2() {
-      if (speakers.size() == 1)
-          return null;
-      else if (speakers.size() < 2)
+      if (speakers.size() < 2)
           return null;
       else
           return speakers.get(1).getDebateSide();

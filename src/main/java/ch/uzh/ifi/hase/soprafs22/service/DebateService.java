@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static ch.uzh.ifi.hase.soprafs22.entity.DebateTopic.readTopicListCSV;
@@ -184,7 +185,7 @@ public class DebateService {
 
         User checkUser = userRepository.findByid(userToAdd.getId());
 
-        if(checkUser == null){
+        if(Objects.isNull(checkUser)){
             User guestUser = new User();
             checkUser = userService.createGuestUser(guestUser);
         }
@@ -199,9 +200,6 @@ public class DebateService {
         DebateSpeaker debatesSpeaker = new DebateSpeaker();
         debatesSpeaker.setUserAssociated(checkUser);
 
-        debatesSpeaker.setDebateRoom(updatedRoom);
-        updatedRoom.setUser2(debatesSpeaker);
-
         if(updatedRoom.getSpeakers().get(0).getDebateSide() == DebateSide.FOR){
             debatesSpeaker.setDebateSide(DebateSide.AGAINST);
         }
@@ -209,6 +207,8 @@ public class DebateService {
             debatesSpeaker.setDebateSide(DebateSide.FOR);
         }
 
+        debatesSpeaker.setDebateRoom(updatedRoom);
+        updatedRoom.setUser2(debatesSpeaker);
         updatedRoom.setDebateRoomStatus(DebateState.READY_TO_START);
 
         debateRoomRepository.save(updatedRoom);
