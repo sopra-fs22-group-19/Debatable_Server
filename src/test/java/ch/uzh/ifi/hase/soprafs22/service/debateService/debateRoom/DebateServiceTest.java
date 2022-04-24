@@ -280,34 +280,22 @@ class DebateServiceTest {
     @Test
     void addSecondParticipant_Success(){
 
-        DebateRoomPostDTO debateRoomPostDTO = new DebateRoomPostDTO();
-        debateRoomPostDTO.setUserId(1L);
-        debateRoomPostDTO.setDebateId(1L);
-        debateRoomPostDTO.setSide(DebateSide.FOR);
-
-        DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO);
-
-        // then
-        //Mockito.verify(debateRoomRepository, Mockito.times(1)).save(Mockito.any());
-
-
         User testUser = new User();
-        testUser.setId(1L);
-        testUser.setUsername("test username");
-        testUser.setName("test user's name");
+        testUser.setId(2L);
+        testUser.setUsername("test username 2");
+        testUser.setName("test user's name 2");
         testUser.setCreationDate(LocalDate.parse("2019-01-21"));
         testUser.setToken("lajflfa");
 
         Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
-        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(createdDebateRoom);
 
-        DebateRoom updatedRoom = debateService.addParticipantToRoom(createdDebateRoom, testUser);
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        DebateRoom updatedRoom = debateService.addParticipantToRoom(testDebateRoom, testUser);
         Mockito.verify(debateRoomRepository, Mockito.times(1)).save(Mockito.any());
-        Mockito.verify(debateSpeakerRepository, Mockito.times(1)).save(Mockito.any());
 
-        DebateRoom sentRoom = debateRoomRepository.findByRoomId(createdDebateRoom.getRoomId());
+        assertEquals(updatedRoom.getUser2().getId(), testUser.getId());
 
-        assertEquals(sentRoom.getUser2().getId(), testUser.getId());
 
     }
 }
