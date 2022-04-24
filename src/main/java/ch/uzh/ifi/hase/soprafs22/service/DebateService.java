@@ -235,7 +235,7 @@ public class DebateService {
 
         DebateState[] toSet = DebateState.values();
 
-        if(status >= 0 && status < 6){
+        if(status >= 0 && status < toSet.length){
             updatedRoom.setDebateRoomStatus(toSet[status]);
             debateRoomRepository.save(updatedRoom);
             debateRoomRepository.flush();
