@@ -134,7 +134,7 @@ public class DebateRoom implements Serializable, Room {
 
   public void setSide2(DebateSide debateSide) {  speakers.get(1).setDebateSide(debateSide); }
 
-  public void startDebate() throws InvalidDebateStatusChange {
+  public void startDebate(DebateSide debateSideStart) throws InvalidDebateStatusChange {
       if (debateStatus != DebateState.READY_TO_START){
           String errorMessage = "The debate was not ready to start. The state of the " +
                   "debate room before starting should be: %s";
@@ -142,7 +142,11 @@ public class DebateRoom implements Serializable, Room {
           throw new InvalidDebateStatusChange(errorMessage);
       }
 
-     setDebateRoomStatus(DebateState.ONGOING_FOR);
+      if (debateSideStart == DebateSide.FOR)
+        setDebateRoomStatus(DebateState.ONGOING_FOR);
+
+      else if (debateSideStart == DebateSide.AGAINST)
+          setDebateRoomStatus(DebateState.ONGOING_AGAINST);
 
   }
 

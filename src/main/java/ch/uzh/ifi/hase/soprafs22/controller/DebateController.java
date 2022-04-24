@@ -89,12 +89,15 @@ public class DebateController {
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
     }
 
-    @PutMapping("/debates/status/{roomId}")
+    @PutMapping("/debates/rooms/{roomId}/status")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @ResponseBody
-    public DebateRoomGetDTO updateStatus(@PathVariable("roomId") Long roomId, @RequestBody Integer status){
+    public DebateRoomGetDTO updateStatus(@PathVariable("roomId") Long roomId,
+                                         @RequestBody DebateRoomStatusPutDTO debateRoomStatusPutDTO){
 
-        DebateRoom updatedRoom = debateService.setStatus(roomId, status);
+        DebateRoom debateRoom = DTOMapper.INSTANCE.convertDebateRoomStatusPutDTOtoEntity(debateRoomStatusPutDTO);
+
+        DebateRoom updatedRoom = debateService.setStatus(roomId, debateRoom);
 
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(updatedRoom);
     }

@@ -52,6 +52,11 @@ public interface DTOMapper {
   @Mapping(target = "debateTopic", ignore = true)
   @Mapping(target = "debateRoomStatus", ignore = true)
   @Mapping(source = "userId", target = "creatorUserId")
+  @Mapping(target = "interventions", ignore = true)
+  @Mapping(target = "user1", ignore = true)
+  @Mapping(target = "user2", ignore = true)
+  @Mapping(target = "side1", ignore = true)
+  @Mapping(target = "side2", ignore = true)
   DebateRoom convertDebateRoomPostDTOtoEntity(DebateRoomPostDTO debateRoomPostDTO);
 
   @Mapping(source = "roomId", target = "roomId")
@@ -63,13 +68,25 @@ public interface DTOMapper {
   @Mapping(source = "debateRoomStatus", target = "debateStatus")
   DebateRoomGetDTO convertEntityToDebateRoomGetDTO(DebateRoom debateRoom);
 
-  @Mapping(source = "roomId", target = "roomId")
-  DebateRoom convertDebateRoomPutDTOtoEntity(DebateRoomPutDTO debateRoomPutDTO);
-
+  @Mapping(source = "debateState", target = "debateRoomStatus")
+  @Mapping(target = "speakers", ignore = true)
+  @Mapping(target = "debateTopic", ignore = true)
+  @Mapping(target = "roomId", ignore = true)
+  @Mapping(target = "creatorUserId", ignore = true)
+  @Mapping(target = "interventions", ignore = true)
+  @Mapping(target = "user1", ignore = true)
+  @Mapping(target = "user2", ignore = true)
+  @Mapping(target = "side1", ignore = true)
+  @Mapping(target = "side2", ignore = true)
+  DebateRoom convertDebateRoomStatusPutDTOtoEntity(DebateRoomStatusPutDTO debateRoomStatusPutDTO);
 
   @Mapping(source = "userId", target = "id")
+  @Mapping(target = "creationDate", ignore = true)
+  @Mapping(target = "token", ignore = true)
+  @Mapping(target = "password", ignore = true)
+  @Mapping(target = "name", ignore = true)
+  @Mapping(target = "username", ignore = true)
   User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
-
 
   // DTOs for the Intervention
   @Mapping(target = "msgId", ignore = true)

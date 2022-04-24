@@ -2,8 +2,8 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStatusChange;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStatusChange;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
@@ -225,53 +225,43 @@ public class DebateService {
         return updatedRoom;
     }
 
-    public DebateRoom setStatus(Long roomID, Integer status){
+    public DebateRoom setStatus(Long roomId, DebateRoom debateRoomWithNewStatus){
 
-        DebateRoom updatedRoom = debateRoomRepository.findByRoomId(roomID);
+        DebateRoom roomToUpdate = debateRoomRepository.findByRoomId(roomId);
 
         String baseErrorMessage = "Error: reason <Can not update status because Room with id: '%d' was not found>";
-        String baseErrorMessageUnauthorized = "Error: reason <Status with index '%d' does not exist>";
 
-        if(updatedRoom == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,roomID));
+        if(Objects.isNull(roomToUpdate)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format(baseErrorMessage, roomId));
         }
 
-        DebateState[] toSet = DebateState.values();
+        DebateState debateStatusToSet = debateRoomWithNewStatus.getDebateRoomStatus();
 
-        if(status >= 0 && status < toSet.length){
-            updatedRoom.setDebateRoomStatus(toSet[status]);
-            debateRoomRepository.save(updatedRoom);
-            debateRoomRepository.flush();
-
-            log.debug("Status Set to the DebateRoom: {}", updatedRoom);
-        }
-        else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format(baseErrorMessageUnauthorized,status));
-        }
-
-        return updatedRoom;
-    }
-
-
-    public DebateRoom startDebate(Long roomID) {
-        DebateRoom room = debateRoomRepository.findByRoomId(roomID);
-
-        if (room == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Error <Could not find the debate room>");
-
-        try {
-            room.startDebate();
-
-            // Launch timer to change turns in X minutes
-            return room;
-        }
-        catch (InvalidDebateStatusChange e) {
+        try{
+            if (debateStatusToSet == DebateState.ONGOING_FOR
+                    && roomToUpdate.getDebateRoomStatus() != DebateState.ONGOING_AGAINST)
+                roomToUpdate.startDebate(DebateSide.FOR);
+            else if (debateStatusToSet == DebateState.ONGOING_AGAINST
+                    && roomToUpdate.getDebateRoomStatus() != DebateState.ONGOING_FOR)
+                roomToUpdate.startDebate(DebateSide.AGAINST);
+            else
+                roomToUpdate.setDebateRoomStatus(debateStatusToSet);
+        } catch (InvalidDebateStatusChange e){
             log.error(e.toString());
             throw new ResponseStatusException(
                     HttpStatus.METHOD_NOT_ALLOWED, String.format("Error: <The debate is not ready to start>"));
         }
 
+        debateRoomRepository.save(roomToUpdate);
+        debateRoomRepository.flush();
+
+        log.debug("Status Set to the DebateRoom: {}", roomToUpdate);
+
+
+        return roomToUpdate;
     }
+
 
     public Intervention createIntervention(Intervention inputIntervention, InterventionPostDTO interventionPostDTO) {
 
