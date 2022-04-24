@@ -154,11 +154,11 @@ public class DebateRoom implements Serializable, Room {
       // TOOO: Reset timer
   }
 
-    public List<Intervention> getInterventions() {
+  public List<Intervention> getInterventions() {
         return interventions;
     }
 
-    public void setInterventions(List<Intervention> interventions) {
+  public void setInterventions(List<Intervention> interventions) {
         this.interventions = interventions;
     }
 

@@ -188,7 +188,7 @@ public class DebateService {
         DebateRoom room = debateRoomRepository.findByRoomId(roomID);
 
         if (room == null)
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Error <Could not find the debate room>");
 
         try {
             room.startDebate();
@@ -197,11 +197,10 @@ public class DebateService {
             return room;
         }
         catch (InvalidDebateStatusChange e) {
+            log.error(e.toString());
             throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, String.format("Error: <%s>", e));
+                    HttpStatus.METHOD_NOT_ALLOWED, String.format("Error: <The debate is not ready to start>"));
         }
-
-
 
     }
 
@@ -225,9 +224,23 @@ public class DebateService {
             inputIntervention.setPostUser(postUser);
         }
 
+        // Change turns for the debateRoom if the intervention is valid
+        try {
+            debateRoom.changeTurns();
+        } catch (InvalidDebateStatusChange e) {
+            log.error(e.toString());
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Error: reason <The debate has not started yet>");
+        }
+
+        // TODO: Verify the side of the speaker matches whose turn it is
+
+        // Save intervention
         Intervention newIntervention = interventionRepository.save(inputIntervention);
         interventionRepository.flush();
 
+        // Update whose turn it is
+        debateRoom = debateRoomRepository.save(debateRoom);
+        debateRoomRepository.flush();
 
         return newIntervention;
     }
