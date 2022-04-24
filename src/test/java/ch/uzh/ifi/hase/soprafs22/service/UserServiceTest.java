@@ -99,18 +99,21 @@ public class UserServiceTest {
   void checkUserCredentials_userNotFound_throwsException(){
       // when -> setup additional mocks for UserRepository
       Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
+      String testUserUsername = testUser.getUsername();
+      String testUserPassword = testUser.getPassword();
 
       assertThrows(ResponseStatusException.class,
-              () -> userService.checkCredentials(testUser.getUsername(), testUser.getPassword()));
+              () -> userService.checkCredentials(testUserUsername, testUserPassword));
   }
 
   @Test
   void checkUserCredentials_wrongPassword_throwsException(){
       // when -> setup additional mocks for UserRepository
       Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser);
+      String testUserUsername = testUser.getUsername();
 
       assertThrows(ResponseStatusException.class,
-              () -> userService.checkCredentials(testUser.getUsername(), "wrong password"));
+              () -> userService.checkCredentials(testUserUsername, "wrong password"));
   }
 
 

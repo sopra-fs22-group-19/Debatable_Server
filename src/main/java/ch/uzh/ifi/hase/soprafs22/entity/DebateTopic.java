@@ -58,8 +58,6 @@ public class DebateTopic implements Serializable {
   @OneToMany(mappedBy="debateTopic")
   private List<DebateRoom> debateRoomSet;
 
-  //TODO: Iterable list of tags. How to tell JPA to store a table with the one to many realtionship
-
   public Long getDebateTopicId() {
     return debateTopicId;
   }

@@ -57,6 +57,8 @@ public class DebateRoom implements Serializable, Room {
   @JoinColumn(name = "debate_topic_debate_topic_id")
   private DebateTopic debateTopic;
 
+  @OneToMany(mappedBy="debateRoom")
+  private List<Intervention> interventions = new ArrayList<>();
 
   public Long getRoomId() {
     return roomId;
@@ -113,7 +115,7 @@ public class DebateRoom implements Serializable, Room {
           return speakers.get(1).getUserAssociated();
   }
 
-    public void setUser2(DebateSpeaker debateSpeaker) {  speakers.add(1, debateSpeaker); }
+  public void setUser2(DebateSpeaker debateSpeaker) {  speakers.add(1, debateSpeaker); }
 
   public DebateSide getSide2() {
       if (speakers.size() == 1)
@@ -151,6 +153,14 @@ public class DebateRoom implements Serializable, Room {
 
       // TOOO: Reset timer
   }
+
+    public List<Intervention> getInterventions() {
+        return interventions;
+    }
+
+    public void setInterventions(List<Intervention> interventions) {
+        this.interventions = interventions;
+    }
 
   @Override
   public void registerParticipant(RoomParticipant roomParticipant) {
