@@ -1,9 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
-
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * Internal User Representation
@@ -16,7 +15,7 @@ import java.io.Serializable;
  * the primary key
  */
 @Entity
-@Table(name = "USER")
+@Table(name = "DEBATABLE_USER")
 public class User implements Serializable {
 
   private static final long serialVersionUID = 1L;
@@ -25,17 +24,20 @@ public class User implements Serializable {
   @GeneratedValue
   private Long id;
 
+  @Column(nullable = false, unique = true)
+  private String username;
+
   @Column(nullable = false)
   private String name;
 
-  @Column(nullable = false, unique = true)
-  private String username;
+  @Column(nullable = false)
+  private LocalDate creationDate;
 
   @Column(nullable = false, unique = true)
   private String token;
 
   @Column(nullable = false)
-  private UserStatus status;
+  private String password;
 
   public Long getId() {
     return id;
@@ -46,11 +48,11 @@ public class User implements Serializable {
   }
 
   public String getName() {
-    return name;
+      return name;
   }
 
   public void setName(String name) {
-    this.name = name;
+      this.name = name;
   }
 
   public String getUsername() {
@@ -61,6 +63,14 @@ public class User implements Serializable {
     this.username = username;
   }
 
+  public LocalDate getCreationDate() {
+      return creationDate;
+  }
+
+  public void setCreationDate(LocalDate creationDate) {
+      this.creationDate = creationDate;
+  }
+
   public String getToken() {
     return token;
   }
@@ -69,11 +79,12 @@ public class User implements Serializable {
     this.token = token;
   }
 
-  public UserStatus getStatus() {
-    return status;
+  public String getPassword() {
+        return password;
   }
 
-  public void setStatus(UserStatus status) {
-    this.status = status;
+  public void setPassword(String password) {
+        this.password = password;
   }
+
 }

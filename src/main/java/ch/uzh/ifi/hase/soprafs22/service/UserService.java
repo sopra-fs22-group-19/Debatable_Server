@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -12,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,7 +31,9 @@ public class UserService {
   private final UserRepository userRepository;
 
   @Autowired
-  public UserService(@Qualifier("userRepository") UserRepository userRepository) {
+  public UserService(
+          @Qualifier("userRepository") UserRepository userRepository
+          ) {
     this.userRepository = userRepository;
   }
 
@@ -41,9 +43,9 @@ public class UserService {
 
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
-    newUser.setStatus(UserStatus.OFFLINE);
+    newUser.setCreationDate(LocalDate.now());
 
-    checkIfUserExists(newUser);
+    checkIfUsernameExists(newUser);
 
     // saves the given entity but data is only persisted in the database once
     // flush() is called
@@ -53,6 +55,48 @@ public class UserService {
     log.debug("Created Information for User: {}", newUser);
     return newUser;
   }
+
+  public User createGuestUser(User newUser) {
+
+      newUser.setUsername(UUID.randomUUID().toString());
+      newUser.setName("Guest");
+      newUser.setPassword(UUID.randomUUID().toString());
+      newUser.setToken(UUID.randomUUID().toString());
+      newUser.setCreationDate(LocalDate.now());
+      checkIfUsernameExists(newUser);
+
+      // saves the given entity but data is only persisted in the database once
+      // flush() is called
+      newUser = userRepository.save(newUser);
+      userRepository.flush();
+
+      log.debug("Created Information for GuestUser: {}", newUser);
+      return newUser;
+  }
+
+  public User checkCredentials(String username, String password){
+
+      User checkedUser = userRepository.findByUsername(username);
+
+      if(checkedUser == null){
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The provided username is invalid.");
+      }
+
+      if(checkedUser.getPassword().equals(password)){
+          return checkedUser;
+      }
+      else{
+          throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The password provided is incorrect");
+      }
+  }
+
+  public void deleteUser(Long id) {
+      this.userRepository.deleteById(id);
+  }
+
+
+
+
 
   /**
    * This is a helper method that will check the uniqueness criteria of the
@@ -64,18 +108,17 @@ public class UserService {
    * @throws org.springframework.web.server.ResponseStatusException
    * @see User
    */
-  private void checkIfUserExists(User userToBeCreated) {
-    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
-    User userByName = userRepository.findByName(userToBeCreated.getName());
 
-    String baseErrorMessage = "The %s provided %s not unique. Therefore, the user could not be created!";
-    if (userByUsername != null && userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-          String.format(baseErrorMessage, "username and the name", "are"));
-    } else if (userByUsername != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "username", "is"));
-    } else if (userByName != null) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, String.format(baseErrorMessage, "name", "is"));
+
+  // changed to only check if username is unique, template check both username and name
+  private void checkIfUsernameExists(User userToBeCreated) {
+    User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
+
+    if (userByUsername != null) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT,
+          "The username provided is not unique. Therefore, the user could not be created!");
+
     }
   }
+
 }

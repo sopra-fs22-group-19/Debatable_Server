@@ -1,11 +1,11 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.constant.UserStatus;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,14 +17,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Collections;
-import java.util.List;
+import java.time.LocalDate;
+import java.util.UUID;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.BDDMockito.given;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,59 +42,95 @@ public class UserControllerTest {
   @MockBean
   private UserService userService;
 
-  @Test
-  public void givenUsers_whenGetUsers_thenReturnJsonArray() throws Exception {
-    // given
-    User user = new User();
-    user.setName("Firstname Lastname");
-    user.setUsername("firstname@lastname");
-    user.setStatus(UserStatus.OFFLINE);
+  private User testUser;
 
-    List<User> allUsers = Collections.singletonList(user);
+  private UserPostDTO testUserPostDTO;
 
-    // this mocks the UserService -> we define above what the userService should
-    // return when getUsers() is called
-    given(userService.getUsers()).willReturn(allUsers);
+  @BeforeEach
+  public void setup() {
+      testUser = new User();
+      testUser.setId(1L);
+      testUser.setUsername("testUsername");
+      testUser.setPassword("testPassword");
+      testUser.setName("testName");
+      testUser.setToken("1");
+      testUser.setCreationDate(LocalDate.parse("2019-01-21"));
 
-    // when
-    MockHttpServletRequestBuilder getRequest = get("/users").contentType(MediaType.APPLICATION_JSON);
-
-    // then
-    mockMvc.perform(getRequest).andExpect(status().isOk())
-        .andExpect(jsonPath("$", hasSize(1)))
-        .andExpect(jsonPath("$[0].name", is(user.getName())))
-        .andExpect(jsonPath("$[0].username", is(user.getUsername())))
-        .andExpect(jsonPath("$[0].status", is(user.getStatus().toString())));
+      testUserPostDTO = new UserPostDTO();
+      testUserPostDTO.setUsername("testUsername");
+      testUserPostDTO.setName("testName");
+      testUserPostDTO.setPassword("testPassword");
   }
 
+
   @Test
-  public void createUser_validInput_userCreated() throws Exception {
+  void createUser_validInput_userCreated() throws Exception {
     // given
-    User user = new User();
-    user.setId(1L);
-    user.setName("Test User");
-    user.setUsername("testUsername");
-    user.setToken("1");
-    user.setStatus(UserStatus.ONLINE);
-
-    UserPostDTO userPostDTO = new UserPostDTO();
-    userPostDTO.setName("Test User");
-    userPostDTO.setUsername("testUsername");
-
-    given(userService.createUser(Mockito.any())).willReturn(user);
+    doReturn(testUser).when(userService).createUser(Mockito.any());
 
     // when/then -> do the request + validate the result
     MockHttpServletRequestBuilder postRequest = post("/users")
         .contentType(MediaType.APPLICATION_JSON)
-        .content(asJsonString(userPostDTO));
+        .content(asJsonString(testUserPostDTO));
 
     // then
     mockMvc.perform(postRequest)
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.id", is(user.getId().intValue())))
-        .andExpect(jsonPath("$.name", is(user.getName())))
-        .andExpect(jsonPath("$.username", is(user.getUsername())))
-        .andExpect(jsonPath("$.status", is(user.getStatus().toString())));
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.userId", is(testUser.getId().intValue())))
+            .andExpect(jsonPath("$.username", is(testUser.getUsername())))
+            .andExpect(jsonPath("$.name", is(testUser.getName())));
+  }
+
+  @Test
+  void createUser_failed_usernameAlreadyExist() throws Exception {
+      Exception eConflict = new ResponseStatusException(HttpStatus.CONFLICT);
+      doThrow(eConflict).when(userService).createUser(Mockito.any());
+
+      // when/then -> do the request + validate the result
+      MockHttpServletRequestBuilder postRequest = post("/users")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(testUserPostDTO));
+
+      // then
+      mockMvc.perform(postRequest)
+              .andExpect(status().isConflict());
+  }
+
+  @Test
+  void createGuest_validInput_guestCreated() throws Exception {
+      User guestUser = new User();
+
+      guestUser.setUsername(UUID.randomUUID().toString());
+      guestUser.setName("Guest");
+      guestUser.setPassword(UUID.randomUUID().toString());
+      guestUser.setToken(UUID.randomUUID().toString());
+      guestUser.setCreationDate(LocalDate.now());
+
+      UserPostDTO guestUserPostDTO = new UserPostDTO();
+      guestUserPostDTO.setName("Guest");
+        // given
+      doReturn(guestUser).when(userService).createGuestUser(Mockito.any());
+
+        // when/then -> do the request + validate the result
+      MockHttpServletRequestBuilder postRequest = post("/users/guests")
+              .contentType(MediaType.APPLICATION_JSON);
+
+        // then
+      mockMvc.perform(postRequest)
+              .andExpect(status().isCreated())
+              .andExpect(jsonPath("$.name", is(guestUserPostDTO.getName())));
+  }
+
+  @Test
+  void deleteUser() throws Exception {
+
+      doNothing().when(userService).deleteUser(Mockito.any());
+
+      MockHttpServletRequestBuilder deleteRequest = delete("/users/1")
+              .contentType(MediaType.APPLICATION_JSON);
+
+      mockMvc.perform(deleteRequest)
+              .andExpect(status().isOk());
   }
 
   /**
