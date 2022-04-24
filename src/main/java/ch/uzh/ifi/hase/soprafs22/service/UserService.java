@@ -1,7 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.entity.User;
-import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,15 +29,12 @@ public class UserService {
   private final Logger log = LoggerFactory.getLogger(UserService.class);
 
   private final UserRepository userRepository;
-  private final DebateTopicRepository debateTopicRepository;
 
   @Autowired
   public UserService(
-          @Qualifier("userRepository") UserRepository userRepository,
-          @Qualifier("debateTopicRepository") DebateTopicRepository debateTopicRepository
+          @Qualifier("userRepository") UserRepository userRepository
           ) {
     this.userRepository = userRepository;
-    this.debateTopicRepository = debateTopicRepository;
   }
 
   public List<User> getUsers() {
@@ -120,7 +116,7 @@ public class UserService {
 
     if (userByUsername != null) {
       throw new ResponseStatusException(HttpStatus.CONFLICT,
-          String.format("The username provided is not unique. Therefore, the user could not be created!"));
+          "The username provided is not unique. Therefore, the user could not be created!");
 
     }
   }
