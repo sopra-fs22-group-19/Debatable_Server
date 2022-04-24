@@ -7,6 +7,7 @@ import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -38,6 +39,9 @@ class DebateServiceTest {
 
   @Mock
   private DebateSpeakerRepository debateSpeakerRepository;
+
+  @Mock
+  private UserService userService;
 
   @InjectMocks
   private DebateService debateService;
@@ -214,4 +218,81 @@ class DebateServiceTest {
                 () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
     }
 
+    @Test
+    void changeStatus_wrongRoomId_notFound(){
+
+        DebateRoom testRoom = new DebateRoom();
+        testRoom.setRoomId(1L);
+
+        Mockito.when(debateRoomRepository.findById(Mockito.any())).thenReturn(null);
+
+        assertThrows(ResponseStatusException.class,
+                () -> debateService.setStatus(testRoom.getRoomId(),4));
+
+    }
+
+    @Test
+    void changeStatus_wrongStatusInput_Unauthorized(){
+
+        DebateState[] states = DebateState.values();
+        Integer invalidState = states.length + 1;
+
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        assertThrows(ResponseStatusException.class, () -> debateService.setStatus(testDebateRoom.getRoomId(), invalidState));
+
+    }
+
+    @Test
+    void changeStatus_SuccessfulTry(){
+
+        DebateState[] states = DebateState.values();
+        int state;
+
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        for(state = 0; state < states.length; state++){
+
+            DebateRoom successTry = debateService.setStatus(testDebateRoom.getRoomId() ,state);
+            assertEquals(states[state], successTry.getDebateRoomStatus());
+        }
+    }
+
+    @Test
+    void addSecondParticipant_RoomIdNotFound(){
+
+        User testUser = new User();
+        testUser.setId(1L);
+        testUser.setUsername("test username");
+        testUser.setName("test user's name");
+        testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+        testUser.setToken("lajflfa");
+
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
+        Mockito.when(userService.createGuestUser(Mockito.any())).thenReturn(testUser);
+
+        DebateRoom testRoom = new DebateRoom();
+        testRoom.setRoomId(-1L);
+
+        assertThrows(ResponseStatusException.class, () -> debateService.addParticipantToRoom(testRoom, testUser));
+    }
+
+    @Test
+    void addSecondParticipant_Success(){
+        User testUser = new User();
+        testUser.setId(2L);
+        testUser.setUsername("test username 2");
+        testUser.setName("test user's name 2");
+        testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+        testUser.setToken("lajflfa");
+
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        DebateRoom updatedRoom = debateService.addParticipantToRoom(testDebateRoom, testUser);
+        Mockito.verify(debateRoomRepository, Mockito.times(1)).save(Mockito.any());
+
+        assertEquals(updatedRoom.getUser2().getId(), testUser.getId());
+
+    }
 }
