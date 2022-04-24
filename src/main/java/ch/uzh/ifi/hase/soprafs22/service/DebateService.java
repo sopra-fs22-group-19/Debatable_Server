@@ -211,11 +211,8 @@ public class DebateService {
 
         updatedRoom.setDebateRoomStatus(DebateState.READY_TO_START);
 
-        debateRoomRepository.save(updatedRoom);
-        debateRoomRepository.flush();
-
-        debateSpeakerRepository.save(debatesSpeaker);
-        debateSpeakerRepository.flush();
+        debateRoomRepository.saveAndFlush(updatedRoom);
+        debateSpeakerRepository.saveAndFlush(debatesSpeaker);
 
         log.debug("Participant added to the DebateRoom: {}", updatedRoom);
 
