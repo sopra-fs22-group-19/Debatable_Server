@@ -34,6 +34,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          DB_SERVER_URL: ${{ secrets.DB_SERVER_URL }}
+          DB_NAME: ${{ secrets.DB_NAME }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PWD: ${{ secrets.DB_PWD }}
         run: ./gradlew build sonarqube --info
