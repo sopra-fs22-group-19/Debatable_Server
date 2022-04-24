@@ -4,6 +4,7 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStatusChange;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
 import ch.uzh.ifi.hase.soprafs22.interfaces.Room;
 import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
@@ -150,7 +151,7 @@ public class DebateRoom implements Serializable, Room {
 
   }
 
-  public void changeTurns() throws InvalidDebateStatusChange {
+  public void changeInterventionTurn() throws InvalidDebateStatusChange {
       if (debateStatus == DebateState.ONGOING_FOR)
           setDebateRoomStatus(DebateState.ONGOING_AGAINST);
       else if (debateStatus == DebateState.ONGOING_AGAINST)
@@ -162,6 +163,26 @@ public class DebateRoom implements Serializable, Room {
       }
 
       // TOOO: Reset timer
+  }
+
+  public void addIntervention(Intervention intervention, DebateSide speakerSide) throws SpeakerNotAllowedToPost {
+      if (debateStatus != DebateState.ONGOING_FOR && this.debateStatus != DebateState.ONGOING_AGAINST){
+          System.out.println("Hallo");
+          String errorMessage = "User cannot intervene as the debate has not started yet";
+          throw new SpeakerNotAllowedToPost(errorMessage);
+      }
+      
+      else if ((this.debateStatus == DebateState.ONGOING_FOR && speakerSide == DebateSide.FOR) ||
+              (this.debateStatus == DebateState.ONGOING_AGAINST && speakerSide == DebateSide.AGAINST))
+        this.interventions.add(intervention);
+      
+      else{
+          String errorMessage = "It is not the speaker's turn to intervene";
+          System.out.println("Heeeeello");
+          throw new SpeakerNotAllowedToPost(errorMessage);  
+      }
+        
+
   }
 
   public List<Intervention> getInterventions() {

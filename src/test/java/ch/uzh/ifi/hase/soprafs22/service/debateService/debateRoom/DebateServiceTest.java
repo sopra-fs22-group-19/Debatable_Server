@@ -161,6 +161,7 @@ class DebateServiceTest {
     void createIntervention_validInputs_success() {
         // when -> any object is being save in the userRepository -> return the dummy
         testDebateRoom.setDebateRoomStatus(DebateState.ONGOING_FOR);
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
         InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
         interventionPostDTO.setRoomId(1L);
@@ -170,8 +171,6 @@ class DebateServiceTest {
         Intervention inputIntervention = new Intervention();
         inputIntervention.setMessage("test_msg");
 
-        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
-
         User testUser = new User();
         testUser.setId(1L);
         testUser.setUsername("test username");
@@ -179,6 +178,11 @@ class DebateServiceTest {
         testUser.setCreationDate(LocalDate.parse("2019-01-21"));
         testUser.setToken("lajflfa");
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
+
+        DebateSpeaker testDebateSpeaker = new DebateSpeaker();
+        testDebateSpeaker.setUserAssociated(testUser);
+        testDebateSpeaker.setDebateSide(DebateSide.FOR);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
 
         Intervention newIntervention = new Intervention();
         newIntervention.setMsgId(1L);
@@ -194,6 +198,61 @@ class DebateServiceTest {
         assertEquals(interventionPostDTO.getMessageContent(), savedIntervention.getMessage());
         assertEquals(interventionPostDTO.getUserId(),savedIntervention.getPostUser().getId());
         assertEquals(interventionPostDTO.getRoomId(),savedIntervention.getDebateRoom().getRoomId());
+    }
+
+    @Test
+    void createIntervention_NotSpeakersTurn() {
+        // when -> any object is being save in the userRepository -> return the dummy
+        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+        interventionPostDTO.setRoomId(1L);
+        interventionPostDTO.setUserId(1L);
+        interventionPostDTO.setMessageContent("test_msg");
+
+        Intervention inputIntervention = new Intervention();
+        inputIntervention.setMessage("test_msg");
+
+        User testUser = new User();
+        testUser.setId(1L);
+        testUser.setUsername("test username");
+        testUser.setName("test user's name");
+        testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+        testUser.setToken("lajflfa");
+        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
+
+        DebateSpeaker testDebateSpeaker = new DebateSpeaker();
+        testDebateSpeaker.setUserAssociated(testUser);
+
+        Intervention newIntervention = new Intervention();
+        newIntervention.setMsgId(1L);
+        newIntervention.setPostUser(testUser);
+        newIntervention.setDebateRoom(testDebateRoom);
+        newIntervention.setMessage("test_msg");
+        newIntervention.setTimestamp(Date.valueOf("2019-01-21"));
+
+        Mockito.when(interventionRepository.save(Mockito.any())).thenReturn(newIntervention);
+
+        testDebateSpeaker.setDebateSide(DebateSide.AGAINST);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+
+        testDebateRoom.setDebateRoomStatus(DebateState.ONGOING_FOR);
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        assertThrows(ResponseStatusException.class,
+                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+
+        testDebateSpeaker.setDebateSide(DebateSide.FOR);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+
+        testDebateRoom.setDebateRoomStatus(DebateState.ONGOING_AGAINST);
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        assertThrows(ResponseStatusException.class,
+                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+
+
+
+        assertThrows(ResponseStatusException.class,
+                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
     }
 
     @Test

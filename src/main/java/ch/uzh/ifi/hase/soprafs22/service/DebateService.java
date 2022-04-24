@@ -4,6 +4,7 @@ import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStatusChange;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
@@ -274,6 +275,7 @@ public class DebateService {
         }
 
         User postUser = userRepository.findById(interventionPostDTO.getUserId()).orElse(null);
+        DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedId(interventionPostDTO.getUserId());
 
         String baseErrorMessage = "Error: reason <Can not post message because User with id: '%d' was not found>";
 
@@ -283,15 +285,21 @@ public class DebateService {
             inputIntervention.setPostUser(postUser);
         }
 
+        // Verify if the intervention is valid by posting it to the debateRoom
+        try{
+            debateSpeaker.postIntervention(inputIntervention, debateRoom);
+        } catch (SpeakerNotAllowedToPost e){
+            log.error(e.toString());
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Error: reason <It is not the speaker's turn>");
+        }
+
         // Change turns for the debateRoom if the intervention is valid
         try {
-            debateRoom.changeTurns();
+            debateRoom.changeInterventionTurn();
         } catch (InvalidDebateStatusChange e) {
             log.error(e.toString());
             throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Error: reason <The debate has not started yet>");
         }
-
-        // TODO: Verify the side of the speaker matches whose turn it is
 
         // Save intervention
         Intervention newIntervention = interventionRepository.save(inputIntervention);
