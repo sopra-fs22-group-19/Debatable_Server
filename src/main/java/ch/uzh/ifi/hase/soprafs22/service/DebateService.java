@@ -5,7 +5,6 @@ import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStateChange;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
-import ch.uzh.ifi.hase.soprafs22.exceptions.TimerNotAllowedCurrentState;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
@@ -23,8 +22,6 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -247,11 +244,9 @@ public class DebateService {
             if (debateStatusToSet == DebateState.ONGOING_FOR
                     && roomToUpdate.getDebateState() != DebateState.ONGOING_AGAINST)
                 roomToUpdate.startDebate(DebateSide.FOR);
-                // TODO: Launch timer for automatic turn change
             else if (debateStatusToSet == DebateState.ONGOING_AGAINST
                     && roomToUpdate.getDebateState() != DebateState.ONGOING_FOR)
                 roomToUpdate.startDebate(DebateSide.AGAINST);
-                // TODO: Launch timer for automatic turn change
             else
                 roomToUpdate.setDebateState(debateStatusToSet);
         } catch (InvalidDebateStateChange e){
@@ -301,7 +296,6 @@ public class DebateService {
         // Change turns for the debateRoom if the intervention is valid
         try {
             debateRoom.changeInterventionTurn();
-            // TODO: Launch timer for automatic turn change
         } catch (InvalidDebateStateChange e) {
             log.error(e.toString());
             throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Error: reason <The debate has not started yet>");
@@ -316,28 +310,6 @@ public class DebateService {
         debateRoomRepository.flush();
 
         return newIntervention;
-    }
-
-    public void startTimer(Long roomId, long timeLimitSeconds) throws InvalidDebateStateChange, TimerNotAllowedCurrentState {
-        DebateRoom debateRoom = debateRoomRepository.findByRoomId(roomId);
-
-        if(debateRoom != null) {
-            // Check if the state is correct to call the timer
-            if (debateRoom.getDebateState() != DebateState.ONGOING_FOR &&
-                    debateRoom.getDebateState() != DebateState.ONGOING_AGAINST) {
-                String errorMsg = "Timer is only allowed in an ongoing debate";
-                throw new TimerNotAllowedCurrentState(errorMsg);
-            }
-
-            long elapsedMinutes = Duration.between(debateRoom.getDebateStateUpdateTime(), LocalTime.now()).toMinutes();
-
-            // Check if debate has spent more than 'timeLimitSeconds' in the same state or turn
-            //  If so, change the turns of the users
-            if (elapsedMinutes > timeLimitSeconds) {
-                log.debug("Changed turns as the time for the interventions was over");
-                debateRoom.changeInterventionTurn();
-            }
-        }
     }
 
 }
