@@ -166,7 +166,7 @@ class DebateControllerDebateRoomTest {
   @Test
   void getDebateRoom_DebateRoomExists() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      given(debateService.getDebateRoom(Mockito.any())).willReturn(testDebateRoom);
+      given(debateService.getDebateRoom(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = get("/debates/rooms/"+ testDebateRoom.getRoomId())
@@ -190,7 +190,8 @@ class DebateControllerDebateRoomTest {
   @Test
   void getDebateRoom_DebateRoomNotFound() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      given(debateService.getDebateRoom(Mockito.any())).willReturn(null);
+      Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
+      doThrow(eConflict).when(debateService).getDebateRoom(Mockito.any(), Mockito.any());
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + testDebateRoom.getRoomId())
@@ -221,7 +222,7 @@ class DebateControllerDebateRoomTest {
       doThrow(eConflict).when(debateService).deleteRoom(Mockito.any());
 
       // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + testDebateRoom.getRoomId())
+      MockHttpServletRequestBuilder postRequest = delete("/debates/rooms/" + testDebateRoom.getRoomId())
               .contentType(MediaType.APPLICATION_JSON);
 
       // then

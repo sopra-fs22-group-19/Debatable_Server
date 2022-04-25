@@ -9,7 +9,6 @@ import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,16 +41,11 @@ public class DebateController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public DebateRoomGetDTO getDebateRoom(@PathVariable Long roomId) {
-        DebateRoom debateRoom = debateService.getDebateRoom(roomId);
+        String errorMessage = String.format("Error: <the Debate Room with id: '%d' was not found>",  roomId);
+        DebateRoom debateRoom = debateService.getDebateRoom(roomId, errorMessage);
 
-        if (debateRoom == null) {
-            String baseErrorMessage = "Error: <the Debate Room with id: '%d' was not found>";
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format(baseErrorMessage, roomId));
-        }
-        else{
-            return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(debateRoom);
-        }
+        return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(debateRoom);
+
     }
 
     @GetMapping("/debates/{userId}")
@@ -111,6 +105,17 @@ public class DebateController {
 
         // Create the intervention in the DB
         debateService.createIntervention(inputIntervention, interventionPostDTO);
+
+        // convert internal representation of user back to API
+    }
+
+    @GetMapping("/debates/rooms/{roomId}/users/{userId}/msg")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public void postMessage(@PathVariable("roomId") Long roomId, @PathVariable("userId") Long userId) {
+
+        // Get interventions of user specified
+        debateService.getUserDebateInterventions(roomId, userId);
 
         // convert internal representation of user back to API
     }

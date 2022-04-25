@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -143,10 +144,6 @@ public class DebateService {
 
     }
 
-    public DebateRoom getDebateRoom(Long roomId) {
-        return debateRoomRepository.findByRoomId(roomId);
-    }
-
     public List<DebateTopic> getDebateTopicByUserId(Long userId){
 
         User creatorUser = userRepository.findById(userId).orElse(null);
@@ -161,28 +158,31 @@ public class DebateService {
         return debateTopicList;
     }
 
-    public List<DebateRoom> getDebateRooms() {
-        return this.debateRoomRepository.findAll();
+    public DebateRoom getDebateRoom(Long roomId, String errorMessageContent) {
+        DebateRoom debateRoom = debateRoomRepository.findByRoomId(roomId);
+
+        String errorMessage = String.format("Error: reason <%s>", errorMessageContent);
+
+        if(debateRoom == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+        }
+        return debateRoom;
     }
 
-    public DebateRoom deleteRoom(Long roomID){
+    public DebateRoom deleteRoom(Long roomId){
+        String baseErrorMessage = String.format("Can not delete the room because Room with id: '%d' was not found", roomId);
+        DebateRoom roomToDelete = getDebateRoom(roomId, baseErrorMessage);
 
-        DebateRoom roomToDelete = debateRoomRepository.findByRoomId(roomID);
-        String baseErrorMessage = "Error: reason <Can not delete the room because Room with id: '%d' was not found>";
+        List<DebateSpeaker> occupiedDebateRooms = debateSpeakerRepository.findAllByDebateRoom(roomToDelete);
 
-        if(roomToDelete == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,roomID));
+        if(!occupiedDebateRooms.isEmpty()){
+            debateSpeakerRepository.deleteAll(occupiedDebateRooms);
+            debateSpeakerRepository.flush();
         }
-        else{
-            List<DebateSpeaker> occupiedDebateRooms = debateSpeakerRepository.findAllByDebateRoom(roomToDelete);
 
-            if(!occupiedDebateRooms.isEmpty()){
-                debateSpeakerRepository.deleteAll(occupiedDebateRooms);
-                debateSpeakerRepository.flush();
-            }
-            debateRoomRepository.delete(roomToDelete);
-            debateRoomRepository.flush();
-        }
+        debateRoomRepository.delete(roomToDelete);
+        debateRoomRepository.flush();
+
         return roomToDelete;
     }
 
@@ -198,12 +198,8 @@ public class DebateService {
             checkUser = userRepository.findByid(userToAdd.getId());
         }
 
-        DebateRoom updatedRoom = debateRoomRepository.findByRoomId(actualRoom.getRoomId());
-        String baseErrorMessage = "Error: reason <Can not add Participant because Room with id: '%d' was not found>";
-
-        if(updatedRoom == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,actualRoom.getRoomId()));
-        }
+        String baseErrorMessage = String.format("Cannot add Participant because Room with id: '%d' was not found", actualRoom.getRoomId());
+        DebateRoom updatedRoom = getDebateRoom(actualRoom.getRoomId(), baseErrorMessage);
 
         DebateSpeaker debatesSpeaker = new DebateSpeaker();
         debatesSpeaker.setUserAssociated(checkUser);
@@ -230,14 +226,8 @@ public class DebateService {
 
     public DebateRoom setStatus(Long roomId, DebateRoom debateRoomWithNewStatus){
 
-        DebateRoom roomToUpdate = debateRoomRepository.findByRoomId(roomId);
-
-        String baseErrorMessage = "Error: reason <Can not update status because Room with id: '%d' was not found>";
-
-        if(Objects.isNull(roomToUpdate)){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
-                    String.format(baseErrorMessage, roomId));
-        }
+        String baseErrorMessage = String.format("Cannot update status because Room with id: '%d' was not found", roomId);
+        DebateRoom roomToUpdate = getDebateRoom(roomId, baseErrorMessage);
 
         DebateState debateStatusToSet = debateRoomWithNewStatus.getDebateState();
 
@@ -269,13 +259,10 @@ public class DebateService {
 
     public Intervention createIntervention(Intervention inputIntervention, InterventionPostDTO interventionPostDTO) {
 
-        DebateRoom debateRoom = debateRoomRepository.findByRoomId(interventionPostDTO.getRoomId());
+        DebateRoom debateRoom = getDebateRoom(interventionPostDTO.getRoomId(),
+                "Can not post message because Debate room was not found");
 
-        if(debateRoom == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Error: reason <Can not post message because Debate room was not found>");
-        }else {
-            inputIntervention.setDebateRoom(debateRoom);
-        }
+        inputIntervention.setDebateRoom(debateRoom);
 
         DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedId(interventionPostDTO.getUserId());
 
@@ -314,4 +301,13 @@ public class DebateService {
         return newIntervention;
     }
 
+
+
+    public List<String> getUserDebateInterventions(Long roomId, Long userId) {
+
+        DebateRoom debateRoom = getDebateRoom(roomId,
+                "Can not retrieve messages because Debate room was not found");
+
+        return new ArrayList<String>();
+    }
 }
