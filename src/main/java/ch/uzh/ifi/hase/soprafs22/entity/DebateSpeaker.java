@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
 import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
@@ -52,7 +53,7 @@ public class DebateSpeaker implements RoomParticipant {
     }
 
     @Override
-    public void postIntervention(Intervention intervention, DebateRoom debateRoom) {
-        throw new RuntimeException(NOTIMPLEMENTED);
+    public void postIntervention(Intervention intervention, DebateRoom debateRoom) throws SpeakerNotAllowedToPost {
+        debateRoom.addIntervention(intervention, this.debateSide);
     }
 }

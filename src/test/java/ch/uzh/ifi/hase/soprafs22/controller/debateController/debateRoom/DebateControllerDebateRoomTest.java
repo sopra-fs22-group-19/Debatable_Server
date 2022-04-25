@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomStatusPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
@@ -34,7 +35,6 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -103,7 +103,7 @@ class DebateControllerDebateRoomTest {
   @Test
   void createDebateRoom_UserFOR_validInput_debateRoomCreated() throws Exception {
     // Check the end point returns the appropriate Debate Room object
-    testDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
+    testDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
 
     debateRoomPostDTO.setSide(DebateSide.FOR);
 
@@ -127,14 +127,14 @@ class DebateControllerDebateRoomTest {
         .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
         .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
         .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-        .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+        .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
 
   }
 
   @Test
   void createDebateRoom_UserAGAINST_validInput_debateRoomCreated() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      testDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+      testDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
 
       debateRoomPostDTO.setSide(DebateSide.AGAINST);
 
@@ -159,7 +159,7 @@ class DebateControllerDebateRoomTest {
               .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
               .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
               .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
 
   }
 
@@ -184,7 +184,7 @@ class DebateControllerDebateRoomTest {
               .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
               .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
               .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
   }
 
   @Test
@@ -243,7 +243,7 @@ class DebateControllerDebateRoomTest {
       debateSpeaker.setUserAssociated(testUser);
       debateSpeaker.setDebateRoom(testDebateRoom);
       testDebateRoom.setUser2(debateSpeaker);
-      testDebateRoom.setDebateRoomStatus(DebateState.READY_TO_START);
+      testDebateRoom.setDebateState(DebateState.READY_TO_START);
 
       UserPutDTO userPutDTO = new UserPutDTO();
       userPutDTO.setUserId(testDebateRoom.getRoomId());
@@ -261,7 +261,7 @@ class DebateControllerDebateRoomTest {
               .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
               .andExpect(jsonPath("$.user1.userId", is(testDebateRoom.getUser1().getId().intValue())))
               .andExpect(jsonPath("$.user1.username", is(testDebateRoom.getUser1().getUsername())))
-              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())))
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())))
               .andExpect(jsonPath("$.user2.userId", is(testUser.getId().intValue())))
               .andExpect(jsonPath("$.user2.username", is(testUser.getUsername())))
               .andExpect(jsonPath("user2.name", is(testUser.getName())));
@@ -281,7 +281,7 @@ class DebateControllerDebateRoomTest {
         debateSpeaker.setUserAssociated(guestUser);
         debateSpeaker.setDebateRoom(testDebateRoom);
         testDebateRoom.setUser2(debateSpeaker);
-        testDebateRoom.setDebateRoomStatus(DebateState.READY_TO_START);
+        testDebateRoom.setDebateState(DebateState.READY_TO_START);
 
         UserPutDTO userPutDTO = new UserPutDTO();
         userPutDTO.setUserId(null);
@@ -300,7 +300,7 @@ class DebateControllerDebateRoomTest {
                 .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
                 .andExpect(jsonPath("$.user1.userId", is(testDebateRoom.getUser1().getId().intValue())))
                 .andExpect(jsonPath("$.user1.username", is(testDebateRoom.getUser1().getUsername())))
-                .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())))
+                .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())))
                 .andExpect(jsonPath("$.user2.userId", is(guestUser.getId().intValue())))
                 .andExpect(jsonPath("$.user2.username", is(guestUser.getUsername())))
                 .andExpect(jsonPath("user2.name", is(guestUser.getName())));
@@ -327,54 +327,58 @@ class DebateControllerDebateRoomTest {
 
     }
 
-    @Test
-    void setStatus_Success() throws Exception {
+  @Test
+  void setStatus_StartDebate_Success() throws Exception {
 
-        int ongoing = 4;
+        DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+        debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
 
-        testDebateRoom.setDebateRoomStatus(DebateState.ONGOING);
+        testDebateRoom.setDebateState(DebateState.READY_TO_START);
         given(debateService.setStatus(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
 
-        MockHttpServletRequestBuilder putRequest = put("/debates/status/"+ testDebateRoom.getRoomId())
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(ongoing));
+                .content(asJsonString(debateRoomStatusPutDTO));
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNoContent())
-                .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().toString())));
+                .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().toString())));
+  }
 
-    }
+  @Test
+  void setStatus_RoomNotFound() throws Exception {
 
-    @Test
-    void setStatus_RoomNotFound() throws Exception {
-
-        int ongoing = 4;
+        DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+        debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
 
         Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
         doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
 
-        MockHttpServletRequestBuilder putRequest = put("/debates/status/"+ testDebateRoom.getRoomId())
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(ongoing));
+                .content(asJsonString(debateRoomStatusPutDTO));
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound());
-    }
+  }
 
-    @Test
-    void setStatus_InvalidStatus() throws Exception {
+  @Test
+  void setStatus_StartDebate_WrongStateNotAllowed() throws Exception {
 
-        int ongoing = 1000;
+      testDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
 
-        Exception eConflict = new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
+      DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+      debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
 
-        MockHttpServletRequestBuilder putRequest = put("/debates/status/"+ testDebateRoom.getRoomId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(ongoing));
+      Exception eConflict = new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+      doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
 
-        mockMvc.perform(putRequest)
-                .andExpect(status().isUnauthorized());
+      MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(debateRoomStatusPutDTO));
+
+      mockMvc.perform(putRequest)
+              .andExpect(status().isMethodNotAllowed());
     }
 
 

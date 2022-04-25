@@ -3,11 +3,14 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStateChange;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
 import ch.uzh.ifi.hase.soprafs22.interfaces.Room;
 import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,7 +50,10 @@ public class DebateRoom implements Serializable, Room {
   private Long creatorUserId;
 
   @Column(nullable = false)
-  private DebateState debateStatus = DebateState.NOT_STARTED;
+  private DebateState debateState = DebateState.NOT_STARTED;
+
+  @Column(nullable = false)
+  private LocalTime debateStateUpdateTime = LocalTime.now();
 
   @OneToMany(mappedBy="debateRoom")
   private List<DebateSpeaker> speakers = new ArrayList<>();
@@ -73,11 +79,17 @@ public class DebateRoom implements Serializable, Room {
         this.creatorUserId = creatorUserId;
     }
 
-  public DebateState getDebateRoomStatus() {  return debateStatus; }
+  public DebateState getDebateState() {  return debateState; }
 
-  public void setDebateRoomStatus(DebateState debateStatus) {
-    this.debateStatus = debateStatus;
+  public void setDebateState(DebateState debateState) {
+    this.debateState = debateState;
   }
+
+  public LocalTime getDebateStateUpdateTime() {  return debateStateUpdateTime; }
+
+  public void setDebateStateUpdateTime(LocalTime debateStateUpdateTime) {
+        this.debateStateUpdateTime = debateStateUpdateTime;
+    }
 
   public List<DebateSpeaker> getSpeakers() {
         return this.speakers;
@@ -133,13 +145,61 @@ public class DebateRoom implements Serializable, Room {
 
   public void setSide2(DebateSide debateSide) {  speakers.get(1).setDebateSide(debateSide); }
 
-  public List<Intervention> getInterventions() {
-      return interventions;
+  public void startDebate(DebateSide debateSideStart) throws InvalidDebateStateChange {
+      if (debateState != DebateState.READY_TO_START){
+          String errorMessage = "The debate was not ready to start. The state of the " +
+                  "debate room before starting should be: %s";
+          errorMessage = String.format(errorMessage, DebateState.READY_TO_START);
+          throw new InvalidDebateStateChange(errorMessage);
+      }
+
+      if (debateSideStart == DebateSide.FOR)
+        setDebateState(DebateState.ONGOING_FOR);
+
+      else if (debateSideStart == DebateSide.AGAINST)
+          setDebateState(DebateState.ONGOING_AGAINST);
+
   }
 
-  public void setInterventions(List<Intervention> interventions) {
-      this.interventions = interventions;
+  public void changeInterventionTurn() throws InvalidDebateStateChange {
+      if (debateState == DebateState.ONGOING_FOR)
+          setDebateState(DebateState.ONGOING_AGAINST);
+      else if (debateState == DebateState.ONGOING_AGAINST)
+          setDebateState(DebateState.ONGOING_FOR);
+      else{
+          String errorMessage = "The debate has not started yet. The state of the debate room should be: %s or %s";
+          errorMessage = String.format(errorMessage, DebateState.ONGOING_FOR, DebateState.ONGOING_AGAINST);
+          throw new InvalidDebateStateChange(errorMessage);
+      }
+
+      // TOOO: Reset timer
   }
+
+  public void addIntervention(Intervention intervention, DebateSide speakerSide) throws SpeakerNotAllowedToPost {
+      if (debateState != DebateState.ONGOING_FOR && this.debateState != DebateState.ONGOING_AGAINST){
+          String errorMessage = "User cannot intervene as the debate has not started yet";
+          throw new SpeakerNotAllowedToPost(errorMessage);
+      }
+      
+      else if ((this.debateState == DebateState.ONGOING_FOR && speakerSide == DebateSide.FOR) ||
+              (this.debateState == DebateState.ONGOING_AGAINST && speakerSide == DebateSide.AGAINST))
+        this.interventions.add(intervention);
+      
+      else{
+          String errorMessage = "It is not the speaker's turn to intervene";
+          throw new SpeakerNotAllowedToPost(errorMessage);
+      }
+        
+
+  }
+
+  public List<Intervention> getInterventions() {
+        return interventions;
+    }
+
+  public void setInterventions(List<Intervention> interventions) {
+        this.interventions = interventions;
+    }
 
   @Override
   public void registerParticipant(RoomParticipant roomParticipant) {

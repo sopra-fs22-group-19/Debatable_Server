@@ -3,6 +3,9 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStateChange;
+import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
+import ch.uzh.ifi.hase.soprafs22.exceptions.TimerNotAllowedCurrentState;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
@@ -20,6 +23,8 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -56,8 +61,8 @@ public class DebateService {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.debateSpeakerRepository = debateSpeakerRepository;
-        this.userService = userService;
         this.interventionRepository = interventionRepository;
+        this.userService = userService;
     }
 
     @PostConstruct
@@ -81,7 +86,9 @@ public class DebateService {
                 log.warn("List of debate topics is empty");
             } else{
                 debateTopicRepository.saveAll(defaultDebateTopicsList);
-                if (log.isDebugEnabled()) { log.info(String.format("Default Topics created %d", defaultDebateTopicsList.size())); }
+                if (log.isDebugEnabled()) {
+                    log.info(String.format("Default Topics created %d", defaultDebateTopicsList.size()));
+                }
             }
         } catch(IOException | CsvValidationException e){
             log.error("Problem loading the default file list");
@@ -94,7 +101,7 @@ public class DebateService {
         // Check that the debate topic exists and add it
         Optional<DebateTopic> debateTopic = debateTopicRepository.findById(debateRoomPostDTO.getDebateId());
 
-        if (debateTopic.isEmpty()){
+        if (debateTopic.isEmpty()) {
             String baseErrorMessage = "Error: reason <Debate topic with id: '%d' was not found>";
             throw new ResponseStatusException(HttpStatus.NOT_FOUND,
                     String.format(baseErrorMessage, debateRoomPostDTO.getDebateId()));
@@ -103,10 +110,10 @@ public class DebateService {
         inputDebateRoom.setDebateTopic(debateTopic.get());
 
         // Set the state of the debate
-        if (debateRoomPostDTO.getSide() == DebateSide.FOR){
-            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
+        if (debateRoomPostDTO.getSide() == DebateSide.FOR) {
+            inputDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
         } else{
-            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+            inputDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
         }
 
         // Check that user that will create the debate exists and add it as a Speaker to the debate room
@@ -212,7 +219,7 @@ public class DebateService {
 
         debatesSpeaker.setDebateRoom(updatedRoom);
         updatedRoom.setUser2(debatesSpeaker);
-        updatedRoom.setDebateRoomStatus(DebateState.READY_TO_START);
+        updatedRoom.setDebateState(DebateState.READY_TO_START);
 
 
         debateRoomRepository.saveAndFlush(updatedRoom);
@@ -223,33 +230,44 @@ public class DebateService {
         return updatedRoom;
     }
 
-    public DebateRoom setStatus(Long roomID, Integer status){
+    public DebateRoom setStatus(Long roomId, DebateRoom debateRoomWithNewStatus){
 
-        DebateRoom updatedRoom = debateRoomRepository.findByRoomId(roomID);
+        DebateRoom roomToUpdate = debateRoomRepository.findByRoomId(roomId);
 
         String baseErrorMessage = "Error: reason <Can not update status because Room with id: '%d' was not found>";
-        String baseErrorMessageUnauthorized = "Error: reason <Status with index '%d' does not exist>";
 
-        if(updatedRoom == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,roomID));
+        if(Objects.isNull(roomToUpdate)){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,
+                    String.format(baseErrorMessage, roomId));
         }
 
-        DebateState[] toSet = DebateState.values();
+        DebateState debateStatusToSet = debateRoomWithNewStatus.getDebateState();
 
-        if(status >= 0 && status < toSet.length){
-            updatedRoom.setDebateRoomStatus(toSet[status]);
-            debateRoomRepository.save(updatedRoom);
-            debateRoomRepository.flush();
-
-            log.debug("Status Set to the DebateRoom: {}", updatedRoom);
+        try{
+            if (debateStatusToSet == DebateState.ONGOING_FOR
+                    && roomToUpdate.getDebateState() != DebateState.ONGOING_AGAINST)
+                roomToUpdate.startDebate(DebateSide.FOR);
+                // TODO: Launch timer for automatic turn change
+            else if (debateStatusToSet == DebateState.ONGOING_AGAINST
+                    && roomToUpdate.getDebateState() != DebateState.ONGOING_FOR)
+                roomToUpdate.startDebate(DebateSide.AGAINST);
+                // TODO: Launch timer for automatic turn change
+            else
+                roomToUpdate.setDebateState(debateStatusToSet);
+        } catch (InvalidDebateStateChange e){
+            log.error(e.toString());
+            throw new ResponseStatusException(
+                    HttpStatus.METHOD_NOT_ALLOWED, String.format("Error: <The debate is not ready to start>"));
         }
-        else{
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, String.format(baseErrorMessageUnauthorized,status));
-        }
 
-        return updatedRoom;
+        debateRoomRepository.save(roomToUpdate);
+        debateRoomRepository.flush();
+
+        log.debug("Status Set to the DebateRoom: {}", roomToUpdate);
+
+
+        return roomToUpdate;
     }
-
 
 
     public Intervention createIntervention(Intervention inputIntervention, InterventionPostDTO interventionPostDTO) {
@@ -262,23 +280,64 @@ public class DebateService {
             inputIntervention.setDebateRoom(debateRoom);
         }
 
-        User postUser = userRepository.findById(interventionPostDTO.getUserId()).orElse(null);
+        DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedId(interventionPostDTO.getUserId());
 
         String baseErrorMessage = "Error: reason <Can not post message because User with id: '%d' was not found>";
 
-        if(postUser == null){
+        if(debateSpeaker == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,interventionPostDTO.getUserId()));
         }else{
-            inputIntervention.setPostUser(postUser);
+            inputIntervention.setPostingSpeaker(debateSpeaker);
         }
 
+        // Verify if the intervention is valid by posting it to the debateRoom
+        try{
+            debateSpeaker.postIntervention(inputIntervention, debateRoom);
+        } catch (SpeakerNotAllowedToPost e){
+            log.error(e.toString());
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Error: reason <It is not the speaker's turn>");
+        }
+
+        // Change turns for the debateRoom if the intervention is valid
+        try {
+            debateRoom.changeInterventionTurn();
+            // TODO: Launch timer for automatic turn change
+        } catch (InvalidDebateStateChange e) {
+            log.error(e.toString());
+            throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Error: reason <The debate has not started yet>");
+        }
+
+        // Save intervention
         Intervention newIntervention = interventionRepository.save(inputIntervention);
         interventionRepository.flush();
 
+        // Update whose turn it is
+        debateRoom = debateRoomRepository.save(debateRoom);
+        debateRoomRepository.flush();
 
         return newIntervention;
     }
 
+    public void startTimer(Long roomId, long timeLimitSeconds) throws InvalidDebateStateChange, TimerNotAllowedCurrentState {
+        DebateRoom debateRoom = debateRoomRepository.findByRoomId(roomId);
 
+        if(debateRoom != null) {
+            // Check if the state is correct to call the timer
+            if (debateRoom.getDebateState() != DebateState.ONGOING_FOR &&
+                    debateRoom.getDebateState() != DebateState.ONGOING_AGAINST) {
+                String errorMsg = "Timer is only allowed in an ongoing debate";
+                throw new TimerNotAllowedCurrentState(errorMsg);
+            }
+
+            long elapsedMinutes = Duration.between(debateRoom.getDebateStateUpdateTime(), LocalTime.now()).toMinutes();
+
+            // Check if debate has spent more than 'timeLimitSeconds' in the same state or turn
+            //  If so, change the turns of the users
+            if (elapsedMinutes > timeLimitSeconds) {
+                log.debug("Changed turns as the time for the interventions was over");
+                debateRoom.changeInterventionTurn();
+            }
+        }
+    }
 
 }

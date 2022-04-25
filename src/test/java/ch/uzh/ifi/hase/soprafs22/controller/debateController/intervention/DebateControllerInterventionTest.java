@@ -4,7 +4,6 @@ import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.controller.DebateController;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,12 +25,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -43,6 +39,8 @@ class DebateControllerInterventionTest {
 
     @MockBean
     private DebateService debateService;
+
+    private DebateSpeaker debatesSpeaker1;
     private User testUser;
 
     private DebateRoom debateRoom;
@@ -57,7 +55,7 @@ class DebateControllerInterventionTest {
         testUser.setCreationDate(LocalDate.parse("2019-01-21"));
         testUser.setToken("lajflfa");
 
-        DebateSpeaker debatesSpeaker1 = new DebateSpeaker();
+        debatesSpeaker1 = new DebateSpeaker();
         debatesSpeaker1.setUserAssociated(testUser);
         debatesSpeaker1.setDebateSide(DebateSide.FOR);
 
@@ -77,7 +75,7 @@ class DebateControllerInterventionTest {
         debateRoom.setCreatorUserId(1L);
         debateRoom.setDebateTopic(debateTopic);
         debateRoom.setSpeakers(speakerList);
-        debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+        debateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
 
     }
 
@@ -87,7 +85,7 @@ class DebateControllerInterventionTest {
 
         inputIntervention.setDebateRoom(debateRoom);
 
-        inputIntervention.setPostUser(testUser);
+        inputIntervention.setPostingSpeaker(debatesSpeaker1);
         inputIntervention.setMessage("test_msg");
         inputIntervention.setMsgId(1L);
         inputIntervention.setTimestamp(Date.valueOf("2019-01-21"));

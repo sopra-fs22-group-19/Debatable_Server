@@ -33,8 +33,8 @@ public class Intervention implements Serializable {
     private DebateRoom debateRoom;
 
     @ManyToOne
-    @JoinColumn(name = "user_post_id", nullable = false)
-    private User postUser;
+    @JoinColumn(name = "posting_speaker_speaker_id", nullable = false)
+    private DebateSpeaker postingSpeaker;
 
     @CreationTimestamp
     @Column(nullable = false)
@@ -60,12 +60,12 @@ public class Intervention implements Serializable {
         this.debateRoom = debateRoom;
     }
 
-    public User getPostUser() {
-        return postUser;
+    public DebateSpeaker getPostingSpeaker() {
+        return postingSpeaker;
     }
 
-    public void setPostUser(User postUser) {
-        this.postUser = postUser;
+    public void setPostingSpeaker(DebateSpeaker postingSpeaker) {
+        this.postingSpeaker = postingSpeaker;
     }
 
     public Date getTimestamp() {
