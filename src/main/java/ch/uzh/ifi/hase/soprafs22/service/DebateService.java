@@ -210,9 +210,6 @@ public class DebateService {
             debatesSpeaker.setDebateSide(DebateSide.FOR);
         }
 
-        debatesSpeaker.setDebateRoom(updatedRoom);
-        updatedRoom.setUser2(debatesSpeaker);
-        updatedRoom.setDebateRoomStatus(DebateState.READY_TO_START);
 
         debateRoomRepository.saveAndFlush(updatedRoom);
         debateSpeakerRepository.saveAndFlush(debatesSpeaker);
