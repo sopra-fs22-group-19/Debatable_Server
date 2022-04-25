@@ -9,6 +9,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomStatusPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
@@ -327,53 +328,38 @@ class DebateControllerDebateRoomTest {
     }
 
     @Test
-    void setStatus_Success() throws Exception {
+    void setStatus_StartDebate_Success() throws Exception {
 
-        int ongoing = 4;
+        DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+        debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
 
-        testDebateRoom.setDebateState(DebateState.ONGOING_FOR);
+        testDebateRoom.setDebateState(DebateState.READY_TO_START);
         given(debateService.setStatus(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
 
-        MockHttpServletRequestBuilder putRequest = put("/debates/status/"+ testDebateRoom.getRoomId())
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(ongoing));
+                .content(asJsonString(debateRoomStatusPutDTO));
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().toString())));
-
     }
 
     @Test
     void setStatus_RoomNotFound() throws Exception {
 
-        int ongoing = 4;
+        DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+        debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
 
         Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
         doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
 
-        MockHttpServletRequestBuilder putRequest = put("/debates/status/"+ testDebateRoom.getRoomId())
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(ongoing));
+                .content(asJsonString(debateRoomStatusPutDTO));
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound());
-    }
-
-    @Test
-    void setStatus_InvalidStatus() throws Exception {
-
-        int ongoing = 1000;
-
-        Exception eConflict = new ResponseStatusException(HttpStatus.UNAUTHORIZED);
-        doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
-
-        MockHttpServletRequestBuilder putRequest = put("/debates/status/"+ testDebateRoom.getRoomId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(asJsonString(ongoing));
-
-        mockMvc.perform(putRequest)
-                .andExpect(status().isUnauthorized());
     }
 
 
