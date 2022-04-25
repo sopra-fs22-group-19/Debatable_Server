@@ -327,8 +327,8 @@ class DebateControllerDebateRoomTest {
 
     }
 
-    @Test
-    void setStatus_StartDebate_Success() throws Exception {
+  @Test
+  void setStatus_StartDebate_Success() throws Exception {
 
         DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
         debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
@@ -343,10 +343,10 @@ class DebateControllerDebateRoomTest {
         mockMvc.perform(putRequest)
                 .andExpect(status().isNoContent())
                 .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().toString())));
-    }
+  }
 
-    @Test
-    void setStatus_RoomNotFound() throws Exception {
+  @Test
+  void setStatus_RoomNotFound() throws Exception {
 
         DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
         debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
@@ -360,6 +360,25 @@ class DebateControllerDebateRoomTest {
 
         mockMvc.perform(putRequest)
                 .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void setStatus_StartDebate_WrongStateNotAllowed() throws Exception {
+
+      testDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
+
+      DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+      debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
+
+      Exception eConflict = new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+      doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
+
+      MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(debateRoomStatusPutDTO));
+
+      mockMvc.perform(putRequest)
+              .andExpect(status().isMethodNotAllowed());
     }
 
 
