@@ -50,7 +50,8 @@ public interface DTOMapper {
   @Mapping(target = "roomId", ignore = true)
   @Mapping(target = "speakers", ignore = true)
   @Mapping(target = "debateTopic", ignore = true)
-  @Mapping(target = "debateRoomStatus", ignore = true)
+  @Mapping(target = "debateState", ignore = true)
+  @Mapping(target = "debateStateUpdateTime", ignore = true)
   @Mapping(source = "userId", target = "creatorUserId")
   @Mapping(target = "interventions", ignore = true)
   @Mapping(target = "user1", ignore = true)
@@ -65,10 +66,11 @@ public interface DTOMapper {
   @Mapping(source = "side1", target = "side1")
   @Mapping(source = "user2", target = "user2")
   @Mapping(source = "side2", target = "side2")
-  @Mapping(source = "debateRoomStatus", target = "debateStatus")
+  @Mapping(source = "debateState", target = "debateStatus")
   DebateRoomGetDTO convertEntityToDebateRoomGetDTO(DebateRoom debateRoom);
 
-  @Mapping(source = "debateState", target = "debateRoomStatus")
+  @Mapping(source = "debateState", target = "debateState")
+  @Mapping(target = "debateStateUpdateTime", ignore = true)
   @Mapping(target = "speakers", ignore = true)
   @Mapping(target = "debateTopic", ignore = true)
   @Mapping(target = "roomId", ignore = true)
@@ -90,7 +92,7 @@ public interface DTOMapper {
 
   // DTOs for the Intervention
   @Mapping(target = "msgId", ignore = true)
-  @Mapping(target = "postUser", ignore = true)
+  @Mapping(target = "postingSpeaker", ignore = true)
   @Mapping(target = "debateRoom", ignore = true)
   @Mapping(source = "messageContent", target = "message")
   @Mapping(target = "timestamp", ignore = true)

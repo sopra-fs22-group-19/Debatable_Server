@@ -3,8 +3,9 @@ package ch.uzh.ifi.hase.soprafs22.service;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
-import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStatusChange;
+import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStateChange;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
+import ch.uzh.ifi.hase.soprafs22.exceptions.TimerNotAllowedCurrentState;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
@@ -22,6 +23,8 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -108,9 +111,9 @@ public class DebateService {
 
         // Set the state of the debate
         if (debateRoomPostDTO.getSide() == DebateSide.FOR) {
-            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
+            inputDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
         } else{
-            inputDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+            inputDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
         }
 
         // Check that user that will create the debate exists and add it as a Speaker to the debate room
@@ -213,7 +216,7 @@ public class DebateService {
 
         debatesSpeaker.setDebateRoom(updatedRoom);
         updatedRoom.setUser2(debatesSpeaker);
-        updatedRoom.setDebateRoomStatus(DebateState.READY_TO_START);
+        updatedRoom.setDebateState(DebateState.READY_TO_START);
 
         debateRoomRepository.save(updatedRoom);
         debateRoomRepository.flush();
@@ -237,18 +240,20 @@ public class DebateService {
                     String.format(baseErrorMessage, roomId));
         }
 
-        DebateState debateStatusToSet = debateRoomWithNewStatus.getDebateRoomStatus();
+        DebateState debateStatusToSet = debateRoomWithNewStatus.getDebateState();
 
         try{
             if (debateStatusToSet == DebateState.ONGOING_FOR
-                    && roomToUpdate.getDebateRoomStatus() != DebateState.ONGOING_AGAINST)
+                    && roomToUpdate.getDebateState() != DebateState.ONGOING_AGAINST)
                 roomToUpdate.startDebate(DebateSide.FOR);
+                // TODO: Launch timer for automatic turn change
             else if (debateStatusToSet == DebateState.ONGOING_AGAINST
-                    && roomToUpdate.getDebateRoomStatus() != DebateState.ONGOING_FOR)
+                    && roomToUpdate.getDebateState() != DebateState.ONGOING_FOR)
                 roomToUpdate.startDebate(DebateSide.AGAINST);
+                // TODO: Launch timer for automatic turn change
             else
-                roomToUpdate.setDebateRoomStatus(debateStatusToSet);
-        } catch (InvalidDebateStatusChange e){
+                roomToUpdate.setDebateState(debateStatusToSet);
+        } catch (InvalidDebateStateChange e){
             log.error(e.toString());
             throw new ResponseStatusException(
                     HttpStatus.METHOD_NOT_ALLOWED, String.format("Error: <The debate is not ready to start>"));
@@ -274,15 +279,14 @@ public class DebateService {
             inputIntervention.setDebateRoom(debateRoom);
         }
 
-        User postUser = userRepository.findById(interventionPostDTO.getUserId()).orElse(null);
         DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedId(interventionPostDTO.getUserId());
 
         String baseErrorMessage = "Error: reason <Can not post message because User with id: '%d' was not found>";
 
-        if(postUser == null){
+        if(debateSpeaker == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,interventionPostDTO.getUserId()));
         }else{
-            inputIntervention.setPostUser(postUser);
+            inputIntervention.setPostingSpeaker(debateSpeaker);
         }
 
         // Verify if the intervention is valid by posting it to the debateRoom
@@ -296,7 +300,8 @@ public class DebateService {
         // Change turns for the debateRoom if the intervention is valid
         try {
             debateRoom.changeInterventionTurn();
-        } catch (InvalidDebateStatusChange e) {
+            // TODO: Launch timer for automatic turn change
+        } catch (InvalidDebateStateChange e) {
             log.error(e.toString());
             throw new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED, "Error: reason <The debate has not started yet>");
         }
@@ -312,6 +317,26 @@ public class DebateService {
         return newIntervention;
     }
 
+    public void startTimer(Long roomId, long timeLimitSeconds) throws InvalidDebateStateChange, TimerNotAllowedCurrentState {
+        DebateRoom debateRoom = debateRoomRepository.findByRoomId(roomId);
 
+        if(debateRoom != null) {
+            // Check if the state is correct to call the timer
+            if (debateRoom.getDebateState() != DebateState.ONGOING_FOR &&
+                    debateRoom.getDebateState() != DebateState.ONGOING_AGAINST) {
+                String errorMsg = "Timer is only allowed in an ongoing debate";
+                throw new TimerNotAllowedCurrentState(errorMsg);
+            }
+
+            long elapsedMinutes = Duration.between(debateRoom.getDebateStateUpdateTime(), LocalTime.now()).toMinutes();
+
+            // Check if debate has spent more than 'timeLimitSeconds' in the same state or turn
+            //  If so, change the turns of the users
+            if (elapsedMinutes > timeLimitSeconds) {
+                log.debug("Changed turns as the time for the interventions was over");
+                debateRoom.changeInterventionTurn();
+            }
+        }
+    }
 
 }

@@ -92,7 +92,7 @@ class DebateControllerDebateRoomTest {
   @Test
   void createDebateRoom_UserFOR_validInput_debateRoomCreated() throws Exception {
     // Check the end point returns the appropriate Debate Room object
-    testDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
+    testDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
 
     debateRoomPostDTO.setSide(DebateSide.FOR);
 
@@ -116,14 +116,14 @@ class DebateControllerDebateRoomTest {
         .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
         .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
         .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-        .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+        .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
 
   }
 
   @Test
   void createDebateRoom_UserAGAINST_validInput_debateRoomCreated() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      testDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+      testDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
 
       debateRoomPostDTO.setSide(DebateSide.AGAINST);
 
@@ -148,7 +148,7 @@ class DebateControllerDebateRoomTest {
               .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
               .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
               .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
 
   }
 
@@ -173,7 +173,7 @@ class DebateControllerDebateRoomTest {
               .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
               .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
               .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
   }
 
   @Test

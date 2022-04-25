@@ -103,7 +103,7 @@ class DebateServiceTest {
 
     assertEquals(testDebateRoom.getRoomId(), createdDebateRoom.getRoomId());
     assertEquals(testDebateRoom.getCreatorUserId(), createdDebateRoom.getCreatorUserId());
-    assertEquals(testDebateRoom.getDebateRoomStatus(), createdDebateRoom.getDebateRoomStatus());
+    assertEquals(testDebateRoom.getDebateState(), createdDebateRoom.getDebateState());
     assertEquals(testDebateRoom.getDebateTopic(), createdDebateRoom.getDebateTopic());
     assertEquals(testDebateRoom.getSpeakers(), createdDebateRoom.getSpeakers());
   }
@@ -160,7 +160,7 @@ class DebateServiceTest {
     @Test
     void createIntervention_validInputs_success() {
         // when -> any object is being save in the userRepository -> return the dummy
-        testDebateRoom.setDebateRoomStatus(DebateState.ONGOING_FOR);
+        testDebateRoom.setDebateState(DebateState.ONGOING_FOR);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
         InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
@@ -186,7 +186,7 @@ class DebateServiceTest {
 
         Intervention newIntervention = new Intervention();
         newIntervention.setMsgId(1L);
-        newIntervention.setPostUser(testUser);
+        newIntervention.setPostingSpeaker(testDebateSpeaker);
         newIntervention.setDebateRoom(testDebateRoom);
         newIntervention.setMessage("test_msg");
         newIntervention.setTimestamp(Date.valueOf("2019-01-21"));
@@ -196,7 +196,7 @@ class DebateServiceTest {
         Intervention savedIntervention = debateService.createIntervention(inputIntervention, interventionPostDTO);
 
         assertEquals(interventionPostDTO.getMessageContent(), savedIntervention.getMessage());
-        assertEquals(interventionPostDTO.getUserId(),savedIntervention.getPostUser().getId());
+        assertEquals(interventionPostDTO.getUserId(),savedIntervention.getPostingSpeaker().getUserAssociated().getId());
         assertEquals(interventionPostDTO.getRoomId(),savedIntervention.getDebateRoom().getRoomId());
     }
 
@@ -224,7 +224,7 @@ class DebateServiceTest {
 
         Intervention newIntervention = new Intervention();
         newIntervention.setMsgId(1L);
-        newIntervention.setPostUser(testUser);
+        newIntervention.setPostingSpeaker(testDebateSpeaker);
         newIntervention.setDebateRoom(testDebateRoom);
         newIntervention.setMessage("test_msg");
         newIntervention.setTimestamp(Date.valueOf("2019-01-21"));
@@ -234,7 +234,7 @@ class DebateServiceTest {
         testDebateSpeaker.setDebateSide(DebateSide.AGAINST);
         Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
 
-        testDebateRoom.setDebateRoomStatus(DebateState.ONGOING_FOR);
+        testDebateRoom.setDebateState(DebateState.ONGOING_FOR);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
         assertThrows(ResponseStatusException.class,
@@ -243,7 +243,7 @@ class DebateServiceTest {
         testDebateSpeaker.setDebateSide(DebateSide.FOR);
         Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
 
-        testDebateRoom.setDebateRoomStatus(DebateState.ONGOING_AGAINST);
+        testDebateRoom.setDebateState(DebateState.ONGOING_AGAINST);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
         assertThrows(ResponseStatusException.class,
@@ -283,7 +283,7 @@ class DebateServiceTest {
   void changeStatus_wrongRoomId_notFound(){
 
       DebateRoom testRoom = new DebateRoom();
-      testRoom.setDebateRoomStatus(DebateState.ONGOING_FOR);
+      testRoom.setDebateState(DebateState.ONGOING_FOR);
       Long testRoomId  = 1L;
 
       Mockito.when(debateRoomRepository.findById(Mockito.any())).thenReturn(null);
@@ -295,48 +295,48 @@ class DebateServiceTest {
 
   @Test
   void changeStatus_AnyStateBesidesOngoing_Successful(){
-      testDebateRoom.setDebateRoomStatus(DebateState.NOT_STARTED);
+      testDebateRoom.setDebateState(DebateState.NOT_STARTED);
       DebateRoom debateRoomWithStateToUpdate = new DebateRoom();
-      debateRoomWithStateToUpdate.setDebateRoomStatus(DebateState.ENDED);
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ENDED);
 
       Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
       DebateRoom updatedDebateRoom = debateService.setStatus(testDebateRoom.getRoomId(), debateRoomWithStateToUpdate);
-      assertEquals(updatedDebateRoom.getDebateRoomStatus(), debateRoomWithStateToUpdate.getDebateRoomStatus());
+      assertEquals(updatedDebateRoom.getDebateState(), debateRoomWithStateToUpdate.getDebateState());
   }
 
   @Test
   void changeStatus_Ongoing_Successful() {
-      testDebateRoom.setDebateRoomStatus(DebateState.READY_TO_START);
+      testDebateRoom.setDebateState(DebateState.READY_TO_START);
 
       // ONGOING_FOR
       DebateRoom debateRoomWithStateToUpdate = new DebateRoom();
-      debateRoomWithStateToUpdate.setDebateRoomStatus(DebateState.ONGOING_FOR);
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_FOR);
 
       Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
       DebateRoom updatedDebateRoom = debateService.setStatus(testDebateRoom.getRoomId(), debateRoomWithStateToUpdate);
-      assertEquals(updatedDebateRoom.getDebateRoomStatus(), debateRoomWithStateToUpdate.getDebateRoomStatus());
+      assertEquals(updatedDebateRoom.getDebateState(), debateRoomWithStateToUpdate.getDebateState());
 
       // ONGOING_AGAINST
-      testDebateRoom.setDebateRoomStatus(DebateState.READY_TO_START);
-      debateRoomWithStateToUpdate.setDebateRoomStatus(DebateState.ONGOING_AGAINST);
+      testDebateRoom.setDebateState(DebateState.READY_TO_START);
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_AGAINST);
 
       Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
       updatedDebateRoom = debateService.setStatus(testDebateRoom.getRoomId(), debateRoomWithStateToUpdate);
-      assertEquals(updatedDebateRoom.getDebateRoomStatus(), debateRoomWithStateToUpdate.getDebateRoomStatus());
+      assertEquals(updatedDebateRoom.getDebateState(), debateRoomWithStateToUpdate.getDebateState());
 
   }
 
   @Test
   void changeStatus_Ongoing_FailNotRightStateForTransition() {
-      testDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+      testDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
       Long testRoomId = testDebateRoom.getRoomId();
 
       // ONGOING_FOR
       DebateRoom debateRoomWithStateToUpdate = new DebateRoom();
-      debateRoomWithStateToUpdate.setDebateRoomStatus(DebateState.ONGOING_FOR);
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_FOR);
 
       Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
@@ -344,7 +344,7 @@ class DebateServiceTest {
               () -> debateService.setStatus(testRoomId, debateRoomWithStateToUpdate));
 
       // ONGOING_AGAINST
-      debateRoomWithStateToUpdate.setDebateRoomStatus(DebateState.ONGOING_AGAINST);
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_AGAINST);
 
       Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
