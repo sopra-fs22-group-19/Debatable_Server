@@ -22,6 +22,7 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -249,6 +250,7 @@ public class DebateService {
                 roomToUpdate.startDebate(DebateSide.AGAINST);
             else
                 roomToUpdate.setDebateState(debateStatusToSet);
+                roomToUpdate.setDebateStateUpdateTime(LocalDateTime.now());
         } catch (InvalidDebateStateChange e){
             log.error(e.toString());
             throw new ResponseStatusException(

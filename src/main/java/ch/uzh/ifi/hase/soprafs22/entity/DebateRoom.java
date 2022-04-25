@@ -10,7 +10,7 @@ import ch.uzh.ifi.hase.soprafs22.interfaces.RoomParticipant;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,7 +53,7 @@ public class DebateRoom implements Serializable, Room {
   private DebateState debateState = DebateState.NOT_STARTED;
 
   @Column(nullable = false)
-  private LocalTime debateStateUpdateTime = LocalTime.now();
+  private LocalDateTime debateStateUpdateTime = LocalDateTime.now();
 
   @OneToMany(mappedBy="debateRoom")
   private List<DebateSpeaker> speakers = new ArrayList<>();
@@ -85,9 +85,9 @@ public class DebateRoom implements Serializable, Room {
     this.debateState = debateState;
   }
 
-  public LocalTime getDebateStateUpdateTime() {  return debateStateUpdateTime; }
+  public LocalDateTime getDebateStateUpdateTime() {  return debateStateUpdateTime; }
 
-  public void setDebateStateUpdateTime(LocalTime debateStateUpdateTime) {
+  public void setDebateStateUpdateTime(LocalDateTime debateStateUpdateTime) {
         this.debateStateUpdateTime = debateStateUpdateTime;
     }
 
@@ -159,6 +159,7 @@ public class DebateRoom implements Serializable, Room {
       else if (debateSideStart == DebateSide.AGAINST)
           setDebateState(DebateState.ONGOING_AGAINST);
 
+      setDebateStateUpdateTime(LocalDateTime.now());
   }
 
   public void changeInterventionTurn() throws InvalidDebateStateChange {
@@ -172,7 +173,7 @@ public class DebateRoom implements Serializable, Room {
           throw new InvalidDebateStateChange(errorMessage);
       }
 
-      // TOOO: Reset timer
+      setDebateStateUpdateTime(LocalDateTime.now());
   }
 
   public void addIntervention(Intervention intervention, DebateSide speakerSide) throws SpeakerNotAllowedToPost {
