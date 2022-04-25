@@ -190,11 +190,14 @@ public class DebateService {
 
     public DebateRoom addParticipantToRoom(DebateRoom actualRoom, User userToAdd){
 
-        User checkUser = userRepository.findByid(userToAdd.getId());
+        User checkUser;
 
-        if(Objects.isNull(checkUser)){
+        if(Objects.isNull(userToAdd.getId())){
             User guestUser = new User();
             checkUser = userService.createGuestUser(guestUser);
+        }
+        else{
+            checkUser = userRepository.findByid(userToAdd.getId());
         }
 
         DebateRoom updatedRoom = debateRoomRepository.findByRoomId(actualRoom.getRoomId());
@@ -218,11 +221,9 @@ public class DebateService {
         updatedRoom.setUser2(debatesSpeaker);
         updatedRoom.setDebateState(DebateState.READY_TO_START);
 
-        debateRoomRepository.save(updatedRoom);
-        debateRoomRepository.flush();
 
-        debateSpeakerRepository.save(debatesSpeaker);
-        debateSpeakerRepository.flush();
+        debateRoomRepository.saveAndFlush(updatedRoom);
+        debateSpeakerRepository.saveAndFlush(debatesSpeaker);
 
         log.debug("Participant added to the DebateRoom: {}", updatedRoom);
 
