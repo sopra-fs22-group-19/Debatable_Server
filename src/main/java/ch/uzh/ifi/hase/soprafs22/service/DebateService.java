@@ -169,6 +169,17 @@ public class DebateService {
         return debateRoom;
     }
 
+    public DebateSpeaker getDebateSpeakerByUserId(Long userAssociatedId, String errorMessageContent) {
+        DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedId(userAssociatedId);
+
+        String errorMessage = String.format("Error: reason <%s>", errorMessageContent);
+
+        if(debateSpeaker == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+        }
+        return debateSpeaker;
+    }
+
     public DebateRoom deleteRoom(Long roomId){
         String baseErrorMessage = String.format("Can not delete the room because Room with id: '%d' was not found", roomId);
         DebateRoom roomToDelete = getDebateRoom(roomId, baseErrorMessage);
@@ -260,19 +271,14 @@ public class DebateService {
     public Intervention createIntervention(Intervention inputIntervention, InterventionPostDTO interventionPostDTO) {
 
         DebateRoom debateRoom = getDebateRoom(interventionPostDTO.getRoomId(),
-                "Can not post message because Debate room was not found");
+                "Cannot post message because Debate room was not found");
 
         inputIntervention.setDebateRoom(debateRoom);
 
-        DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedId(interventionPostDTO.getUserId());
+        String baseErrorMessage = "Cannot post message because User with id: '%d' was not found";
+        DebateSpeaker debateSpeaker = getDebateSpeakerByUserId(interventionPostDTO.getUserId(), baseErrorMessage);
+        inputIntervention.setPostingSpeaker(debateSpeaker);
 
-        String baseErrorMessage = "Error: reason <Can not post message because User with id: '%d' was not found>";
-
-        if(debateSpeaker == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, String.format(baseErrorMessage,interventionPostDTO.getUserId()));
-        }else{
-            inputIntervention.setPostingSpeaker(debateSpeaker);
-        }
 
         // Verify if the intervention is valid by posting it to the debateRoom
         try{
@@ -302,12 +308,23 @@ public class DebateService {
     }
 
 
-
     public List<String> getUserDebateInterventions(Long roomId, Long userId) {
+        String errorMessage = String.format("Cannot retrieve messages because Room with id: '%d' was not found", roomId);
+        DebateRoom debateRoom = getDebateRoom(roomId, errorMessage);
 
-        DebateRoom debateRoom = getDebateRoom(roomId,
-                "Can not retrieve messages because Debate room was not found");
+        errorMessage = String.format("Cannot retrieve messages because User with id: '%d' was not found", userId);
+        DebateSpeaker debateSpeaker = getDebateSpeakerByUserId(userId, errorMessage);
 
-        return new ArrayList<String>();
+        List<Intervention> speakerInterventions =
+                interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(
+                        debateRoom.getRoomId(), debateSpeaker.getSpeakerId());
+
+        List<String> messageList = new ArrayList<>();
+
+        for (Intervention intervention: speakerInterventions){
+            messageList.add(intervention.getMessage());
+        }
+
+        return messageList;
     }
 }
