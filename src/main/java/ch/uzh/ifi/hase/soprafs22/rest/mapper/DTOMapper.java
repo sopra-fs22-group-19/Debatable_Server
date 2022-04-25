@@ -63,6 +63,13 @@ public interface DTOMapper {
   @Mapping(source = "debateRoomStatus", target = "debateStatus")
   DebateRoomGetDTO convertEntityToDebateRoomGetDTO(DebateRoom debateRoom);
 
+  @Mapping(source = "roomId", target = "roomId")
+  DebateRoom convertDebateRoomPutDTOtoEntity(DebateRoomPutDTO debateRoomPutDTO);
+
+
+  @Mapping(source = "userId", target = "id")
+  User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
+
 
   // DTOs for the Intervention
   @Mapping(target = "msgId", ignore = true)
@@ -71,7 +78,5 @@ public interface DTOMapper {
   @Mapping(source = "messageContent", target = "message")
   @Mapping(target = "timestamp", ignore = true)
   Intervention convertInterventionPostDTOtoEntity(InterventionPostDTO interventionPostDTO);
-
-
 
 }

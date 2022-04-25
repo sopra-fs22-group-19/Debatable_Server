@@ -46,8 +46,6 @@ public class DebateSpeaker implements RoomParticipant {
 
     public void setDebateSide(DebateSide debateSide) { this.debateSide = debateSide; }
 
-
-
     @Override
     public void update() {
         throw new RuntimeException(NOTIMPLEMENTED);
