@@ -330,6 +330,9 @@ public class DebateService {
             if (topI > toTopJ){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Error: reason <toTopJ has to be larger or equal than topI");
+            } else if (topI < 1) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Error: reason <topI has to be larger or equal than 1");
             } else if (topI > speakerInterventions.size()){
                 return new ArrayList<>();
             }
