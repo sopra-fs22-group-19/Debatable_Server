@@ -326,7 +326,7 @@ public class DebateService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                     "Error: reason <Either both 'top_i' and 'top_j' should be specified or neither of them " +
                             "(neither of them retrieves all messages>");
-        } else if (!Objects.isNull(topI) && !Objects.isNull(toTopJ)) {
+        } else if (!Objects.isNull(topI)) {
             if (topI > toTopJ){
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
                         "Error: reason <toTopJ has to be larger or equal than topI>");
@@ -337,13 +337,13 @@ public class DebateService {
                 return new ArrayList<>();
             }
 
-            int first_idx = speakerInterventions.size() - toTopJ;
-            first_idx = Math.max(0, first_idx);
+            int firstIdx = speakerInterventions.size() - toTopJ;
+            firstIdx = Math.max(0, firstIdx);
 
-            int last_idx = speakerInterventions.size() - topI + 1;
-            last_idx = Math.max(0, last_idx);
+            int lastIdx = speakerInterventions.size() - topI + 1;
+            lastIdx = Math.max(0, lastIdx);
 
-            speakerInterventions = speakerInterventions.subList(first_idx, last_idx);
+            speakerInterventions = speakerInterventions.subList(firstIdx, lastIdx);
         }
 
         for (Intervention intervention : speakerInterventions) {

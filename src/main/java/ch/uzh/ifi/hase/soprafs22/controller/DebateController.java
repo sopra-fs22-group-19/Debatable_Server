@@ -117,10 +117,7 @@ public class DebateController {
                                     @RequestParam(name = "to_top_j", required = false) Integer toTopJ) {
 
         // Get interventions of user specified
-        List<String> messageList = debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
-
-        // convert internal representation of user back to API
-        return messageList;
+        return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
     }
 
 }
