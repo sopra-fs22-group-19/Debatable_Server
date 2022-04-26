@@ -2,11 +2,14 @@ package ch.uzh.ifi.hase.soprafs22.service.debateService.debateRoom;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -15,7 +18,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Date;
 import java.time.LocalDate;
 import java.util.Optional;
 
@@ -38,6 +40,9 @@ class DebateServiceTest {
 
   @Mock
   private DebateSpeakerRepository debateSpeakerRepository;
+
+  @Mock
+  private UserService userService;
 
   @InjectMocks
   private DebateService debateService;
@@ -99,7 +104,7 @@ class DebateServiceTest {
 
     assertEquals(testDebateRoom.getRoomId(), createdDebateRoom.getRoomId());
     assertEquals(testDebateRoom.getCreatorUserId(), createdDebateRoom.getCreatorUserId());
-    assertEquals(testDebateRoom.getDebateRoomStatus(), createdDebateRoom.getDebateRoomStatus());
+    assertEquals(testDebateRoom.getDebateState(), createdDebateRoom.getDebateState());
     assertEquals(testDebateRoom.getDebateTopic(), createdDebateRoom.getDebateTopic());
     assertEquals(testDebateRoom.getSpeakers(), createdDebateRoom.getSpeakers());
   }
@@ -153,18 +158,82 @@ class DebateServiceTest {
       assertThrows(ResponseStatusException.class, () -> debateService.deleteRoom(roomId));
   }
 
+  @Test
+  void changeStatus_wrongRoomId_notFound(){
+
+      DebateRoom testRoom = new DebateRoom();
+      testRoom.setDebateState(DebateState.ONGOING_FOR);
+      Long testRoomId  = 1L;
+
+      Mockito.when(debateRoomRepository.findById(Mockito.any())).thenReturn(null);
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.setStatus(testRoomId, testRoom));
+
+  }
+
+  @Test
+  void changeStatus_AnyStateBesidesOngoing_Successful(){
+      testDebateRoom.setDebateState(DebateState.NOT_STARTED);
+      DebateRoom debateRoomWithStateToUpdate = new DebateRoom();
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ENDED);
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      DebateRoom updatedDebateRoom = debateService.setStatus(testDebateRoom.getRoomId(), debateRoomWithStateToUpdate);
+      assertEquals(updatedDebateRoom.getDebateState(), debateRoomWithStateToUpdate.getDebateState());
+  }
+
+  @Test
+  void changeStatus_Ongoing_Successful() {
+      testDebateRoom.setDebateState(DebateState.READY_TO_START);
+
+      // ONGOING_FOR
+      DebateRoom debateRoomWithStateToUpdate = new DebateRoom();
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_FOR);
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      DebateRoom updatedDebateRoom = debateService.setStatus(testDebateRoom.getRoomId(), debateRoomWithStateToUpdate);
+      assertEquals(updatedDebateRoom.getDebateState(), debateRoomWithStateToUpdate.getDebateState());
+
+      // ONGOING_AGAINST
+      testDebateRoom.setDebateState(DebateState.READY_TO_START);
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_AGAINST);
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      updatedDebateRoom = debateService.setStatus(testDebateRoom.getRoomId(), debateRoomWithStateToUpdate);
+      assertEquals(updatedDebateRoom.getDebateState(), debateRoomWithStateToUpdate.getDebateState());
+
+  }
+
+  @Test
+  void changeStatus_Ongoing_FailNotRightStateForTransition() {
+      testDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
+      Long testRoomId = testDebateRoom.getRoomId();
+
+      // ONGOING_FOR
+      DebateRoom debateRoomWithStateToUpdate = new DebateRoom();
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_FOR);
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.setStatus(testRoomId, debateRoomWithStateToUpdate));
+
+      // ONGOING_AGAINST
+      debateRoomWithStateToUpdate.setDebateState(DebateState.ONGOING_AGAINST);
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.setStatus(testRoomId, debateRoomWithStateToUpdate));
+  }
+
+
     @Test
-    void createIntervention_validInputs_success() {
-        // when -> any object is being save in the userRepository -> return the dummy
-        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
-        interventionPostDTO.setRoomId(1L);
-        interventionPostDTO.setUserId(1L);
-        interventionPostDTO.setMessageContent("test_msg");
-
-        Intervention inputIntervention = new Intervention();
-        inputIntervention.setMessage("test_msg");
-
-        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+    void addSecondParticipant_RoomIdNotFound(){
 
         User testUser = new User();
         testUser.setId(1L);
@@ -172,46 +241,71 @@ class DebateServiceTest {
         testUser.setName("test user's name");
         testUser.setCreationDate(LocalDate.parse("2019-01-21"));
         testUser.setToken("lajflfa");
+
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
+        Mockito.when(userService.createGuestUser(Mockito.any())).thenReturn(testUser);
 
-        Intervention newIntervention = new Intervention();
-        newIntervention.setMsgId(1L);
-        newIntervention.setPostUser(testUser);
-        newIntervention.setDebateRoom(testDebateRoom);
-        newIntervention.setMessage("test_msg");
-        newIntervention.setTimestamp(Date.valueOf("2019-01-21"));
+        DebateRoom testRoom = new DebateRoom();
+        testRoom.setRoomId(-1L);
 
-        Mockito.when(interventionRepository.save(Mockito.any())).thenReturn(newIntervention);
-
-        Intervention savedIntervention = debateService.createIntervention(inputIntervention, interventionPostDTO);
-
-        assertEquals(interventionPostDTO.getMessageContent(), savedIntervention.getMessage());
-        assertEquals(interventionPostDTO.getUserId(),savedIntervention.getPostUser().getId());
-        assertEquals(interventionPostDTO.getRoomId(),savedIntervention.getDebateRoom().getRoomId());
+        assertThrows(ResponseStatusException.class, () -> debateService.addParticipantToRoom(testRoom, testUser));
     }
 
     @Test
-    void createIntervention_wrongRoomId_notfound(){
-        // when -> setup additional mocks for UserRepository
-        Intervention inputIntervention = new Intervention();
-        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+    void addSecondParticipant_Success(){
 
-        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(null);
+        User testUser = new User();
+        testUser.setId(2L);
+        testUser.setUsername("test username 2");
+        testUser.setName("test user's name 2");
+        testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+        testUser.setToken("lajflfa");
 
-        assertThrows(ResponseStatusException.class,
-                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        DebateRoom updatedRoom = debateService.addParticipantToRoom(testDebateRoom, testUser);
+
+        assertEquals(updatedRoom.getUser2().getId(), testUser.getId());
+        assertEquals(updatedRoom.getUser2().getName(), testUser.getName());
+
     }
 
     @Test
-    void createIntervention_wrongUserId_notfound(){
-        // when -> setup additional mocks for UserRepository
-        Intervention inputIntervention = new Intervention();
-        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+    void addSecondParticipant_Guest_Success(){
 
-        Mockito.when(userRepository.findById(Mockito.any())).thenReturn(null);
+        User testUser = new User();
+        testUser.setId(null);
 
-        assertThrows(ResponseStatusException.class,
-                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+        User testUser2 = new User();
+        testUser2.setId(2L);
+        testUser2.setUsername("test username 2");
+        testUser2.setName("test user's name 2");
+        testUser2.setCreationDate(LocalDate.parse("2019-01-21"));
+        testUser2.setToken("lajflfa");
+
+        User guestUser = new User();
+        guestUser.setId(1L);
+        guestUser.setUsername("Guest");
+        guestUser.setName("Guest");
+        guestUser.setCreationDate(LocalDate.parse("2019-01-21"));
+        guestUser.setToken("lajflfa");
+
+        DebateRoomPostDTO debateRoomPostDTO = new DebateRoomPostDTO();
+        debateRoomPostDTO.setUserId(20L);
+        debateRoomPostDTO.setDebateId(1L);
+        debateRoomPostDTO.setSide(DebateSide.FOR);
+
+        DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO);
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser2);
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(createdDebateRoom);
+        Mockito.when(userService.createGuestUser(Mockito.any())).thenReturn(guestUser);
+
+        DebateRoom updatedRoom = debateService.addParticipantToRoom(createdDebateRoom, testUser);
+
+        assertEquals(updatedRoom.getUser2().getId(), guestUser.getId());
+        assertEquals(updatedRoom.getUser2().getName(), guestUser.getName());
+
     }
 
 }

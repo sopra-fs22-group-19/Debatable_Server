@@ -7,12 +7,17 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.DebateRoomRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomStatusPutDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -45,6 +50,12 @@ class DebateControllerDebateRoomTest {
 
   @Autowired
   private MockMvc mockMvc;
+
+  @Mock
+  private UserService userService;
+
+  @Mock
+  private DebateRoomRepository debateRoomRepository;
 
   @MockBean
   private DebateService debateService;
@@ -92,7 +103,7 @@ class DebateControllerDebateRoomTest {
   @Test
   void createDebateRoom_UserFOR_validInput_debateRoomCreated() throws Exception {
     // Check the end point returns the appropriate Debate Room object
-    testDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_FOR);
+    testDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
 
     debateRoomPostDTO.setSide(DebateSide.FOR);
 
@@ -116,14 +127,14 @@ class DebateControllerDebateRoomTest {
         .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
         .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
         .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-        .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+        .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
 
   }
 
   @Test
   void createDebateRoom_UserAGAINST_validInput_debateRoomCreated() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      testDebateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+      testDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
 
       debateRoomPostDTO.setSide(DebateSide.AGAINST);
 
@@ -148,14 +159,14 @@ class DebateControllerDebateRoomTest {
               .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
               .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
               .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
 
   }
 
   @Test
   void getDebateRoom_DebateRoomExists() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      given(debateService.getDebateRoom(Mockito.any())).willReturn(testDebateRoom);
+      given(debateService.getDebateRoom(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = get("/debates/rooms/"+ testDebateRoom.getRoomId())
@@ -173,13 +184,14 @@ class DebateControllerDebateRoomTest {
               .andExpect(jsonPath("$.user1.name", is(testDebateRoom.getUser1().getName())))
               .andExpect(jsonPath("$.user1.creation_date", is(testDebateRoom.getUser1().getCreationDate().toString())))
               .andExpect(jsonPath("$.side1", is(testDebateRoom.getSide1().name())))
-              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateRoomStatus().name())));
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())));
   }
 
   @Test
   void getDebateRoom_DebateRoomNotFound() throws Exception {
       // Check the end point returns the appropriate Debate Room object
-      given(debateService.getDebateRoom(Mockito.any())).willReturn(null);
+      Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
+      doThrow(eConflict).when(debateService).getDebateRoom(Mockito.any(), Mockito.any());
 
       // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + testDebateRoom.getRoomId())
@@ -210,13 +222,166 @@ class DebateControllerDebateRoomTest {
       doThrow(eConflict).when(debateService).deleteRoom(Mockito.any());
 
       // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = get("/debates/rooms/" + testDebateRoom.getRoomId())
+      MockHttpServletRequestBuilder postRequest = delete("/debates/rooms/" + testDebateRoom.getRoomId())
               .contentType(MediaType.APPLICATION_JSON);
 
       // then
       mockMvc.perform(postRequest)
               .andExpect(status().isNotFound());
   }
+
+  @Test
+  void addSecondParticipant_success() throws Exception {
+
+      User testUser = new User();
+      testUser.setId(2L);
+      testUser.setUsername("test username 2");
+      testUser.setName("test user's name 2");
+      testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+      testUser.setToken("lajflfa");
+
+      DebateSpeaker debateSpeaker = new DebateSpeaker();
+      debateSpeaker.setUserAssociated(testUser);
+      debateSpeaker.setDebateRoom(testDebateRoom);
+      testDebateRoom.setUser2(debateSpeaker);
+      testDebateRoom.setDebateState(DebateState.READY_TO_START);
+
+      UserPutDTO userPutDTO = new UserPutDTO();
+      userPutDTO.setUserId(testDebateRoom.getRoomId());
+
+      given(debateService.addParticipantToRoom(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
+
+      MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId())
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(userPutDTO));
+      // then
+      mockMvc.perform(putRequest)
+              .andExpect(status().isNoContent())
+              .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
+              .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
+              .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
+              .andExpect(jsonPath("$.user1.userId", is(testDebateRoom.getUser1().getId().intValue())))
+              .andExpect(jsonPath("$.user1.username", is(testDebateRoom.getUser1().getUsername())))
+              .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())))
+              .andExpect(jsonPath("$.user2.userId", is(testUser.getId().intValue())))
+              .andExpect(jsonPath("$.user2.username", is(testUser.getUsername())))
+              .andExpect(jsonPath("user2.name", is(testUser.getName())));
+  }
+
+    @Test
+    void addSecondParticipant_Guest_success() throws Exception {
+
+        User guestUser = new User();
+        guestUser.setId(20L);
+        guestUser.setUsername("Guest");
+        guestUser.setName("Guest");
+        guestUser.setCreationDate(LocalDate.parse("2019-01-21"));
+        guestUser.setToken("lajflfa");
+
+        DebateSpeaker debateSpeaker = new DebateSpeaker();
+        debateSpeaker.setUserAssociated(guestUser);
+        debateSpeaker.setDebateRoom(testDebateRoom);
+        testDebateRoom.setUser2(debateSpeaker);
+        testDebateRoom.setDebateState(DebateState.READY_TO_START);
+
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setUserId(null);
+
+        given(debateService.addParticipantToRoom(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
+        given(userService.createGuestUser(Mockito.any())).willReturn(guestUser);
+
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPutDTO));
+        // then
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
+                .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
+                .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
+                .andExpect(jsonPath("$.user1.userId", is(testDebateRoom.getUser1().getId().intValue())))
+                .andExpect(jsonPath("$.user1.username", is(testDebateRoom.getUser1().getUsername())))
+                .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().name())))
+                .andExpect(jsonPath("$.user2.userId", is(guestUser.getId().intValue())))
+                .andExpect(jsonPath("$.user2.username", is(guestUser.getUsername())))
+                .andExpect(jsonPath("user2.name", is(guestUser.getName())));
+
+    }
+
+    @Test
+    void addSecondParticipant_RoomIdNotFound() throws Exception {
+
+        UserPutDTO userPutDTO = new UserPutDTO();
+        userPutDTO.setUserId(null);
+
+        Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
+        doThrow(eConflict).when(debateService).addParticipantToRoom(Mockito.any(), Mockito.any());
+
+        given(debateRoomRepository.findByRoomId(Mockito.any())).willReturn(null);
+
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ -10)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(userPutDTO));
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNotFound());
+
+    }
+
+  @Test
+  void setStatus_StartDebate_Success() throws Exception {
+
+        DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+        debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
+
+        testDebateRoom.setDebateState(DebateState.READY_TO_START);
+        given(debateService.setStatus(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
+
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(debateRoomStatusPutDTO));
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNoContent())
+                .andExpect(jsonPath("$.debateStatus", is(testDebateRoom.getDebateState().toString())));
+  }
+
+  @Test
+  void setStatus_RoomNotFound() throws Exception {
+
+        DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+        debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
+
+        Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
+        doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
+
+        MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(debateRoomStatusPutDTO));
+
+        mockMvc.perform(putRequest)
+                .andExpect(status().isNotFound());
+  }
+
+  @Test
+  void setStatus_StartDebate_WrongStateNotAllowed() throws Exception {
+
+      testDebateRoom.setDebateState(DebateState.ONE_USER_FOR);
+
+      DebateRoomStatusPutDTO debateRoomStatusPutDTO = new DebateRoomStatusPutDTO();
+      debateRoomStatusPutDTO.setDebateState(DebateState.ONGOING_FOR);
+
+      Exception eConflict = new ResponseStatusException(HttpStatus.METHOD_NOT_ALLOWED);
+      doThrow(eConflict).when(debateService).setStatus(Mockito.any(), Mockito.any());
+
+      MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId() + "/status")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(debateRoomStatusPutDTO));
+
+      mockMvc.perform(putRequest)
+              .andExpect(status().isMethodNotAllowed());
+    }
+
 
 
   /**

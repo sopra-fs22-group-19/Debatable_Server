@@ -4,8 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -33,12 +32,12 @@ public class Intervention implements Serializable {
     private DebateRoom debateRoom;
 
     @ManyToOne
-    @JoinColumn(name = "user_post_id", nullable = false)
-    private User postUser;
+    @JoinColumn(name = "posting_speaker_speaker_id", nullable = false)
+    private DebateSpeaker postingSpeaker;
 
     @CreationTimestamp
     @Column(nullable = false)
-    private Date timestamp;
+    private LocalDateTime timestamp;
 
     @Column(nullable = false)
     private String message;
@@ -60,19 +59,19 @@ public class Intervention implements Serializable {
         this.debateRoom = debateRoom;
     }
 
-    public User getPostUser() {
-        return postUser;
+    public DebateSpeaker getPostingSpeaker() {
+        return postingSpeaker;
     }
 
-    public void setPostUser(User postUser) {
-        this.postUser = postUser;
+    public void setPostingSpeaker(DebateSpeaker postingSpeaker) {
+        this.postingSpeaker = postingSpeaker;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

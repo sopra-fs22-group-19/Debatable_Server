@@ -81,7 +81,7 @@ class DebateControllerDebateTopicTest {
     debateRoom.setCreatorUserId(1L);
     debateRoom.setDebateTopic(debateTopic);
     debateRoom.setSpeakers(speakerList);
-    debateRoom.setDebateRoomStatus(DebateState.ONE_USER_AGAINST);
+    debateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
 
   }
 
