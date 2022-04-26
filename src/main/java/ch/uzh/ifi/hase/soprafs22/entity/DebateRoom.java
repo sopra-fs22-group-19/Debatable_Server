@@ -190,8 +190,6 @@ public class DebateRoom implements Serializable, Room {
           String errorMessage = "It is not the speaker's turn to intervene";
           throw new SpeakerNotAllowedToPost(errorMessage);
       }
-        
-
   }
 
   public List<Intervention> getInterventions() {

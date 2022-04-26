@@ -20,13 +20,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -69,7 +70,7 @@ class DebateControllerInterventionTest {
         debateTopic.setTopic("Topic 1");
         debateTopic.setTopicDescription("Topic 1' description");
 
-        // Create reference DebateRoom
+        // Create refegetDebateRoomrence DebateRoom
         debateRoom = new DebateRoom();
         debateRoom.setRoomId(1L);
         debateRoom.setCreatorUserId(1L);
@@ -88,7 +89,7 @@ class DebateControllerInterventionTest {
         inputIntervention.setPostingSpeaker(debatesSpeaker1);
         inputIntervention.setMessage("test_msg");
         inputIntervention.setMsgId(1L);
-        inputIntervention.setTimestamp(Date.valueOf("2019-01-21"));
+        inputIntervention.setTimestamp(LocalDateTime.now());
 
         InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
         interventionPostDTO.setRoomId(1L);
@@ -145,6 +146,20 @@ class DebateControllerInterventionTest {
 
     }
 
+    @Test
+    void getMessages_invalidRoomId_return_notfound()throws Exception {
+
+        Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+        doThrow(eConflict).when(debateService).getUserDebateInterventions(
+                Mockito.any(), Mockito.any(), Mockito.any(), Mockito.any());
+
+        MockHttpServletRequestBuilder postRequest = get("/debates/rooms/1/users/1/msgs")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(postRequest).andExpect(status().isNotFound());
+
+    }
 
     private String asJsonString(final Object object) {
         try {
