@@ -4,8 +4,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.io.Serializable;
-
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -38,7 +37,7 @@ public class Intervention implements Serializable {
 
     @CreationTimestamp
     @Column(nullable = false)
-    private Date timestamp;
+    private LocalDateTime timestamp;
 
     @Column(nullable = false)
     private String message;
@@ -68,11 +67,11 @@ public class Intervention implements Serializable {
         this.postingSpeaker = postingSpeaker;
     }
 
-    public Date getTimestamp() {
+    public LocalDateTime getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Date timestamp) {
+    public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
 

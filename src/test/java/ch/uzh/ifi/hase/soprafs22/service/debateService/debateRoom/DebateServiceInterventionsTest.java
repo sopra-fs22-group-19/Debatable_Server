@@ -1,0 +1,434 @@
+package ch.uzh.ifi.hase.soprafs22.service.debateService.debateRoom;
+
+import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.repository.*;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
+import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class DebateServiceInterventionsTest {
+
+  @Mock
+  private DebateRoomRepository debateRoomRepository;
+
+  @Mock
+  private DebateTopicRepository debateTopicRepository;
+
+  @Mock
+  private UserRepository userRepository;
+
+  @Mock
+  private InterventionRepository interventionRepository;
+
+  @Mock
+  private DebateSpeakerRepository debateSpeakerRepository;
+
+  @Mock
+  private UserService userService;
+
+  @InjectMocks
+  private DebateService debateService;
+
+  private DebateRoom testDebateRoom;
+  private DebateSpeaker testDebateSpeaker1;
+
+  private DebateSpeaker testDebateSpeaker2;
+
+  @BeforeEach
+  public void setup() {
+    MockitoAnnotations.openMocks(this);
+
+    // given
+    User creatingUser = new User();
+    creatingUser.setId(1L);
+    creatingUser.setUsername("test username FOR");
+    creatingUser.setName("test user's name FOR");
+    creatingUser.setCreationDate(LocalDate.parse("2019-01-21"));
+    creatingUser.setToken("lajflfa");
+
+    testDebateSpeaker1 = new DebateSpeaker();
+    testDebateSpeaker1.setSpeakerId(1L);
+    testDebateSpeaker1.setUserAssociated(creatingUser);
+    testDebateSpeaker1.setDebateSide(DebateSide.FOR);
+
+    User opposingUser = new User();
+    opposingUser.setId(2L);
+    opposingUser.setUsername("test username AGAINST");
+    opposingUser.setName("test user's name AGAINST");
+    opposingUser.setCreationDate(LocalDate.parse("2019-01-21"));
+    opposingUser.setToken("lajflfa");
+
+    testDebateSpeaker2 = new DebateSpeaker();
+    testDebateSpeaker2.setSpeakerId(2L);
+    testDebateSpeaker2.setUserAssociated(creatingUser);
+    testDebateSpeaker2.setDebateSide(DebateSide.AGAINST);
+
+    DebateTopic testDebateTopic = new DebateTopic();
+    testDebateTopic.setCreatorUserId(1L);
+    testDebateTopic.setDebateTopicId(1L);
+    testDebateTopic.setTopic("Topic 1");
+    testDebateTopic.setTopicDescription("Topic 1' description");
+
+    testDebateRoom = new DebateRoom();
+    testDebateRoom.setRoomId(1L);
+    testDebateRoom.setCreatorUserId(1L);
+    testDebateRoom.setDebateTopic(testDebateTopic);
+    testDebateRoom.setUser1(testDebateSpeaker1);
+    testDebateRoom.setUser1(testDebateSpeaker2);
+
+    //Mockito.when(debateRoomRepository.save(Mockito.any())).thenReturn(testDebateRoom);
+    //Mockito.when(debateSpeakerRepository.save(Mockito.any())).thenReturn(debateSpeaker1);
+    //Mockito.when(debateTopicRepository.findById(Mockito.any())).thenReturn(Optional.of(testDebateTopic));
+    //Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(creatingUser));
+  }
+
+  @Test
+  void createIntervention_validInputs_success() {
+      // when -> any object is being save in the userRepository -> return the dummy
+      testDebateRoom.setDebateState(DebateState.ONGOING_FOR);
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+      interventionPostDTO.setRoomId(1L);
+      interventionPostDTO.setUserId(1L);
+      interventionPostDTO.setMessageContent("test_msg");
+
+      Intervention inputIntervention = new Intervention();
+      inputIntervention.setMessage("test_msg");
+
+      User testUser = new User();
+      testUser.setId(1L);
+      testUser.setUsername("test username");
+      testUser.setName("test user's name");
+      testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+      testUser.setToken("lajflfa");
+      Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser);
+
+      DebateSpeaker testDebateSpeaker = new DebateSpeaker();
+      testDebateSpeaker.setUserAssociated(testUser);
+      testDebateSpeaker.setDebateSide(DebateSide.FOR);
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+
+      Intervention newIntervention = new Intervention();
+      newIntervention.setMsgId(1L);
+      newIntervention.setPostingSpeaker(testDebateSpeaker);
+      newIntervention.setDebateRoom(testDebateRoom);
+      newIntervention.setMessage("test_msg");
+      newIntervention.setTimestamp(LocalDateTime.now());
+
+      Mockito.when(interventionRepository.save(Mockito.any())).thenReturn(newIntervention);
+
+      Intervention savedIntervention = debateService.createIntervention(inputIntervention, interventionPostDTO);
+
+      assertEquals(interventionPostDTO.getMessageContent(), savedIntervention.getMessage());
+      assertEquals(interventionPostDTO.getUserId(),savedIntervention.getPostingSpeaker().getUserAssociated().getId());
+      assertEquals(interventionPostDTO.getRoomId(),savedIntervention.getDebateRoom().getRoomId());
+  }
+
+  @Test
+  void createIntervention_NotSpeakersTurn() {
+      // when -> any object is being save in the userRepository -> return the dummy
+      InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+      interventionPostDTO.setRoomId(1L);
+      interventionPostDTO.setUserId(1L);
+      interventionPostDTO.setMessageContent("test_msg");
+
+      Intervention inputIntervention = new Intervention();
+      inputIntervention.setMessage("test_msg");
+
+      User testUser = new User();
+      testUser.setId(1L);
+      testUser.setUsername("test username");
+      testUser.setName("test user's name");
+      testUser.setCreationDate(LocalDate.parse("2019-01-21"));
+      testUser.setToken("lajflfa");
+      Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
+
+      DebateSpeaker testDebateSpeaker = new DebateSpeaker();
+      testDebateSpeaker.setUserAssociated(testUser);
+
+      Intervention newIntervention = new Intervention();
+      newIntervention.setMsgId(1L);
+      newIntervention.setPostingSpeaker(testDebateSpeaker);
+      newIntervention.setDebateRoom(testDebateRoom);
+      newIntervention.setMessage("test_msg");
+      newIntervention.setTimestamp(LocalDateTime.now());
+
+      Mockito.when(interventionRepository.save(Mockito.any())).thenReturn(newIntervention);
+
+      testDebateSpeaker.setDebateSide(DebateSide.AGAINST);
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+
+      testDebateRoom.setDebateState(DebateState.ONGOING_FOR);
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+
+      testDebateSpeaker.setDebateSide(DebateSide.FOR);
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+
+      testDebateRoom.setDebateState(DebateState.ONGOING_AGAINST);
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+  }
+
+  @Test
+  void createIntervention_wrongRoomId_notfound(){
+      // when -> setup additional mocks for UserRepository
+      Intervention inputIntervention = new Intervention();
+      InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(null);
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+  }
+
+  @Test
+  void createIntervention_wrongUserId_notfound(){
+      // when -> setup additional mocks for UserRepository
+      Intervention inputIntervention = new Intervention();
+      InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+
+      Mockito.when(userRepository.findById(Mockito.any())).thenReturn(null);
+
+      assertThrows(ResponseStatusException.class,
+              () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+  }
+
+  @Test
+  void getInterventionsUser_getAllInterventions_Success(){
+      int totalNumberInterventions = 3;
+
+      // Create ordered interventions
+      String baseString = "Debate Speaker: %d, Message #%d";
+      ArrayList<String> expectedInterventionStringSpeaker1 = new ArrayList<>();
+      List<Intervention> interventionListSpeaker1 = new ArrayList<>();
+      ArrayList<String> expectedInterventionStringSpeaker2 = new ArrayList<>();
+      List<Intervention> interventionListSpeaker2 = new ArrayList<>();
+      int j = 0;
+      for (DebateSpeaker debateSpeaker: Arrays.asList(testDebateSpeaker1, testDebateSpeaker2)){
+          for (int i = 0; i < totalNumberInterventions; i++){
+              Intervention intervention = new Intervention();
+              intervention.setPostingSpeaker(testDebateSpeaker1);
+              intervention.setDebateRoom(testDebateRoom);
+              intervention.setTimestamp(LocalDateTime.now());
+              intervention.setMessage(String.format(baseString, debateSpeaker.getSpeakerId(), i));
+              testDebateRoom.getInterventions().add(intervention);
+
+              if (j==0) {
+                  interventionListSpeaker1.add(intervention);
+                  expectedInterventionStringSpeaker1.add(intervention.getMessage());
+              } else {
+                  interventionListSpeaker2.add(intervention);
+                  expectedInterventionStringSpeaker2.add(intervention.getMessage());
+              }
+          }
+          j++;
+      }
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+      Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+              .thenReturn(interventionListSpeaker1);
+      List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
+              testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), null, null);
+
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+      Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+              .thenReturn(interventionListSpeaker2);
+      List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
+              testDebateRoom.getRoomId(), testDebateSpeaker2.getUserAssociated().getId(), null, null);
+
+      assertEquals(expectedInterventionStringSpeaker1, actualInterventionStringSpeaker1);
+      assertEquals(expectedInterventionStringSpeaker2, actualInterventionStringSpeaker2);
+  }
+
+  @Test
+  void getInterventionsUser_getTopIToTopJInterventions_InsideTotalInteventions_Success(){
+      // Create ordered interventions
+
+      int totalNumberInterventions = 10;
+      int topI = 5;
+      int toTopJ = 8;
+      String baseString = "Debate Speaker: %d, Message #%d";
+      ArrayList<String> expectedInterventionStringSpeaker1 = new ArrayList<>();
+      List<Intervention> interventionListSpeaker1 = new ArrayList<>();
+      ArrayList<String> expectedInterventionStringSpeaker2 = new ArrayList<>();
+      List<Intervention> interventionListSpeaker2 = new ArrayList<>();
+
+      int j = 0;
+      for (DebateSpeaker debateSpeaker: Arrays.asList(testDebateSpeaker1, testDebateSpeaker2)){
+          for (int i = 0; i < totalNumberInterventions; i++){
+              Intervention intervention = new Intervention();
+              intervention.setPostingSpeaker(testDebateSpeaker1);
+              intervention.setDebateRoom(testDebateRoom);
+              intervention.setTimestamp(LocalDateTime.now());
+              intervention.setMessage(String.format(baseString, debateSpeaker.getSpeakerId(), i));
+              testDebateRoom.getInterventions().add(intervention);
+
+              boolean addToExpectedIntevention = (totalNumberInterventions - topI >= i) && (i >= totalNumberInterventions - toTopJ);
+              if (j==0) {
+                  interventionListSpeaker1.add(intervention);
+                  if (addToExpectedIntevention)
+                    expectedInterventionStringSpeaker1.add(intervention.getMessage());
+              } else {
+                  interventionListSpeaker2.add(intervention);
+                  if (addToExpectedIntevention)
+                      expectedInterventionStringSpeaker2.add(intervention.getMessage());
+              }
+          }
+          j++;
+      }
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+      Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+              .thenReturn(interventionListSpeaker1);
+      List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
+              testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), topI, toTopJ);
+
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+      Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+              .thenReturn(interventionListSpeaker2);
+      List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
+              testDebateRoom.getRoomId(), testDebateSpeaker2.getUserAssociated().getId(), topI, toTopJ);
+
+      assertEquals(expectedInterventionStringSpeaker1, actualInterventionStringSpeaker1);
+      assertEquals(expectedInterventionStringSpeaker2, actualInterventionStringSpeaker2);
+  }
+
+
+  @Test
+  void getInterventionsUser_getTopIToTopJInterventions_ToTopJLargerTotalInteventions_Success(){
+      // Create ordered interventions
+
+      int totalNumberInterventions = 6;
+      int topI = 5;
+      int toTopJ = 8;
+      String baseString = "Debate Speaker: %d, Message #%d";
+      ArrayList<String> expectedInterventionStringSpeaker1 = new ArrayList<>();
+      List<Intervention> interventionListSpeaker1 = new ArrayList<>();
+      ArrayList<String> expectedInterventionStringSpeaker2 = new ArrayList<>();
+      List<Intervention> interventionListSpeaker2 = new ArrayList<>();
+
+      int j = 0;
+      for (DebateSpeaker debateSpeaker: Arrays.asList(testDebateSpeaker1, testDebateSpeaker2)){
+          for (int i = 0; i < totalNumberInterventions; i++){
+              Intervention intervention = new Intervention();
+              intervention.setPostingSpeaker(testDebateSpeaker1);
+              intervention.setDebateRoom(testDebateRoom);
+              intervention.setTimestamp(LocalDateTime.now());
+              intervention.setMessage(String.format(baseString, debateSpeaker.getSpeakerId(), i));
+              testDebateRoom.getInterventions().add(intervention);
+
+              boolean addToExpectedIntevention = (totalNumberInterventions - topI >= i);
+              if (j==0) {
+                  interventionListSpeaker1.add(intervention);
+                  if (addToExpectedIntevention)
+                      expectedInterventionStringSpeaker1.add(intervention.getMessage());
+              } else {
+                  interventionListSpeaker2.add(intervention);
+                  if (addToExpectedIntevention)
+                      expectedInterventionStringSpeaker2.add(intervention.getMessage());
+              }
+          }
+          j++;
+      }
+
+      Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+      Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+              .thenReturn(interventionListSpeaker1);
+      List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
+              testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), topI, toTopJ);
+
+      Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+      Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+              .thenReturn(interventionListSpeaker2);
+      List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
+              testDebateRoom.getRoomId(), testDebateSpeaker2.getUserAssociated().getId(), topI, toTopJ);
+
+      assertEquals(expectedInterventionStringSpeaker1, actualInterventionStringSpeaker1);
+      assertEquals(expectedInterventionStringSpeaker2, actualInterventionStringSpeaker2);
+  }
+
+    @Test
+    void getInterventionsUser_getTopNInterventions_TopILargerThanTotalInteventions_Success(){
+        // Create ordered interventions
+
+        int totalNumberInterventions = 4;
+        int topI = 5;
+        int toTopJ = 8;
+        String baseString = "Debate Speaker: %d, Message #%d";
+        ArrayList<String> expectedInterventionStringSpeaker1 = new ArrayList<>();
+        List<Intervention> interventionListSpeaker1 = new ArrayList<>();
+        ArrayList<String> expectedInterventionStringSpeaker2 = new ArrayList<>();
+        List<Intervention> interventionListSpeaker2 = new ArrayList<>();
+
+        int j = 0;
+        for (DebateSpeaker debateSpeaker: Arrays.asList(testDebateSpeaker1, testDebateSpeaker2)){
+            for (int i = 0; i < totalNumberInterventions; i++){
+                Intervention intervention = new Intervention();
+                intervention.setPostingSpeaker(testDebateSpeaker1);
+                intervention.setDebateRoom(testDebateRoom);
+                intervention.setTimestamp(LocalDateTime.now());
+                intervention.setMessage(String.format(baseString, debateSpeaker.getSpeakerId(), i));
+                testDebateRoom.getInterventions().add(intervention);
+
+                if (j==0) {
+                    interventionListSpeaker1.add(intervention);
+                } else {
+                    interventionListSpeaker2.add(intervention);
+                }
+            }
+            j++;
+        }
+
+        Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
+
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+                .thenReturn(interventionListSpeaker1);
+        List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
+                testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), topI, toTopJ);
+
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+        Mockito.when(interventionRepository. findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(),Mockito.any()))
+                .thenReturn(interventionListSpeaker2);
+        List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
+                testDebateRoom.getRoomId(), testDebateSpeaker2.getUserAssociated().getId(), topI, toTopJ);
+
+        assertEquals(expectedInterventionStringSpeaker1, actualInterventionStringSpeaker1);
+        assertEquals(expectedInterventionStringSpeaker2, actualInterventionStringSpeaker2);
+    }
+
+}

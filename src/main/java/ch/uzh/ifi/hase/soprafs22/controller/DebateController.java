@@ -109,13 +109,15 @@ public class DebateController {
         // convert internal representation of user back to API
     }
 
-    @GetMapping("/debates/rooms/{roomId}/users/{userId}/msg")
+    @GetMapping("/debates/rooms/{roomId}/users/{userId}/msgs")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
-    public List<String> getMessages(@PathVariable("roomId") Long roomId, @PathVariable("userId") Long userId) {
+    public List<String> getMessages(@PathVariable("roomId") Long roomId, @PathVariable("userId") Long userId,
+                                    @RequestParam(name = "top_i", required = false) Integer topI,
+                                    @RequestParam(name = "to_top_j", required = false) Integer toTopJ) {
 
         // Get interventions of user specified
-        List<String> messageList = debateService.getUserDebateInterventions(roomId, userId);
+        List<String> messageList = debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
 
         // convert internal representation of user back to API
         return messageList;

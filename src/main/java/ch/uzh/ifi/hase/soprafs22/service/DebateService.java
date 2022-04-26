@@ -308,7 +308,7 @@ public class DebateService {
     }
 
 
-    public List<String> getUserDebateInterventions(Long roomId, Long userId) {
+    public List<String> getUserDebateInterventions(Long roomId, Long userId, Integer topI, Integer toTopJ) {
         String errorMessage = String.format("Cannot retrieve messages because Room with id: '%d' was not found", roomId);
         DebateRoom debateRoom = getDebateRoom(roomId, errorMessage);
 
@@ -319,9 +319,31 @@ public class DebateService {
                 interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(
                         debateRoom.getRoomId(), debateSpeaker.getSpeakerId());
 
+
         List<String> messageList = new ArrayList<>();
 
-        for (Intervention intervention: speakerInterventions){
+        if ((Objects.isNull(topI) && !Objects.isNull(toTopJ)) || (!Objects.isNull(topI) && Objects.isNull(toTopJ))) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "Error: reason <Either both 'top_i' and 'top_j' should be specified or neither of them " +
+                            "(neither of them retrieves all messages>");
+        } else if (!Objects.isNull(topI) && !Objects.isNull(toTopJ)) {
+            if (topI > toTopJ){
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "Error: reason <toTopJ has to be larger or equal than topI");
+            } else if (topI > speakerInterventions.size()){
+                return new ArrayList<>();
+            }
+
+            int first_idx = speakerInterventions.size() - toTopJ;
+            first_idx = Math.max(0, first_idx);
+
+            int last_idx = speakerInterventions.size() - topI + 1;
+            last_idx = Math.max(0, last_idx);
+
+            speakerInterventions = speakerInterventions.subList(first_idx, last_idx);
+        }
+
+        for (Intervention intervention : speakerInterventions) {
             messageList.add(intervention.getMessage());
         }
 

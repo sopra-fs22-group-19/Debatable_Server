@@ -20,8 +20,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.sql.Date;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +88,7 @@ class DebateControllerInterventionTest {
         inputIntervention.setPostingSpeaker(debatesSpeaker1);
         inputIntervention.setMessage("test_msg");
         inputIntervention.setMsgId(1L);
-        inputIntervention.setTimestamp(Date.valueOf("2019-01-21"));
+        inputIntervention.setTimestamp(LocalDateTime.now());
 
         InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
         interventionPostDTO.setRoomId(1L);
