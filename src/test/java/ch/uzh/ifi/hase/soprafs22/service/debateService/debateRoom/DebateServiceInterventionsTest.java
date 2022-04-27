@@ -123,7 +123,7 @@ class DebateServiceInterventionsTest {
         DebateSpeaker testDebateSpeaker = new DebateSpeaker();
         testDebateSpeaker.setUserAssociated(testUser);
         testDebateSpeaker.setDebateSide(DebateSide.FOR);
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker);
 
         Intervention newIntervention = new Intervention();
         newIntervention.setMsgId(1L);
@@ -173,7 +173,8 @@ class DebateServiceInterventionsTest {
         Mockito.when(interventionRepository.save(Mockito.any())).thenReturn(newIntervention);
 
         testDebateSpeaker.setDebateSide(DebateSide.AGAINST);
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any()))
+                .thenReturn(testDebateSpeaker);
 
         testDebateRoom.setDebateState(DebateState.ONGOING_FOR);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
@@ -182,7 +183,8 @@ class DebateServiceInterventionsTest {
                 () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
 
         testDebateSpeaker.setDebateSide(DebateSide.FOR);
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any()))
+                .thenReturn(testDebateSpeaker);
 
         testDebateRoom.setDebateState(DebateState.ONGOING_AGAINST);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
@@ -252,13 +254,13 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker1);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker1);
         List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
                 testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), null, null);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker2);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker2);
         List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
@@ -308,13 +310,13 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker1);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker1);
         List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
                 testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), topI, toTopJ);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker2);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker2);
         List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
@@ -365,13 +367,13 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker1);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker1);
         List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
                 testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), topI, toTopJ);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker2);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker2);
         List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
@@ -416,13 +418,13 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker1);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker1);
         List<String> actualInterventionStringSpeaker1 = debateService.getUserDebateInterventions(
                 testDebateRoom.getRoomId(), testDebateSpeaker1.getUserAssociated().getId(), topI, toTopJ);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker2);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker2);
         Mockito.when(interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(Mockito.any(), Mockito.any()))
                 .thenReturn(interventionListSpeaker2);
         List<String> actualInterventionStringSpeaker2 = debateService.getUserDebateInterventions(
@@ -454,7 +456,7 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(null);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(null);
 
         assertThrows(ResponseStatusException.class,
                 () -> debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ));
@@ -468,7 +470,7 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker1);
 
         Integer topI_1 = null;
         Integer toTopJ_1 = 4;
@@ -488,7 +490,7 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker1);
 
         Integer topI = 10;
         Integer toTopJ = 1;
@@ -504,7 +506,7 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
-        Mockito.when(debateSpeakerRepository.findByUserAssociatedId(Mockito.any())).thenReturn(testDebateSpeaker1);
+        Mockito.when(debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any())).thenReturn(testDebateSpeaker1);
 
         Integer topI = 0;
         Integer toTopJ = 4;
