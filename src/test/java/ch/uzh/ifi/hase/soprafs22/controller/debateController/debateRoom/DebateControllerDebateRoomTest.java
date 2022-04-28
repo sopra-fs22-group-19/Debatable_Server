@@ -164,6 +164,25 @@ class DebateControllerDebateRoomTest {
   }
 
   @Test
+  void createDebateRoom_UserNotOrDebateTopicNotFound() throws Exception {
+      // Check the end point returns the appropriate Debate Room object
+      testDebateRoom.setDebateState(DebateState.ONE_USER_AGAINST);
+      debateRoomPostDTO.setSide(DebateSide.AGAINST);
+
+      Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
+      doThrow(eConflict).when(debateService).createDebateRoom(Mockito.any(), Mockito.any());
+
+      // when/then -> do the request + validate the result
+      MockHttpServletRequestBuilder postRequest = post("/debates/rooms/")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(debateRoomPostDTO));
+
+      // then
+      mockMvc.perform(postRequest)
+              .andExpect(status().isNotFound());
+  }
+
+  @Test
   void getDebateRoom_DebateRoomExists() throws Exception {
       // Check the end point returns the appropriate Debate Room object
       given(debateService.getDebateRoom(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
