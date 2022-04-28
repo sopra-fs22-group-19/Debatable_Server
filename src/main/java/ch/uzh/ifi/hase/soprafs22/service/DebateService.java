@@ -97,7 +97,7 @@ public class DebateService {
 
     public DebateRoom createDebateRoom(DebateRoom inputDebateRoom, DebateRoomPostDTO debateRoomPostDTO) {
 
-        // Check that the debate topic exists and add it
+        // Check that the debcreateDeate topic exists and add it
         Optional<DebateTopic> debateTopic = debateTopicRepository.findById(debateRoomPostDTO.getDebateId());
 
         if (debateTopic.isEmpty()) {
@@ -208,7 +208,6 @@ public class DebateService {
         else{
             checkUser = userRepository.findByid(userToAdd.getId());
         }
-
         String baseErrorMessage = String.format("Cannot add Participant because Room with id: '%d' was not found", actualRoom.getRoomId());
         DebateRoom updatedRoom = getDebateRoom(actualRoom.getRoomId(), baseErrorMessage);
 
@@ -226,9 +225,11 @@ public class DebateService {
         updatedRoom.setUser2(debatesSpeaker);
         updatedRoom.setDebateState(DebateState.READY_TO_START);
 
+        debateSpeakerRepository.save(debatesSpeaker);
+        debateSpeakerRepository.flush();
 
-        debateRoomRepository.saveAndFlush(updatedRoom);
-        debateSpeakerRepository.saveAndFlush(debatesSpeaker);
+        updatedRoom = debateRoomRepository.save(updatedRoom);
+        debateRoomRepository.flush();
 
         log.debug("Participant added to the DebateRoom: {}", updatedRoom);
 
