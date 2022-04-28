@@ -225,7 +225,7 @@ public class DebateService {
         updatedRoom.setUser2(debatesSpeaker);
         updatedRoom.setDebateState(DebateState.READY_TO_START);
 
-        debatesSpeaker = debateSpeakerRepository.save(debatesSpeaker);
+        debateSpeakerRepository.save(debatesSpeaker);
         debateSpeakerRepository.flush();
 
         updatedRoom = debateRoomRepository.save(updatedRoom);

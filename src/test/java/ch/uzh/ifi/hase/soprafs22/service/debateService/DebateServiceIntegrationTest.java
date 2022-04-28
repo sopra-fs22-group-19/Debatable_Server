@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @WebAppConfiguration
 @SpringBootTest
 @ActiveProfiles("test")
-public class DebateServiceIntegrationTest {
+class DebateServiceIntegrationTest {
 
     @Qualifier("debateTopicRepository")
     @Autowired
