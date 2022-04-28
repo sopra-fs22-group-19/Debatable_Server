@@ -169,8 +169,8 @@ public class DebateService {
         return debateRoom;
     }
 
-    public DebateSpeaker getDebateSpeakerByUserId(Long userAssociatedId, String errorMessageContent) {
-        DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedId(userAssociatedId);
+    public DebateSpeaker getDebateSpeakerByUserIdAndRoomId(Long userAssociatedId, Long roomId, String errorMessageContent) {
+        DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(userAssociatedId, roomId);
 
         String errorMessage = String.format("Error: reason <%s>", errorMessageContent);
 
@@ -276,7 +276,8 @@ public class DebateService {
         inputIntervention.setDebateRoom(debateRoom);
 
         String baseErrorMessage = "Cannot post message because User with id: '%d' was not found";
-        DebateSpeaker debateSpeaker = getDebateSpeakerByUserId(interventionPostDTO.getUserId(), baseErrorMessage);
+        DebateSpeaker debateSpeaker = getDebateSpeakerByUserIdAndRoomId(
+                interventionPostDTO.getUserId(), debateRoom.getRoomId(), baseErrorMessage);
         inputIntervention.setPostingSpeaker(debateSpeaker);
 
 
@@ -313,7 +314,7 @@ public class DebateService {
         DebateRoom debateRoom = getDebateRoom(roomId, errorMessage);
 
         errorMessage = String.format("Cannot retrieve messages because User with id: '%d' was not found", userId);
-        DebateSpeaker debateSpeaker = getDebateSpeakerByUserId(userId, errorMessage);
+        DebateSpeaker debateSpeaker = getDebateSpeakerByUserIdAndRoomId(userId, debateRoom.getRoomId(), errorMessage);
 
         List<Intervention> speakerInterventions =
                 interventionRepository.findAllByDebateRoomRoomIdAndPostingSpeakerSpeakerIdOrderByTimestamp(
