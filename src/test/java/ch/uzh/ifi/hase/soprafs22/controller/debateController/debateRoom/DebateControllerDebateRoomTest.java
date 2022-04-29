@@ -275,7 +275,7 @@ class DebateControllerDebateRoomTest {
               .content(asJsonString(userPutDTO));
       // then
       mockMvc.perform(putRequest)
-              .andExpect(status().isNoContent())
+              .andExpect(status().isOk())
               .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
               .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
               .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
@@ -314,7 +314,7 @@ class DebateControllerDebateRoomTest {
                 .content(asJsonString(userPutDTO));
         // then
         mockMvc.perform(putRequest)
-                .andExpect(status().isNoContent())
+                .andExpect(status().isOk())
                 .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
                 .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
                 .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))

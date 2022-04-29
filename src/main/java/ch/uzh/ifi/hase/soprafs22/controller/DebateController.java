@@ -71,7 +71,7 @@ public class DebateController {
     }
 
     @PutMapping("/debates/rooms/{roomId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public DebateRoomGetDTO addSecondParticipantById(@PathVariable("roomId") Long roomId, @RequestBody UserPutDTO userPutDTO){
 
