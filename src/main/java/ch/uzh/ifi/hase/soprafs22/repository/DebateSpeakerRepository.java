@@ -15,5 +15,5 @@ public interface DebateSpeakerRepository extends JpaRepository<DebateSpeaker, Lo
     DebateSpeaker findByDebateRoom(DebateRoom debateRoom);
     DebateSpeaker findByUserAssociatedId(Long creatorUserId);
 
-    DebateSpeaker findByUserAssociatedIdAndDebateRoomRoomId(Long associatedUserId, Long roomId);
+    List<DebateSpeaker> findAllByUserAssociatedIdAndDebateRoomRoomId(Long associatedUserId, Long roomId);
 }
