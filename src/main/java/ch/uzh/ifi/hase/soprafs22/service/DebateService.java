@@ -377,6 +377,9 @@ public class DebateService {
         newDebateTopic = debateTopicRepository.save(newDebateTopic);
         debateTopicRepository.flush();
 
+        newDebateTopic = debateTopicRepository.save(newDebateTopic);
+        debateTopicRepository.flush();
+
         return newDebateTopic;
     }
     public List<DebateTopic> getDebateTopicByCategories(String categories){
