@@ -170,14 +170,16 @@ public class DebateService {
     }
 
     public DebateSpeaker getDebateSpeakerByUserIdAndRoomId(Long userAssociatedId, Long roomId, String errorMessageContent) {
-        DebateSpeaker debateSpeaker = debateSpeakerRepository.findByUserAssociatedIdAndDebateRoomRoomId(userAssociatedId, roomId);
+        List<DebateSpeaker> debateSpeaker = debateSpeakerRepository.findAllByUserAssociatedIdAndDebateRoomRoomId(userAssociatedId, roomId);
 
         String errorMessage = String.format("Error: reason <%s>", errorMessageContent);
 
-        if(debateSpeaker == null) {
+        if(debateSpeaker == null)
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
-        }
-        return debateSpeaker;
+        if (debateSpeaker.get(0) == null)
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+
+        return debateSpeaker.get(0);
     }
 
     public DebateRoom deleteRoom(Long roomId){
