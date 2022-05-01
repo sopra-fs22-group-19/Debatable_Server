@@ -1,21 +1,27 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
-import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static ch.uzh.ifi.hase.soprafs22.entity.ApiUsage.getUsage;
+
 @RestController
 public class DebateController {
 
+    @Value("{api.key}")
+    private String apikey;
+
+    @Value("{api.host}")
+    private String host;
     private final DebateService debateService;
 
     DebateController(DebateService debateService) {
@@ -118,6 +124,25 @@ public class DebateController {
 
         // Get interventions of user specified
         return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
+    }
+
+    //for dev and test only
+    @GetMapping("/api/usage")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public String getApiUsage() {
+        String apiHost="https://api-free.deepl.com/v2/";
+        String apiKey="8b834a25-0b9a-7cca-5c37-148e566acbeb:fx";
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        String resourceUrl = apiHost + "usage?auth_key=" + apiKey;
+
+        ApiUsage usage = restTemplate.getForObject(resourceUrl, ApiUsage.class);
+
+        String response = usage.toString();
+
+        return response;
     }
 
 }
