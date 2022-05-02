@@ -29,12 +29,14 @@ class DebateTopicsTest {
   @InjectMocks
   private DebateService debateService;
 
+  private User creatingUser;
+
   @BeforeEach
   public void setup() {
       MockitoAnnotations.openMocks(this);
 
       // given
-      User creatingUser = new User();
+      creatingUser = new User();
       creatingUser.setId(1L);
       creatingUser.setUsername("test username");
       creatingUser.setName("test user's name");
@@ -50,26 +52,26 @@ class DebateTopicsTest {
   void getDebateTopic_returnAllTopicByUser() {
 
       DebateTopic defaultDebateTopic1 =  new DebateTopic();
-      defaultDebateTopic1.setCreatorUserId(1L);
+      defaultDebateTopic1.setCreatorUser(creatingUser);
       defaultDebateTopic1.setTopic("Test default Topic1 belongs user1");
       defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
 
       DebateTopic defaultDebateTopic2 =  new DebateTopic();
-      defaultDebateTopic2.setCreatorUserId(1L);
+      defaultDebateTopic2.setCreatorUser(creatingUser);
       defaultDebateTopic2.setTopic("Test default Topic2 belongs user2 ");
       defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
 
       List<DebateTopic> testTopics = List.of(defaultDebateTopic1, defaultDebateTopic2);
 
-      Mockito.when(debateTopicRepository.findByCreatorUserId(1L)).thenReturn(testTopics);
+      Mockito.when(debateTopicRepository.findByCreatorUser_Id(1L)).thenReturn(testTopics);
 
 
       List<DebateTopic> debateTopics = debateService.getDebateTopicByUserId(1L);
 
-      assertEquals(testTopics.get(0).getCreatorUserId(), debateTopics.get(0).getCreatorUserId());
+      assertEquals(testTopics.get(0).getCreatorUser(), debateTopics.get(0).getCreatorUser());
       assertEquals(testTopics.get(0).getTopic(), debateTopics.get(0).getTopic());
       assertEquals(testTopics.get(0).getTopicDescription(), debateTopics.get(0).getTopicDescription());
-      assertEquals(testTopics.get(1).getCreatorUserId(), debateTopics.get(1).getCreatorUserId());
+      assertEquals(testTopics.get(1).getCreatorUser(), debateTopics.get(1).getCreatorUser());
       assertEquals(testTopics.get(1).getTopic(), debateTopics.get(1).getTopic());
       assertEquals(testTopics.get(1).getTopicDescription(), debateTopics.get(1).getTopicDescription());
   }

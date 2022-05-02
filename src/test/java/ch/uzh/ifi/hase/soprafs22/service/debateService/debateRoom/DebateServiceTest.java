@@ -66,7 +66,7 @@ class DebateServiceTest {
     debatesSpeaker1.setDebateSide(DebateSide.FOR);
 
     DebateTopic testDebateTopic = new DebateTopic();
-    testDebateTopic.setCreatorUserId(1L);
+    testDebateTopic.setCreatorUser(creatingUser);
     testDebateTopic.setDebateTopicId(1L);
     testDebateTopic.setTopic("Topic 1");
     testDebateTopic.setTopicDescription("Topic 1' description");

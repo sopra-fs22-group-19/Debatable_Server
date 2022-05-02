@@ -42,7 +42,7 @@ public class UserServiceTest {
 
 
     DebateTopic defaultDebateTopic1 =  new DebateTopic();
-    defaultDebateTopic1.setCreatorUserId(1L);
+    defaultDebateTopic1.setCreatorUser(testUser);
     defaultDebateTopic1.setTopic("Default Topic 1 added by DebateService, TBD");
     defaultDebateTopic1.setTopicDescription("Default Topic 1 description, TBD");
 

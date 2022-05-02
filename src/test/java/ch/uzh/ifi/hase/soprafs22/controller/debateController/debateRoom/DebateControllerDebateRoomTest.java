@@ -82,7 +82,7 @@ class DebateControllerDebateRoomTest {
 
     // Create Debate Topic
     DebateTopic debateTopic = new DebateTopic();
-    debateTopic.setCreatorUserId(1L);
+    debateTopic.setCreatorUser(creatingUser);
     debateTopic.setDebateTopicId(1L);
     debateTopic.setTopic("Topic 1");
     debateTopic.setTopicDescription("Topic 1' description");
@@ -118,7 +118,7 @@ class DebateControllerDebateRoomTest {
     mockMvc.perform(postRequest)
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
-        .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
+        .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUser().getId().intValue())))
         .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
         .andExpect(jsonPath("$.debate.topic", is(testDebateRoom.getDebateTopic().getTopic())))
         .andExpect(jsonPath("$.debate.description", is(testDebateRoom.getDebateTopic().getTopicDescription())))
@@ -150,7 +150,7 @@ class DebateControllerDebateRoomTest {
       mockMvc.perform(postRequest)
               .andExpect(status().isCreated())
               .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
-              .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
+              .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUser().getId().intValue())))
               .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
               .andExpect(jsonPath("$.debate.topic", is(testDebateRoom.getDebateTopic().getTopic())))
               .andExpect(jsonPath("$.debate.description", is(testDebateRoom.getDebateTopic().getTopicDescription())))
@@ -194,7 +194,7 @@ class DebateControllerDebateRoomTest {
       mockMvc.perform(postRequest)
               .andExpect(status().isOk())
               .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
-              .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
+              .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUser().getId().intValue())))
               .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
               .andExpect(jsonPath("$.debate.topic", is(testDebateRoom.getDebateTopic().getTopic())))
               .andExpect(jsonPath("$.debate.description", is(testDebateRoom.getDebateTopic().getTopicDescription())))
@@ -277,7 +277,7 @@ class DebateControllerDebateRoomTest {
       mockMvc.perform(putRequest)
               .andExpect(status().isOk())
               .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
-              .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
+              .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUser().getId().intValue())))
               .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
               .andExpect(jsonPath("$.user1.userId", is(testDebateRoom.getUser1().getId().intValue())))
               .andExpect(jsonPath("$.user1.username", is(testDebateRoom.getUser1().getUsername())))
@@ -316,7 +316,7 @@ class DebateControllerDebateRoomTest {
         mockMvc.perform(putRequest)
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.roomId", is(testDebateRoom.getRoomId().intValue())))
-                .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUserId().intValue())))
+                .andExpect(jsonPath("$.debate.userId", is(testDebateRoom.getDebateTopic().getCreatorUser().getId().intValue())))
                 .andExpect(jsonPath("$.debate.debateId", is(testDebateRoom.getDebateTopic().getDebateTopicId().intValue())))
                 .andExpect(jsonPath("$.user1.userId", is(testDebateRoom.getUser1().getId().intValue())))
                 .andExpect(jsonPath("$.user1.username", is(testDebateRoom.getUser1().getUsername())))

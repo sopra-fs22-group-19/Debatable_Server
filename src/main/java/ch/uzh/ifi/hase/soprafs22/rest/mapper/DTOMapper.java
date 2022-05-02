@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
+import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -96,6 +98,11 @@ public interface DTOMapper {
   @Mapping(target = "timestamp", ignore = true)
   Intervention convertInterventionPostDTOtoEntity(InterventionPostDTO interventionPostDTO);
 
-
+  @Mapping(target = "debateTopicId", ignore = true)
+  @Mapping(target = "creatorUser", ignore = true)
+  @Mapping(target = "isDefaultTopic", ignore = true)
+  @Mapping(source = "topic", target = "topic")
+  @Mapping(source = "description", target = "topicDescription")
+  DebateTopic convertDebateTopicPostDTOtoEntity(DebateTopicPostDTO debateTopicPostDTO);
 
 }

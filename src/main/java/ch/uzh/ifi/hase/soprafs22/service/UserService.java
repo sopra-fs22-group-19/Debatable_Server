@@ -94,6 +94,16 @@ public class UserService {
       this.userRepository.deleteById(id);
   }
 
+  public User getUserByUserId(Long userId, String errorMessage){
+      errorMessage = String.format("Error: reason <%s>", errorMessage);
+      User user = userRepository.findByid(userId);
+
+      if(user == null)
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+
+      return user;
+  }
+
 
 
 
