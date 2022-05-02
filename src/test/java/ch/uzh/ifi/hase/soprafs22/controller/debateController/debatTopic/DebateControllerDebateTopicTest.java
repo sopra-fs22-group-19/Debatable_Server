@@ -51,10 +51,12 @@ class DebateControllerDebateTopicTest {
 
   private DebateRoom debateRoom;
 
+  private User creatingUser;
+
   @BeforeEach
   public void setup() {
     // Create first speaker (creating user)
-    User creatingUser = new User();
+    creatingUser = new User();
     creatingUser.setId(1L);
     creatingUser.setUsername("test username");
     creatingUser.setName("test user's name");
@@ -70,7 +72,7 @@ class DebateControllerDebateTopicTest {
 
     // Create Debate Topic
     DebateTopic debateTopic = new DebateTopic();
-    debateTopic.setCreatorUserId(1L);
+    debateTopic.setCreatorUser(creatingUser);
     debateTopic.setDebateTopicId(1L);
     debateTopic.setTopic("Topic 1");
     debateTopic.setTopicDescription("Topic 1' description");
@@ -89,12 +91,12 @@ class DebateControllerDebateTopicTest {
   void getTopicByUser_validInput_debateTopicsReturned()throws Exception {
 
       DebateTopic defaultDebateTopic1 =  new DebateTopic();
-      defaultDebateTopic1.setCreatorUserId(1L);
+      defaultDebateTopic1.setCreatorUser(creatingUser);
       defaultDebateTopic1.setTopic("Topic1");
       defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
 
       DebateTopic defaultDebateTopic2 =  new DebateTopic();
-      defaultDebateTopic2.setCreatorUserId(1L);
+      defaultDebateTopic2.setCreatorUser(creatingUser);
       defaultDebateTopic2.setTopic("Topic2");
       defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
 
@@ -128,12 +130,12 @@ class DebateControllerDebateTopicTest {
   void getTopicByUser_invalidUserId_UserNotFound()throws Exception {
 
       DebateTopic defaultDebateTopic1 =  new DebateTopic();
-      defaultDebateTopic1.setCreatorUserId(1L);
+      defaultDebateTopic1.setCreatorUser(creatingUser);
       defaultDebateTopic1.setTopic("Topic1");
       defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
 
       DebateTopic defaultDebateTopic2 =  new DebateTopic();
-      defaultDebateTopic2.setCreatorUserId(1L);
+      defaultDebateTopic2.setCreatorUser(creatingUser);
       defaultDebateTopic2.setTopic("Topic2");
       defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
 

@@ -9,7 +9,7 @@ import java.util.List;
 @Repository("debateTopicRepository")
 public interface DebateTopicRepository extends JpaRepository<DebateTopic, Long> {
 
-    List<DebateTopic> findByCreatorUserId(Long creatorUserId);
+    List<DebateTopic> findByCreatorUser_Id(Long creatorUserId);
 
     List<DebateTopic> findByIsDefaultTopicIsTrue();
 

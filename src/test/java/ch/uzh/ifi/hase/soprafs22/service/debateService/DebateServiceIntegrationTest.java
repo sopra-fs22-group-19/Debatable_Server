@@ -52,7 +52,8 @@ class DebateServiceIntegrationTest {
 
     @BeforeEach
     public void setup() {
-        userRepository.deleteAll();
+        userRepository.deleteByUsername("testUsername1");
+        userRepository.deleteByUsername("testUsername2");
 
         testUser1 = new User();
         testUser1.setUsername("testUsername1");
