@@ -18,9 +18,9 @@ class DebateTopicTest {
     void loadDefaultUserList_NotEmptyTest() throws CsvValidationException, IOException {
         Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
 
-        DebateTopic.readTopicListCSV(defaultListPath.toString());
+        DebateTopic.readTopicListCSV(defaultListPath.toString(), new User());
 
-        List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
+        List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString(), new User());
 
         assertFalse(defaultDebateTopicsList.isEmpty());
     }
@@ -29,9 +29,9 @@ class DebateTopicTest {
     void loadDefaultUserList_MoreThanFiveTest() throws CsvValidationException, IOException {
         Path defaultListPath = Paths.get("setup", "defaultTopics.csv");
 
-        DebateTopic.readTopicListCSV(defaultListPath.toString());
+        DebateTopic.readTopicListCSV(defaultListPath.toString(), new User());
 
-        List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
+        List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString(), new User());
 
         assertTrue(defaultDebateTopicsList.size() > 5);
     }

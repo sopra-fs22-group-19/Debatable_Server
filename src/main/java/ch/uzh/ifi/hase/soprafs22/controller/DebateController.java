@@ -120,4 +120,15 @@ public class DebateController {
         return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
     }
 
+    @PostMapping("/debates/{userId}/")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public DebateTopicGetDTO postDebateTopic(@PathVariable("userId") Long userId, @RequestBody DebateTopicPostDTO debateTopicPostDTO) {
+
+        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+        newDebateTopic = debateService.createDebateTopic(userId, newDebateTopic);
+
+        // Get interventions of user specified
+        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
+    }
 }

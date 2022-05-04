@@ -22,11 +22,9 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static ch.uzh.ifi.hase.soprafs22.entity.DebateTopic.readTopicListCSV;
 
@@ -80,7 +78,19 @@ public class DebateService {
         if (log.isDebugEnabled()) { log.info(String.format("Loading default topic list from: %s", defaultListPath)); }
 
         try {
-            List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString());
+            // Create the default user that creates the default topics
+            User defaultUserForCreatingDebateTopics = new User();
+            String defaultStringFields = UUID.randomUUID().toString();
+            defaultUserForCreatingDebateTopics.setName(defaultStringFields);
+            defaultUserForCreatingDebateTopics.setUsername(defaultStringFields);
+            defaultUserForCreatingDebateTopics.setPassword(defaultStringFields);
+            defaultUserForCreatingDebateTopics.setToken(defaultStringFields);
+            defaultUserForCreatingDebateTopics.setCreationDate(LocalDate.now());
+
+            userRepository.save(defaultUserForCreatingDebateTopics);
+            userRepository.flush();
+
+            List<DebateTopic> defaultDebateTopicsList = readTopicListCSV(defaultListPath.toString(), defaultUserForCreatingDebateTopics);
             if (defaultDebateTopicsList.isEmpty()){
                 log.warn("List of debate topics is empty");
             } else{
@@ -154,7 +164,7 @@ public class DebateService {
         }
 
         List<DebateTopic> debateTopicList = debateTopicRepository.findByIsDefaultTopicIsTrue();
-        debateTopicList.addAll(debateTopicRepository.findByCreatorUserId(userId));
+        debateTopicList.addAll(debateTopicRepository.findByCreatorUser_Id(userId));
         return debateTopicList;
     }
 
@@ -355,5 +365,17 @@ public class DebateService {
         }
 
         return messageList;
+    }
+
+    public DebateTopic createDebateTopic(Long userId, DebateTopic newDebateTopic) {
+        // Verify if user exists
+        String errorMessage = String.format("Cannot retrieve messages because User with id: '%d' was not found", userId);
+        User user = userService.getUserByUserId(userId, errorMessage);
+
+        newDebateTopic.setCreatorUser(user);
+        debateTopicRepository.save(newDebateTopic);
+        debateTopicRepository.flush();
+
+        return newDebateTopic;
     }
 }
