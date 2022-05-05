@@ -375,7 +375,7 @@ public class DebateService {
         User user = userService.getUserByUserId(userId, errorMessage);
 
         newDebateTopic.setCreatorUser(user);
-        debateTopicRepository.save(newDebateTopic);
+        newDebateTopic = debateTopicRepository.save(newDebateTopic);
         debateTopicRepository.flush();
 
         return newDebateTopic;
