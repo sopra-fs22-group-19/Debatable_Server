@@ -386,10 +386,6 @@ public class DebateService {
 
         List<DebateTopic> debateTopicList = debateTopicRepository.findAll();
 
-        if(categories.length < 0){
-            return debateTopicList;
-        }
-
         List<DebateTopic> toSend = new ArrayList<>();
 
         for(String toCompare: categories){
@@ -399,7 +395,6 @@ public class DebateService {
                 }
             }
         }
-
         return toSend;
     }
 }
