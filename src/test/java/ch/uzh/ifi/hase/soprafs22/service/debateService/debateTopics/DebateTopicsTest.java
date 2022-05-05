@@ -126,8 +126,10 @@ class DebateTopicsTest {
       Exception excNotFound = new ResponseStatusException(HttpStatus.NOT_FOUND);
       doThrow(excNotFound).when(userService).getUserByUserId(Mockito.any(), Mockito.any());
 
+      Long creatingUserId = creatingUser.getId();
+
       assertThrows(ResponseStatusException.class, ()
-              -> debateService.createDebateTopic(creatingUser.getId(), expectedDebateTopic));
+              -> debateService.createDebateTopic(creatingUserId, expectedDebateTopic));
 
   }
 

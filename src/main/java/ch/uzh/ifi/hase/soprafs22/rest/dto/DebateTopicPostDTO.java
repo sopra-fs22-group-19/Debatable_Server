@@ -13,7 +13,7 @@ public class DebateTopicPostDTO {
 
     public Long getUserId(){ return userId; }
 
-    public Long setUserId(Long userId){ return this.userId = userId; }
+    public void setUserId(Long userId){ this.userId = userId; }
 
     public String getTopic() {
         return topic;
