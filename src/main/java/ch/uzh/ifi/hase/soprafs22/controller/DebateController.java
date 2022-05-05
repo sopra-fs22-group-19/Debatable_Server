@@ -64,6 +64,18 @@ public class DebateController {
         return debateGetDTOs;
     }
 
+    @PostMapping("/debates")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
+
+        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+        newDebateTopic = debateService.createDebateTopic(debateTopicPostDTO.getUserId(), newDebateTopic);
+
+        // Get interventions of user specified
+        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
+    }
+
     @DeleteMapping("/debates/rooms/{roomId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -119,18 +131,6 @@ public class DebateController {
 
         // Get interventions of user specified
         return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
-    }
-
-    @PostMapping("/debates/{userId}/")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public DebateTopicGetDTO postDebateTopic(@PathVariable("userId") Long userId, @RequestBody DebateTopicPostDTO debateTopicPostDTO) {
-
-        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
-        newDebateTopic = debateService.createDebateTopic(userId, newDebateTopic);
-
-        // Get interventions of user specified
-        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
     }
 
     @GetMapping("/debates/categories/")

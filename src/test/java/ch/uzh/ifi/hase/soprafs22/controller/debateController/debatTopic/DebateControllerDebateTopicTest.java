@@ -8,11 +8,14 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,6 +34,7 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -158,6 +162,53 @@ class DebateControllerDebateTopicTest {
 
       MockHttpServletRequestBuilder getRequest = get("/debates/2")
               .contentType(MediaType.APPLICATION_JSON);
+
+      mockMvc.perform(getRequest).andExpect(status().isNotFound());
+
+
+  }
+
+
+  @Test
+  void createTopicByUser_Succesful()throws Exception {
+
+    DebateTopicPostDTO debateTopicPostDTO = new DebateTopicPostDTO();
+    debateTopicPostDTO.setUserId(creatingUser.getId());
+    debateTopicPostDTO.setTopic("Topic1");
+    debateTopicPostDTO.setDescription("Test default Topic1 description");
+
+    DebateTopic expectedDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+    expectedDebateTopic.setCreatorUser(creatingUser);
+
+    doReturn(expectedDebateTopic).when(debateService).createDebateTopic(Mockito.any(), Mockito.any());
+
+    MockHttpServletRequestBuilder getRequest = post("/debates")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(asJsonString(debateTopicPostDTO));
+
+    mockMvc.perform(getRequest)
+            .andExpect(status().isCreated())
+            .andExpect(jsonPath("$.userId", is(expectedDebateTopic.getCreatorUser().getId().intValue())))
+            .andExpect(jsonPath("$.topic", is(expectedDebateTopic.getTopic())))
+            .andExpect(jsonPath("$.description", is(expectedDebateTopic.getTopicDescription())));
+ }
+
+
+  @Test
+  void createTopicByUser_invalidUserId_UserNotFound()throws Exception {
+
+      DebateTopicPostDTO debateTopicPostDTO = new DebateTopicPostDTO();
+      debateTopicPostDTO.setUserId(creatingUser.getId());
+      debateTopicPostDTO.setTopic("Topic1");
+      debateTopicPostDTO.setDescription("Test default Topic1 description");
+
+      Exception excNotFound = new ResponseStatusException(HttpStatus.NOT_FOUND);
+
+      doThrow(excNotFound).when(debateService).createDebateTopic(Mockito.any(), Mockito.any());
+
+      MockHttpServletRequestBuilder getRequest = post("/debates")
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(debateTopicPostDTO));
 
       mockMvc.perform(getRequest).andExpect(status().isNotFound());
 

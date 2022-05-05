@@ -4,12 +4,16 @@ import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 
 public class DebateTopicPostDTO {
 
+    private Long userId;
     private String topic;
     private String description;
     private TopicCategory category;
 
     //TODO: Add the TAG get DTO
 
+    public Long getUserId(){ return userId; }
+
+    public void setUserId(Long userId){ this.userId = userId; }
 
     public String getTopic() {
         return topic;
