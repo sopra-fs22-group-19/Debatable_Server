@@ -68,9 +68,6 @@ public class DebateController {
     @ResponseBody
     public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
 
-        System.out.println(debateTopicPostDTO.getTopic());
-        System.out.println(debateTopicPostDTO.getDescription());
-        System.out.println(debateTopicPostDTO.getUserId());
         DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
         newDebateTopic = debateService.createDebateTopic(debateTopicPostDTO.getUserId(), newDebateTopic);
 

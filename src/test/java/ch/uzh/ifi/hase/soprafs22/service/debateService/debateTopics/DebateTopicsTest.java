@@ -11,15 +11,21 @@ import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Method;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 
 class DebateTopicsTest {
   @Mock
@@ -49,7 +55,7 @@ class DebateTopicsTest {
       creatingUser.setCreationDate(LocalDate.parse("2019-01-21"));
       creatingUser.setToken("lajflfa");
 
-      Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(creatingUser));
+      Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(creatingUser);
 
   }
 
@@ -85,7 +91,7 @@ class DebateTopicsTest {
   @Test
   void getDebateTopic_userIdNotFound_throwNotFound() {
 
-      Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
+      Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(null);
 
       assertThrows(ResponseStatusException.class, () -> debateService.getDebateTopicByUserId(2L));
 
@@ -93,23 +99,37 @@ class DebateTopicsTest {
 
   @Test
   void createDebateTopic_success(){
-      DebateTopicPostDTO debateTopicPostDTO = new DebateTopicPostDTO();
-      debateTopicPostDTO.setTopic("test topic");
-      debateTopicPostDTO.setDescription("test topic description");
-
-      DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+      DebateTopic expectedDebateTopic = new DebateTopic();
+      expectedDebateTopic.setTopic("test topic");
+      expectedDebateTopic.setTopicDescription("test topic description");
+      expectedDebateTopic.setCreatorUser(creatingUser);
 
       Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(creatingUser);
-      Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(creatingUser);
+      Mockito.when(userService.getUserByUserId(Mockito.any(), Mockito.any())).thenReturn(creatingUser);
+      Mockito.when(debateTopicRepository.save(Mockito.any())).thenReturn(expectedDebateTopic);
 
-      DebateTopic createdDebateTopic = debateService.createDebateTopic(creatingUser.getId(), newDebateTopic);
+      DebateTopic createdDebateTopic = debateService.createDebateTopic(creatingUser.getId(), expectedDebateTopic);
 
-      //assertEquals(newDebateTopic.getTopic(), createdDebateTopic.getTopic());
-      //assertEquals(newDebateTopic.getTopicDescription(), createdDebateTopic.getTopicDescription());
-      //assertEquals(creatingUser, createdDebateTopic.getCreatorUser());
+      assertEquals(createdDebateTopic.getTopic(), createdDebateTopic.getTopic());
+      assertEquals(createdDebateTopic.getTopicDescription(), createdDebateTopic.getTopicDescription());
+      assertEquals(createdDebateTopic.getCreatorUser(), createdDebateTopic.getCreatorUser());
 
   }
 
+  @Test
+  void createDebateTopic_UserNotFound_Fail(){
+      DebateTopic expectedDebateTopic = new DebateTopic();
+      expectedDebateTopic.setTopic("test topic");
+      expectedDebateTopic.setTopicDescription("test topic description");
+      expectedDebateTopic.setCreatorUser(creatingUser);
+
+      Exception excNotFound = new ResponseStatusException(HttpStatus.NOT_FOUND);
+      doThrow(excNotFound).when(userService).getUserByUserId(Mockito.any(), Mockito.any());
+
+      assertThrows(ResponseStatusException.class, ()
+              -> debateService.createDebateTopic(creatingUser.getId(), expectedDebateTopic));
+
+  }
 
   @Test
   void initializeDefaultTopics_Success_NoExceptionThrown() throws NoSuchMethodException {
