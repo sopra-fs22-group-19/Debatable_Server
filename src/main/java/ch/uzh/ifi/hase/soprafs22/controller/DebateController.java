@@ -63,6 +63,18 @@ public class DebateController {
         return debateGetDTOs;
     }
 
+    @PostMapping("/debates")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
+
+        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+        newDebateTopic = debateService.createDebateTopic(debateTopicPostDTO.getUserId(), newDebateTopic);
+
+        // Get interventions of user specified
+        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
+    }
+
     @DeleteMapping("/debates/rooms/{roomId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody

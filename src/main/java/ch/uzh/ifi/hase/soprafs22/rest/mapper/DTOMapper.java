@@ -98,4 +98,11 @@ public interface DTOMapper {
   @Mapping(target = "timestamp", ignore = true)
   Intervention convertInterventionPostDTOtoEntity(InterventionPostDTO interventionPostDTO);
 
+  @Mapping(target = "debateTopicId", ignore = true)
+  @Mapping(target = "creatorUser", ignore = true)
+  @Mapping(target = "isDefaultTopic", ignore = true)
+  @Mapping(source = "topic", target = "topic")
+  @Mapping(source = "description", target = "topicDescription")
+  DebateTopic convertDebateTopicPostDTOtoEntity(DebateTopicPostDTO debateTopicPostDTO);
+
 }

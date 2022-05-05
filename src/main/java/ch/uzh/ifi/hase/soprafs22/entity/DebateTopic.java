@@ -43,8 +43,9 @@ public class DebateTopic implements Serializable {
   )
   private Long debateTopicId;
 
-  @Column(nullable = false)
-  private Long creatorUserId;
+  @ManyToOne
+  @JoinColumn(name = "creator_user_id", nullable = false)
+  private User creatorUser;
 
   @Column(nullable = false)
   private String topic;
@@ -66,13 +67,9 @@ public class DebateTopic implements Serializable {
     this.debateTopicId = debateTopicId;
   }
 
-  public Long getCreatorUserId() {
-        return creatorUserId;
-    }
+  public User getCreatorUser() { return this.creatorUser;}
 
-  public void setCreatorUserId(Long creatorUserId) {
-        this.creatorUserId = creatorUserId;
-    }
+  public void setCreatorUser(User creatorUser) { this.creatorUser = creatorUser; }
 
   public String getTopic() {
     return topic;
@@ -94,11 +91,18 @@ public class DebateTopic implements Serializable {
         return isDefaultTopic;
     }
 
+
   public void setIsDefaultTopic(boolean isDefaultTopic) {
         this.isDefaultTopic = isDefaultTopic;
     }
 
-  public static List<DebateTopic> readTopicListCSV(String filepath) throws IOException, CsvValidationException {
+  public Long getCreatorUserId(){
+      if (this.creatorUser != null)
+          return this.creatorUser.getId();
+      else
+          return null;
+  }
+  public static List<DebateTopic> readTopicListCSV(String filepath, User defaultUser) throws IOException, CsvValidationException {
 
       CSVReader csvReader = new CSVReaderBuilder(new FileReader(filepath)).withSkipLines(1).build();
       ArrayList<DebateTopic> debateTopics=  new ArrayList<>();
@@ -108,7 +112,7 @@ public class DebateTopic implements Serializable {
           DebateTopic debateTopic = new DebateTopic();
           debateTopic.setTopic(line[0]);
           debateTopic.setTopicDescription(line[1]);
-          debateTopic.setCreatorUserId(-1L);
+          debateTopic.setCreatorUser(defaultUser);
           debateTopic.setIsDefaultTopic(true);
 
           debateTopics.add(debateTopic);
