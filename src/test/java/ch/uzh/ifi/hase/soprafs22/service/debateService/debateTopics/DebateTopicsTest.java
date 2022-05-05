@@ -4,7 +4,10 @@ import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -24,6 +27,9 @@ class DebateTopicsTest {
 
   @Mock
   private UserRepository userRepository;
+
+  @Mock
+  private UserService userService;
 
   @Spy
   @InjectMocks
@@ -82,6 +88,25 @@ class DebateTopicsTest {
       Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.empty());
 
       assertThrows(ResponseStatusException.class, () -> debateService.getDebateTopicByUserId(2L));
+
+  }
+
+  @Test
+  void createDebateTopic_success(){
+      DebateTopicPostDTO debateTopicPostDTO = new DebateTopicPostDTO();
+      debateTopicPostDTO.setTopic("test topic");
+      debateTopicPostDTO.setDescription("test topic description");
+
+      DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+
+      Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(creatingUser);
+      Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(creatingUser);
+
+      DebateTopic createdDebateTopic = debateService.createDebateTopic(creatingUser.getId(), newDebateTopic);
+
+      assertEquals(newDebateTopic.getTopic(), createdDebateTopic.getTopic());
+      assertEquals(newDebateTopic.getTopicDescription(), createdDebateTopic.getTopicDescription());
+      //assertEquals(creatingUser, createdDebateTopic.getCreatorUser());
 
   }
 
