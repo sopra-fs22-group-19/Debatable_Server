@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.dto;
 
+import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import ch.uzh.ifi.hase.soprafs22.entity.Tag;
 
 public class DebateTopicGetDTO {
@@ -8,6 +9,7 @@ public class DebateTopicGetDTO {
     private Long userId;
     private String topic;
     private String description;
+    private TopicCategory category;
 
     public Long getDebateId() { return debateId; }
 
@@ -36,4 +38,8 @@ public class DebateTopicGetDTO {
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public TopicCategory getCategory(){return category;}
+
+    public void setCategory(TopicCategory category){this.category = category;}
 }

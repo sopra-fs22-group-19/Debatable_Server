@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
@@ -131,4 +132,20 @@ public class DebateController {
         // Get interventions of user specified
         return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
     }
+
+    @GetMapping("/debates/categories/")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<DebateTopicGetDTO> getSelectedCategories(@RequestBody String[] categories){
+
+        List<DebateTopic> toConvert = debateService.getDebateTopicByCategories(categories);
+        List<DebateTopicGetDTO> toSend = new ArrayList<>();
+
+        for (DebateTopic debateTopic : toConvert) {
+            toSend.add(DTOMapper.INSTANCE.convertEntityToDebateGetDTO(debateTopic));
+        }
+
+        return toSend;
+    }
+
 }
