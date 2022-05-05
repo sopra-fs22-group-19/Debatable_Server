@@ -1,6 +1,5 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
@@ -64,6 +63,21 @@ public class DebateController {
         return debateGetDTOs;
     }
 
+    @PostMapping("/debates")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
+
+        System.out.println(debateTopicPostDTO.getTopic());
+        System.out.println(debateTopicPostDTO.getDescription());
+        System.out.println(debateTopicPostDTO.getUserId());
+        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+        newDebateTopic = debateService.createDebateTopic(debateTopicPostDTO.getUserId(), newDebateTopic);
+
+        // Get interventions of user specified
+        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
+    }
+
     @DeleteMapping("/debates/rooms/{roomId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -119,33 +133,6 @@ public class DebateController {
 
         // Get interventions of user specified
         return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
-    }
-
-    @PostMapping("/debates/{userId}/")
-    @ResponseStatus(HttpStatus.CREATED)
-    @ResponseBody
-    public DebateTopicGetDTO postDebateTopic(@PathVariable("userId") Long userId, @RequestBody DebateTopicPostDTO debateTopicPostDTO) {
-
-        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
-        newDebateTopic = debateService.createDebateTopic(userId, newDebateTopic);
-
-        // Get interventions of user specified
-        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
-    }
-
-    @GetMapping("/debates/categories/")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public List<DebateTopicGetDTO> getSelectedCategories(@RequestBody String[] categories){
-
-        List<DebateTopic> toConvert = debateService.getDebateTopicByCategories(categories);
-        List<DebateTopicGetDTO> toSend = new ArrayList<>();
-
-        for (DebateTopic debateTopic : toConvert) {
-            toSend.add(DTOMapper.INSTANCE.convertEntityToDebateGetDTO(debateTopic));
-        }
-
-        return toSend;
     }
 
 }
