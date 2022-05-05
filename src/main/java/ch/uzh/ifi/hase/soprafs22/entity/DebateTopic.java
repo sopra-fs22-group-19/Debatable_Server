@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
@@ -59,6 +60,9 @@ public class DebateTopic implements Serializable {
   @OneToMany(mappedBy="debateTopic")
   private List<DebateRoom> debateRoomSet;
 
+  @Column
+  private TopicCategory category;
+
   public Long getDebateTopicId() {
     return debateTopicId;
   }
@@ -106,6 +110,11 @@ public class DebateTopic implements Serializable {
       else
           return null;
   }
+
+  public TopicCategory getCategory(){return category;}
+
+  public void setCategory(TopicCategory category){this.category = category;}
+
   public static List<DebateTopic> readTopicListCSV(String filepath, User defaultUser) throws IOException, CsvValidationException {
 
       CSVReader csvReader = new CSVReaderBuilder(new FileReader(filepath)).withSkipLines(1).build();

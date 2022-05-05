@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStateChange;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
@@ -378,5 +379,27 @@ public class DebateService {
         debateTopicRepository.flush();
 
         return newDebateTopic;
+    }
+    public List<DebateTopic> getDebateTopicByCategories(String[] categories){
+
+        String baseErrorMessage = "Error: reason <Can not get categories>";
+
+        List<DebateTopic> debateTopicList = debateTopicRepository.findAll();
+
+        if(categories.length < 0){
+            return debateTopicList;
+        }
+
+        List<DebateTopic> toSend = new ArrayList<>();
+
+        for(String toCompare: categories){
+            for(DebateTopic toAdd : debateTopicList){
+                if(toAdd.getCategory().toString().equals(toCompare)){
+                    toSend.add(toAdd);
+                }
+            }
+        }
+
+        return toSend;
     }
 }
