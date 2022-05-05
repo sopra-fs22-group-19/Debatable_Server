@@ -391,8 +391,10 @@ public class DebateService {
 
         for(String toCompare: categories){
             for(DebateTopic toAdd : debateTopicList){
-                if(toAdd.getCategory().toString().equals(toCompare)){
-                    toSend.add(toAdd);
+                if(!Objects.isNull(toAdd.getCategory())){
+                    if(toAdd.getCategory().toString().equals(toCompare)){
+                        toSend.add(toAdd);
+                    }
                 }
             }
         }
