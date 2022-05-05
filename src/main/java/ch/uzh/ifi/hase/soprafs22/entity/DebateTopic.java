@@ -67,13 +67,9 @@ public class DebateTopic implements Serializable {
     this.debateTopicId = debateTopicId;
   }
 
-  public User getCreatorUser() {
-        return creatorUser;
-    }
+  public User getCreatorUser() { return this.creatorUser;}
 
-  public void setCreatorUser(User creatorUser) {
-        this.creatorUser = creatorUser;
-    }
+  public void setCreatorUser(User creatorUser) { this.creatorUser = creatorUser; }
 
   public String getTopic() {
     return topic;

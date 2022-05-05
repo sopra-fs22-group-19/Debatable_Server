@@ -157,7 +157,7 @@ public class DebateService {
 
     public List<DebateTopic> getDebateTopicByUserId(Long userId){
 
-        User creatorUser = userRepository.findById(userId).orElse(null);
+        User creatorUser = userRepository.findByid(userId);
         String baseErrorMessage = "Error: reason <Can not get topics because User with id: '%d' was not found>";
 
         if(creatorUser == null){
@@ -374,6 +374,7 @@ public class DebateService {
         User user = userService.getUserByUserId(userId, errorMessage);
 
         newDebateTopic.setCreatorUser(user);
+
         newDebateTopic = debateTopicRepository.save(newDebateTopic);
         debateTopicRepository.flush();
 
