@@ -36,6 +36,7 @@ public class wsDebateRoomController {
     @SendTo("/debateRoom/roomId")
     public String getMessages(@Payload WSMsg msg) {
 
+
         String incoming = msg.getMessage();
         return incoming;
     }
