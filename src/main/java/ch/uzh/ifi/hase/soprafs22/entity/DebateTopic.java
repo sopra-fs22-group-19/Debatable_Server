@@ -117,10 +117,13 @@ public class DebateTopic implements Serializable {
       ArrayList<DebateTopic> debateTopics=  new ArrayList<>();
 
       String[] line;
+
       while ((line = csvReader.readNext()) != null) {
           DebateTopic debateTopic = new DebateTopic();
           debateTopic.setTopic(line[0]);
           debateTopic.setTopicDescription(line[1]);
+          debateTopic.setCategory(TopicCategory.valueOf(line[2]));
+
           debateTopic.setCreatorUser(defaultUser);
           debateTopic.setIsDefaultTopic(true);
 
