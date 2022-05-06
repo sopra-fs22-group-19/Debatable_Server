@@ -133,10 +133,10 @@ public class DebateController {
         return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
     }
 
-    @GetMapping("/debates/categories/")
+    @GetMapping("/debates/")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public List<DebateTopicGetDTO> getSelectedCategories(@RequestBody String[] categories){
+    public List<DebateTopicGetDTO> getSelectedCategories(@RequestParam(name = "categories") String categories){
 
         List<DebateTopic> toConvert = debateService.getDebateTopicByCategories(categories);
         List<DebateTopicGetDTO> toSend = new ArrayList<>();

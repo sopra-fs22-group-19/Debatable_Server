@@ -381,15 +381,17 @@ public class DebateService {
 
         return newDebateTopic;
     }
-    public List<DebateTopic> getDebateTopicByCategories(String[] categories){
+    public List<DebateTopic> getDebateTopicByCategories(String categories){
 
         String baseErrorMessage = "Error: reason <Can not get categories>";
+
+        String[] subarray = categories.split(",");
 
         List<DebateTopic> debateTopicList = debateTopicRepository.findAll();
 
         List<DebateTopic> toSend = new ArrayList<>();
 
-        for(String toCompare: categories){
+        for(String toCompare: subarray){
             for(DebateTopic toAdd : debateTopicList){
                 if(!Objects.isNull(toAdd.getCategory())){
                     if(toAdd.getCategory().toString().equals(toCompare)){
