@@ -17,10 +17,10 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         // Set prefix for the endpoint that the client listens for our messages from
-        registry.enableSimpleBroker("/debateRoom");
+        registry.enableSimpleBroker("/debates");
 
         // Set prefix for endpoints the client will send messages to
-        registry.setApplicationDestinationPrefixes("/debates");
+        registry.setApplicationDestinationPrefixes("/ws");
 
     }
 

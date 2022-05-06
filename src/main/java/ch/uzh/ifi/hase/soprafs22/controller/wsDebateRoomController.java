@@ -10,6 +10,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -30,12 +31,11 @@ public class wsDebateRoomController {
     ///current post debates/rooms/{roomId}/msg
     // Handles messages from /debates/rooms/{roomId}/msg. (The Spring adds the /debates prefix for us).
     // Need to send to this url
-    @MessageMapping("/rooms/toRoomId/msg")
+    @MessageMapping("/debates/rooms/{roomId}/msg")
     // Sends the return value of this method to /debateRoom/{roomId}
     // Need to subscribe to this url
-    @SendTo("/debateRoom/roomId")
-    public String getMessages(@Payload WSMsg msg) {
-
+    @SendTo("/debates/rooms/{roomId}")
+    public String getMessages(@DestinationVariable Long roomId, @Payload WSMsg msg) {
 
         String incoming = msg.getMessage();
         return incoming;
