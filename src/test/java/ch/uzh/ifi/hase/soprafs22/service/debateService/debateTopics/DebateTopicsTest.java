@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service.debateService.debateTopics;
 
+import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.DebateTopicRepository;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.lang.reflect.Method;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -143,4 +145,34 @@ class DebateTopicsTest {
       Throwable throwable = catchThrowable(() -> setupDefaultDebateTopics.invoke(debateService));
       assertNull(throwable);
   }
+
+  @Test
+  void getTopics_Successful(){
+
+      DebateTopic defaultDebateTopic1 =  new DebateTopic();
+      defaultDebateTopic1.setCreatorUser(creatingUser);
+      defaultDebateTopic1.setTopic("Topic1");
+      defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
+      defaultDebateTopic1.setCategory(TopicCategory.Art);
+
+      DebateTopic defaultDebateTopic2 =  new DebateTopic();
+      defaultDebateTopic2.setCreatorUser(creatingUser);
+      defaultDebateTopic2.setTopic("Topic2");
+      defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
+      defaultDebateTopic2.setCategory(TopicCategory.Culture);
+
+      List<DebateTopic> allTopics = new ArrayList<>();
+      allTopics.add(defaultDebateTopic1);
+      allTopics.add(defaultDebateTopic2);
+
+      String categories = "Art,Culture";
+
+      Mockito.when(debateTopicRepository.findAll()).thenReturn(allTopics);
+
+      List<DebateTopic> toCompare = debateService.getDebateTopicByCategories(categories);
+
+      assertEquals(allTopics, toCompare);
+
+  }
+
 }

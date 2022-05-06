@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.controller.debateController.debatTopic;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import ch.uzh.ifi.hase.soprafs22.controller.DebateController;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateSpeaker;
@@ -31,8 +32,8 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -80,6 +81,7 @@ class DebateControllerDebateTopicTest {
     debateTopic.setDebateTopicId(1L);
     debateTopic.setTopic("Topic 1");
     debateTopic.setTopicDescription("Topic 1' description");
+    debateTopic.setCategory(TopicCategory.Art);
 
     // Create reference DebateRoom
     debateRoom = new DebateRoom();
@@ -176,6 +178,7 @@ class DebateControllerDebateTopicTest {
     debateTopicPostDTO.setUserId(creatingUser.getId());
     debateTopicPostDTO.setTopic("Topic1");
     debateTopicPostDTO.setDescription("Test default Topic1 description");
+    debateTopicPostDTO.setCategory(TopicCategory.Art);
 
     DebateTopic expectedDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
     expectedDebateTopic.setCreatorUser(creatingUser);
@@ -212,6 +215,41 @@ class DebateControllerDebateTopicTest {
 
       mockMvc.perform(getRequest).andExpect(status().isNotFound());
 
+
+  }
+
+  @Test
+  void getCategories_Successful() throws Exception {
+
+      DebateTopic defaultDebateTopic1 =  new DebateTopic();
+      defaultDebateTopic1.setCreatorUser(creatingUser);
+      defaultDebateTopic1.setTopic("Topic1");
+      defaultDebateTopic1.setTopicDescription("Test default Topic1 description");
+      defaultDebateTopic1.setCategory(TopicCategory.Art);
+
+      DebateTopic defaultDebateTopic2 =  new DebateTopic();
+      defaultDebateTopic2.setCreatorUser(creatingUser);
+      defaultDebateTopic2.setTopic("Topic2");
+      defaultDebateTopic2.setTopicDescription("Test default Topic2 description");
+      defaultDebateTopic2.setCategory(TopicCategory.Culture);
+
+      List<DebateTopic> allTopics = new ArrayList<>();
+      allTopics.add(defaultDebateTopic1);
+      allTopics.add(defaultDebateTopic2);
+
+      Mockito.when(debateService.getDebateTopicByCategories(Mockito.any())).thenReturn(allTopics);
+
+      MockHttpServletRequestBuilder getRequest = get("/debates/?categories=Art&Culture")
+              .contentType(MediaType.APPLICATION_JSON);
+
+      mockMvc.perform(getRequest)
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$[0].topic", is(defaultDebateTopic1.getTopic())))
+              .andExpect(jsonPath("$[0].description", is(defaultDebateTopic1.getTopicDescription())))
+              .andExpect(jsonPath("$[0].category", is(defaultDebateTopic1.getCategory().toString())))
+              .andExpect(jsonPath("$[1].topic", is(defaultDebateTopic2.getTopic())))
+              .andExpect(jsonPath("$[1].description", is(defaultDebateTopic2.getTopicDescription())))
+              .andExpect(jsonPath("$[1].category", is(defaultDebateTopic2.getCategory().toString())));
 
   }
 
