@@ -103,6 +103,7 @@ public interface DTOMapper {
   @Mapping(target = "isDefaultTopic", ignore = true)
   @Mapping(source = "topic", target = "topic")
   @Mapping(source = "description", target = "topicDescription")
+  @Mapping(source = "category", target = "category")
   DebateTopic convertDebateTopicPostDTOtoEntity(DebateTopicPostDTO debateTopicPostDTO);
 
 }
