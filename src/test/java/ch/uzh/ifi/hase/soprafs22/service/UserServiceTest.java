@@ -139,5 +139,141 @@ public class UserServiceTest {
       Mockito.verify(userRepository).deleteById(id);
   }
 
+  @Test
+  void updateCredentials_Successful(){
+
+      User testUser1 = new User();
+      testUser1.setId(1L);
+      testUser1.setUsername("testUsername1");
+      testUser1.setPassword("testPassword1");
+      testUser1.setName("testName1");
+
+      User testUser2 = new User();
+      testUser2.setId(1L);
+      testUser2.setUsername("testUsername2");
+      testUser2.setPassword("testPassword2");
+      testUser2.setName("testName2");
+
+      Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser1);
+      Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser1);
+
+      User compareUer = userService.updateUser(testUser1.getId(), testUser2);
+
+      assertEquals(compareUer.getName(), testUser2.getName());
+      assertEquals(compareUer.getPassword(),testUser2.getPassword());
+      assertEquals(compareUer.getUsername(), testUser2.getUsername());
+
+  }
+
+    @Test
+    void updateCredentials_userNotFound_throwsException(){
+
+        User testUser1 = new User();
+        testUser1.setId(1L);
+        testUser1.setUsername("testUsername1");
+        testUser1.setPassword("testPassword1");
+        testUser1.setName("testName1");
+
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(null);
+
+
+        assertThrows(ResponseStatusException.class,
+                () -> userService.updateUser(222222L , testUser1));
+
+    }
+
+    @Test
+    void updateCredentials_samePassword_throwsException(){
+
+        User testUser1 = new User();
+        testUser1.setId(1L);
+        testUser1.setUsername("testUsername1");
+        testUser1.setPassword("testPassword");
+        testUser1.setName("testName1");
+
+        User testUser2 = new User();
+        testUser2.setId(1L);
+        testUser2.setUsername("testUsername2");
+        testUser2.setPassword("testPassword");
+        testUser2.setName("testName2");
+
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser1);
+        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser1);
+
+        assertThrows(ResponseStatusException.class,
+                () -> userService.updateUser(testUser1.getId() , testUser2));
+
+    }
+
+    @Test
+    void updateCredentials_occupiedUsername_throwsException(){
+
+        User testUser1 = new User();
+        testUser1.setId(1L);
+        testUser1.setUsername("testUsername");
+        testUser1.setPassword("testPassword1");
+        testUser1.setName("testName1");
+
+        User testUser2 = new User();
+        testUser2.setId(2L);
+        testUser2.setUsername("testUsername");
+        testUser2.setPassword("testPassword2");
+        testUser2.setName("testName2");
+
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser2);
+        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser1);
+
+        assertThrows(ResponseStatusException.class,
+                () -> userService.updateUser(testUser2.getId() , testUser2));
+
+    }
+
+    @Test
+    void updateCredentials_Successful_justName(){
+
+        User testUser1 = new User();
+        testUser1.setId(1L);
+        testUser1.setUsername("testUsername1");
+        testUser1.setPassword("testPassword1");
+        testUser1.setName("testName1");
+
+        User testUser2 = new User();
+        testUser2.setId(1L);
+        testUser2.setName("testName2");
+
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser1);
+        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser1);
+
+        User compareUer = userService.updateUser(testUser2.getId(), testUser2);
+
+        assertEquals(compareUer.getName(), testUser2.getName());
+        assertEquals(compareUer.getPassword(),testUser1.getPassword());
+        assertEquals(compareUer.getUsername(), testUser1.getUsername());
+
+    }
+
+    @Test
+    void updateCredentials_Successful_justPassword(){
+
+        User testUser1 = new User();
+        testUser1.setId(1L);
+        testUser1.setUsername("testUsername1");
+        testUser1.setPassword("testPassword1");
+        testUser1.setName("testName1");
+
+        User testUser2 = new User();
+        testUser2.setId(1L);
+        testUser2.setPassword("testPassword2");
+
+        Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser1);
+        Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser1);
+
+        User compareUer = userService.updateUser(testUser2.getId(), testUser2);
+
+        assertEquals(compareUer.getName(), testUser1.getName());
+        assertEquals(compareUer.getPassword(),testUser2.getPassword());
+        assertEquals(compareUer.getUsername(), testUser1.getUsername());
+
+    }
 
 }

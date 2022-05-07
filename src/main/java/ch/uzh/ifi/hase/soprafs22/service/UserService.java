@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -95,6 +96,7 @@ public class UserService {
   }
 
   public User getUserByUserId(Long userId, String errorMessage){
+
       errorMessage = String.format("Error: reason <%s>", errorMessage);
       User user = userRepository.findByid(userId);
 
@@ -104,6 +106,45 @@ public class UserService {
       return user;
   }
 
+  public User updateUser(Long id, User userDetails){
+
+      String errorMessage = String.format("User with id: '%d' was not found", id);
+      String errorMessagePassword = "The password must be different from the previous one.";
+      String errorMessageUsername = "The selected username is already taken by another user, choose another username.";
+
+      User toUpdateUser = userRepository.findByid(id);
+
+      if(Objects.isNull(toUpdateUser)){
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+      }
+
+      if(Objects.equals(userDetails.getPassword(), toUpdateUser.getPassword())){
+          throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessagePassword);
+      }
+      else if(!Objects.equals(userRepository.findByUsername(userDetails.getUsername()).getId(), toUpdateUser.getId())){
+          throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessageUsername);
+      }
+      else{
+          if(!Objects.isNull(userDetails.getName())){
+              if(!userDetails.getName().isEmpty()){
+                  toUpdateUser.setName(userDetails.getName());
+              }
+          }
+          if(!Objects.isNull(userDetails.getUsername())){
+              if(!userDetails.getUsername().isEmpty()){
+                  toUpdateUser.setUsername(userDetails.getUsername());
+              }
+          }
+          if(!Objects.isNull(userDetails.getPassword())){
+              if(!userDetails.getPassword().isEmpty()){
+                  toUpdateUser.setPassword(userDetails.getPassword());
+              }
+          }
+          userRepository.saveAndFlush(toUpdateUser);
+
+          return toUpdateUser;
+      }
+  }
 
 
 
