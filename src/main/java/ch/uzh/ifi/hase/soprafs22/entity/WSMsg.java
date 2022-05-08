@@ -1,35 +1,36 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.constant.Status;
 import lombok.*;
-
-import java.util.Date;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class WSMsg {
-    private int userId;
-    private int roomId;
+
+    private Long userId;
+    private String userName;
     private String message;
-    private Status status;
+    private DebateState debateState;
 
 
-    public int getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
-    public int getRoomId() {
-        return roomId;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setRoomId(int roomId) {
-        this.roomId = roomId;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
+
 
     public String getMessage() {
         return message;
@@ -39,11 +40,12 @@ public class WSMsg {
         this.message = message;
     }
 
-    public Status getStatus() {
-        return status;
+    public DebateState getDebateState() {
+        return debateState;
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
+    public void setDebateState(DebateState debateState) {
+        this.debateState = debateState;
     }
+
 }
