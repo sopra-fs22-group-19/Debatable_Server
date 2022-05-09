@@ -42,6 +42,7 @@ public interface DTOMapper {
   @Mapping(source = "creatorUserId", target = "userId")
   @Mapping(source = "topic", target = "topic")
   @Mapping(source = "topicDescription", target = "description")
+  @Mapping(source = "category", target = "category")
   DebateTopicGetDTO convertEntityToDebateGetDTO(DebateTopic debateTopic);
   
   // DTOs for the DebateRoom
@@ -96,6 +97,12 @@ public interface DTOMapper {
   @Mapping(target = "timestamp", ignore = true)
   Intervention convertInterventionPostDTOtoEntity(InterventionPostDTO interventionPostDTO);
 
-
+  @Mapping(target = "debateTopicId", ignore = true)
+  @Mapping(target = "creatorUser", ignore = true)
+  @Mapping(target = "isDefaultTopic", ignore = true)
+  @Mapping(source = "topic", target = "topic")
+  @Mapping(source = "description", target = "topicDescription")
+  @Mapping(source = "category", target = "category")
+  DebateTopic convertDebateTopicPostDTOtoEntity(DebateTopicPostDTO debateTopicPostDTO);
 
 }
