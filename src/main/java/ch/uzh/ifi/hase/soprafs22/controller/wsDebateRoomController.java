@@ -26,15 +26,9 @@ public class wsDebateRoomController {
     @SendTo("/debates/rooms/{roomId}")
     public WSMsg getMessages(@DestinationVariable Long roomId, @Payload WSMsg msg) {
 
-
         if (!Objects.isNull(msg.getDebateState())){
             System.out.println(msg.getDebateState());
         }
-
-        System.out.println(msg.getDebateState());
-        System.out.println(msg.getUserId());
-        System.out.println(msg.getUserName());
-        System.out.println(msg.getMessage());
 
         return msg;
     }

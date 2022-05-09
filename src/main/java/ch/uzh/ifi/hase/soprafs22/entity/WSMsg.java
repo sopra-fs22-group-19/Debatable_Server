@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.constant.Status;
 import lombok.*;
@@ -11,6 +12,7 @@ public class WSMsg {
 
     private Long userId;
     private String userName;
+    private DebateSide userSide;
     private String message;
     private DebateState debateState;
 
@@ -29,6 +31,14 @@ public class WSMsg {
 
     public void setUserName(String userName) {
         this.userName = userName;
+    }
+
+    public DebateSide getUserSide() {
+        return userSide;
+    }
+
+    public void setUserSide(DebateSide userSide) {
+        this.userSide = userSide;
     }
 
 
