@@ -13,9 +13,7 @@ import org.springframework.stereotype.Controller;
 import java.util.Objects;
 
 @Controller
-public class wsDebateRoomController {
-
-    private final Logger log = LoggerFactory.getLogger(DebateService.class);
+public class WSDebateRoomController {
 
     ///current post debates/rooms/{roomId}/msg
     // Handles messages from /debates/rooms/{roomId}/msg. (The Spring adds the /debates prefix for us).
@@ -25,11 +23,6 @@ public class wsDebateRoomController {
     // Need to subscribe to this url
     @SendTo("/debates/rooms/{roomId}")
     public WSMsg getMessages(@DestinationVariable Long roomId, @Payload WSMsg msg) {
-
-        if (!Objects.isNull(msg.getDebateState())){
-            System.out.println(msg.getDebateState());
-        }
-
         return msg;
     }
 

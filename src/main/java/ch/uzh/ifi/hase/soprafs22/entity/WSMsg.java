@@ -2,7 +2,6 @@ package ch.uzh.ifi.hase.soprafs22.entity;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.constant.Status;
 import lombok.*;
 
 @NoArgsConstructor
