@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 
 public class UserServiceTest {
 
@@ -148,6 +149,7 @@ public class UserServiceTest {
       testUser1.setPassword("testPassword1");
       testUser1.setName("testName1");
 
+
       User testUser2 = new User();
       testUser2.setId(1L);
       testUser2.setUsername("testUsername2");
@@ -155,7 +157,8 @@ public class UserServiceTest {
       testUser2.setName("testName2");
 
       Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser1);
-      Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(testUser1);
+      Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
+
 
       User compareUer = userService.updateUser(testUser1.getId(), testUser2);
 
