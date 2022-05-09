@@ -83,9 +83,9 @@ public interface DTOMapper {
   @Mapping(source = "userId", target = "id")
   @Mapping(target = "creationDate", ignore = true)
   @Mapping(target = "token", ignore = true)
-  @Mapping(target = "password", ignore = true)
-  @Mapping(target = "name", ignore = true)
-  @Mapping(target = "username", ignore = true)
+  @Mapping(source = "password", target = "password")
+  @Mapping(source = "name", target = "name")
+  @Mapping(source = "username", target = "username")
   User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
   // DTOs for the Intervention
