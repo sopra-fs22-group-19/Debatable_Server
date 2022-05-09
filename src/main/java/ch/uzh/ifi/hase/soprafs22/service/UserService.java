@@ -121,9 +121,7 @@ public class UserService {
       if(Objects.equals(userDetails.getPassword(), toUpdateUser.getPassword())){
           throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessagePassword);
       }
-      else if(!Objects.equals(userRepository.findByUsername(userDetails.getUsername()).getId(), toUpdateUser.getId())){
-          throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessageUsername);
-      }
+
       else{
           if(!Objects.isNull(userDetails.getName())){
               if(!userDetails.getName().isEmpty()){
@@ -131,7 +129,8 @@ public class UserService {
               }
           }
           if(!Objects.isNull(userDetails.getUsername())){
-              if(!userDetails.getUsername().isEmpty()){
+              if(!userDetails.getUsername().isEmpty() && !Objects.equals(userDetails.getUsername(), toUpdateUser.getUsername())){
+                  checkIfUsernameExists(userDetails);
                   toUpdateUser.setUsername(userDetails.getUsername());
               }
           }
@@ -162,7 +161,7 @@ public class UserService {
 
 
   // changed to only check if username is unique, template check both username and name
-  private void checkIfUsernameExists(User userToBeCreated) {
+  public void checkIfUsernameExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 
     if (userByUsername != null) {
