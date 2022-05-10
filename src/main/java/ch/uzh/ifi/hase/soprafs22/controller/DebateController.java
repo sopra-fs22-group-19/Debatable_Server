@@ -21,6 +21,7 @@ import static ch.uzh.ifi.hase.soprafs22.entity.ApiUsage.getUsage;
 @RestController
 public class DebateController {
 
+
     @Value("{api.key}")
     private String apikey;
 
