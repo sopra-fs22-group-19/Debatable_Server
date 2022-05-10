@@ -13,6 +13,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -94,6 +95,55 @@ public class UserService {
       this.userRepository.deleteById(id);
   }
 
+  public User getUserByUserId(Long userId, String errorMessage){
+
+      errorMessage = String.format("Error: reason <%s>", errorMessage);
+      User user = userRepository.findByid(userId);
+
+      if(user == null)
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+
+      return user;
+  }
+
+  public User updateUser(Long id, User userDetails){
+
+      String errorMessage = String.format("User with id: '%d' was not found", id);
+      String errorMessagePassword = "The password must be different from the previous one.";
+      String errorMessageUsername = "The selected username is already taken by another user, choose another username.";
+
+      User toUpdateUser = userRepository.findByid(id);
+
+      if(Objects.isNull(toUpdateUser)){
+          throw new ResponseStatusException(HttpStatus.NOT_FOUND, errorMessage);
+      }
+
+      if(Objects.equals(userDetails.getPassword(), toUpdateUser.getPassword())){
+          throw new ResponseStatusException(HttpStatus.CONFLICT, errorMessagePassword);
+      }
+
+      else{
+          if(!Objects.isNull(userDetails.getName())){
+              if(!userDetails.getName().isEmpty()){
+                  toUpdateUser.setName(userDetails.getName());
+              }
+          }
+          if(!Objects.isNull(userDetails.getUsername())){
+              if(!userDetails.getUsername().isEmpty() && !Objects.equals(userDetails.getUsername(), toUpdateUser.getUsername())){
+                  checkIfUsernameExists(userDetails);
+                  toUpdateUser.setUsername(userDetails.getUsername());
+              }
+          }
+          if(!Objects.isNull(userDetails.getPassword())){
+              if(!userDetails.getPassword().isEmpty()){
+                  toUpdateUser.setPassword(userDetails.getPassword());
+              }
+          }
+          userRepository.saveAndFlush(toUpdateUser);
+
+          return toUpdateUser;
+      }
+  }
 
 
 
@@ -111,7 +161,7 @@ public class UserService {
 
 
   // changed to only check if username is unique, template check both username and name
-  private void checkIfUsernameExists(User userToBeCreated) {
+  public void checkIfUsernameExists(User userToBeCreated) {
     User userByUsername = userRepository.findByUsername(userToBeCreated.getUsername());
 
     if (userByUsername != null) {

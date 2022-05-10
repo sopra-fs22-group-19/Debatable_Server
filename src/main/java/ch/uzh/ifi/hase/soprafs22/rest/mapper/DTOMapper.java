@@ -1,9 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.rest.mapper;
 
-import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
-import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import org.mapstruct.*;
 import org.mapstruct.factory.Mappers;
@@ -44,6 +41,7 @@ public interface DTOMapper {
   @Mapping(source = "creatorUserId", target = "userId")
   @Mapping(source = "topic", target = "topic")
   @Mapping(source = "topicDescription", target = "description")
+  @Mapping(source = "category", target = "category")
   DebateTopicGetDTO convertEntityToDebateGetDTO(DebateTopic debateTopic);
   
   // DTOs for the DebateRoom
@@ -85,9 +83,9 @@ public interface DTOMapper {
   @Mapping(source = "userId", target = "id")
   @Mapping(target = "creationDate", ignore = true)
   @Mapping(target = "token", ignore = true)
-  @Mapping(target = "password", ignore = true)
-  @Mapping(target = "name", ignore = true)
-  @Mapping(target = "username", ignore = true)
+  @Mapping(source = "password", target = "password")
+  @Mapping(source = "name", target = "name")
+  @Mapping(source = "username", target = "username")
   User convertUserPutDTOtoEntity(UserPutDTO userPutDTO);
 
   // DTOs for the Intervention
@@ -97,5 +95,13 @@ public interface DTOMapper {
   @Mapping(source = "messageContent", target = "message")
   @Mapping(target = "timestamp", ignore = true)
   Intervention convertInterventionPostDTOtoEntity(InterventionPostDTO interventionPostDTO);
+
+  @Mapping(target = "debateTopicId", ignore = true)
+  @Mapping(target = "creatorUser", ignore = true)
+  @Mapping(target = "isDefaultTopic", ignore = true)
+  @Mapping(source = "topic", target = "topic")
+  @Mapping(source = "description", target = "topicDescription")
+  @Mapping(source = "category", target = "category")
+  DebateTopic convertDebateTopicPostDTOtoEntity(DebateTopicPostDTO debateTopicPostDTO);
 
 }

@@ -1,6 +1,10 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.entity.*;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
+import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
+import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
+import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
@@ -69,6 +73,18 @@ public class DebateController {
         return debateGetDTOs;
     }
 
+    @PostMapping("/debates")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
+
+        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+        newDebateTopic = debateService.createDebateTopic(debateTopicPostDTO.getUserId(), newDebateTopic);
+
+        // Get interventions of user specified
+        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
+    }
+
     @DeleteMapping("/debates/rooms/{roomId}")
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
@@ -124,6 +140,21 @@ public class DebateController {
 
         // Get interventions of user specified
         return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
+    }
+
+    @GetMapping("/debates/")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<DebateTopicGetDTO> getSelectedCategories(@RequestParam(name = "categories") String categories){
+
+        List<DebateTopic> toConvert = debateService.getDebateTopicByCategories(categories);
+        List<DebateTopicGetDTO> toSend = new ArrayList<>();
+
+        for (DebateTopic debateTopic : toConvert) {
+            toSend.add(DTOMapper.INSTANCE.convertEntityToDebateGetDTO(debateTopic));
+        }
+
+        return toSend;
     }
 
     //for dev and test only
