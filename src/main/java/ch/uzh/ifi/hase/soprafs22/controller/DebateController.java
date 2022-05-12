@@ -8,8 +8,7 @@ import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import lombok.val;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -17,7 +16,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
+
 
 @RestController
 public class DebateController {
@@ -168,6 +168,10 @@ public class DebateController {
 
         ApiUsage usage = restTemplate.getForObject(host + "usage?auth_key=" + apikey, ApiUsage.class);
 
+        if (usage == null) {
+            return null;
+        }
+
         return usage.toString();
     }
 
@@ -180,6 +184,10 @@ public class DebateController {
         String targetLang = "&target_lang="+target_lang;
 
         TranslationResponse translationResponse = restTemplate.getForObject(host + "translate?auth_key=" + apikey + text + targetLang, TranslationResponse.class);
+
+        if (translationResponse == null) {
+            return null;
+        }
 
         return translationResponse.getTranslations().get(0).getText();
     }
