@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -160,7 +161,7 @@ public class DebateController {
 
     //for dev and test only
     @GetMapping("/api/usage")
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getApiUsage() {
         String apiHost="https://api-free.deepl.com/v2/";
@@ -175,6 +176,18 @@ public class DebateController {
         String response = usage.toString();
 
         return response;
+    }
+
+    @GetMapping("/translate")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String getTranslation(@RequestParam String msg , @RequestParam String target_lang) {
+
+
+        String msgTranslated = msg;
+
+
+        return msgTranslated;
     }
 
 }
