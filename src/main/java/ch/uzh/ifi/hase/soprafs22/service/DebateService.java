@@ -403,9 +403,5 @@ public class DebateService {
         return toSend;
     }
 
-    public String getTranslationFromDeepl(String msg, String targetLang) {
-        String ssf = "";
 
-        return ssf;
-    }
 }

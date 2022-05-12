@@ -13,11 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ch.uzh.ifi.hase.soprafs22.entity.ApiUsage.getUsage;
 
 @RestController
 public class DebateController {
@@ -166,9 +163,7 @@ public class DebateController {
     public String getApiUsage() {
         RestTemplate restTemplate = new RestTemplate();
 
-        String resourceUrl = host + "usage?auth_key=" + apikey;
-
-        ApiUsage usage = restTemplate.getForObject(resourceUrl, ApiUsage.class);
+        ApiUsage usage = restTemplate.getForObject(host + "usage?auth_key=" + apikey, ApiUsage.class);
 
         return usage.toString();
     }
@@ -177,12 +172,18 @@ public class DebateController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getTranslation(@RequestParam String msg , @RequestParam String target_lang) {
+        //https://api-free.deepl.com/v2/translate?auth_key=8b834a25-0b9a-7cca-5c37-148e566acbeb:fx&text=hello,world&target_lang=DE
+        RestTemplate restTemplate = new RestTemplate();
+        String text = "&text="+msg;
+        String targetLang = "&target_lang="+target_lang;
+
+        TranslationResponse translationResponse = restTemplate.getForObject(host + "translate?auth_key=" + apikey + text + targetLang, TranslationResponse.class);
 
 
-        String msgTranslated = msg;
+        String msgTranslated = translationResponse.getTranslations().getText();
 
 
-        return apikey;
+        return msgTranslated;
     }
 
 }
