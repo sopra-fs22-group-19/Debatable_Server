@@ -23,10 +23,10 @@ import static ch.uzh.ifi.hase.soprafs22.entity.ApiUsage.getUsage;
 public class DebateController {
 
 
-    @Value("{api.key}")
+    @Value("${api.key}")
     private String apikey;
 
-    @Value("{api.host}")
+    @Value("${api.host}")
     private String host;
     private final DebateService debateService;
 
@@ -164,18 +164,13 @@ public class DebateController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getApiUsage() {
-        String apiHost="https://api-free.deepl.com/v2/";
-        String apiKey="8b834a25-0b9a-7cca-5c37-148e566acbeb:fx";
-
         RestTemplate restTemplate = new RestTemplate();
 
-        String resourceUrl = apiHost + "usage?auth_key=" + apiKey;
+        String resourceUrl = host + "usage?auth_key=" + apikey;
 
         ApiUsage usage = restTemplate.getForObject(resourceUrl, ApiUsage.class);
 
-        String response = usage.toString();
-
-        return response;
+        return usage.toString();
     }
 
     @GetMapping("/translate")
@@ -187,7 +182,7 @@ public class DebateController {
         String msgTranslated = msg;
 
 
-        return msgTranslated;
+        return apikey;
     }
 
 }
