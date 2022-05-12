@@ -175,14 +175,11 @@ public class DebateController {
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     public String getTranslation(@RequestParam String msg , @RequestParam String target_lang) {
-        //https://api-free.deepl.com/v2/translate?auth_key=8b834a25-0b9a-7cca-5c37-148e566acbeb:fx&text=hello,world&target_lang=DE
         RestTemplate restTemplate = new RestTemplate();
         String text = "&text="+msg;
         String targetLang = "&target_lang="+target_lang;
 
         TranslationResponse translationResponse = restTemplate.getForObject(host + "translate?auth_key=" + apikey + text + targetLang, TranslationResponse.class);
-
-        //translationResponse.getTranslations().get(0).getText();
 
         return translationResponse.getTranslations().get(0).getText();
     }
