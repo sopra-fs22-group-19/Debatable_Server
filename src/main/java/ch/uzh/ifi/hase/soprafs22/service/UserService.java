@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.config.PasswordConfig;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -31,11 +33,16 @@ public class UserService {
 
   private final UserRepository userRepository;
 
+
+  private PasswordConfig passwordConfig;
+
   @Autowired
   public UserService(
-          @Qualifier("userRepository") UserRepository userRepository
+          @Qualifier("userRepository") UserRepository userRepository,
+          @Qualifier("passwordConfig") PasswordConfig passwordConfig
           ) {
     this.userRepository = userRepository;
+    this.passwordConfig = passwordConfig;
   }
 
   public List<User> getUsers() {
@@ -45,6 +52,7 @@ public class UserService {
   public User createUser(User newUser) {
     newUser.setToken(UUID.randomUUID().toString());
     newUser.setCreationDate(LocalDate.now());
+    newUser.setEncodedPw(passwordConfig.passwordEncoder().encode(newUser.getPassword()));
 
     checkIfUsernameExists(newUser);
 
