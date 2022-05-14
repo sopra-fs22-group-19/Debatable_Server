@@ -1,14 +1,13 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
-import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
-import ch.uzh.ifi.hase.soprafs22.entity.DebateTopic;
-import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
-import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,12 @@ import java.util.List;
 @RestController
 public class DebateController {
 
+
+    @Value("${api.key}")
+    private String apikey;
+
+    @Value("${api.host}")
+    private String host;
     private final DebateService debateService;
 
     DebateController(DebateService debateService) {
@@ -61,6 +66,18 @@ public class DebateController {
         }
 
         return debateGetDTOs;
+    }
+
+    @PostMapping("/debates")
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
+
+        DebateTopic newDebateTopic = DTOMapper.INSTANCE.convertDebateTopicPostDTOtoEntity(debateTopicPostDTO);
+        newDebateTopic = debateService.createDebateTopic(debateTopicPostDTO.getUserId(), newDebateTopic);
+
+        // Get interventions of user specified
+        return DTOMapper.INSTANCE.convertEntityToDebateGetDTO(newDebateTopic);
     }
 
     @DeleteMapping("/debates/rooms/{roomId}")
@@ -118,6 +135,54 @@ public class DebateController {
 
         // Get interventions of user specified
         return debateService.getUserDebateInterventions(roomId, userId, topI, toTopJ);
+    }
+
+    @GetMapping("/debates/")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<DebateTopicGetDTO> getSelectedCategories(@RequestParam(name = "categories") String categories){
+
+        List<DebateTopic> toConvert = debateService.getDebateTopicByCategories(categories);
+        List<DebateTopicGetDTO> toSend = new ArrayList<>();
+
+        for (DebateTopic debateTopic : toConvert) {
+            toSend.add(DTOMapper.INSTANCE.convertEntityToDebateGetDTO(debateTopic));
+        }
+
+        return toSend;
+    }
+
+    //for dev and test only
+    @GetMapping("/api/usage")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String getApiUsage() {
+        RestTemplate restTemplate = new RestTemplate();
+
+        ApiUsage usage = restTemplate.getForObject(host + "usage?auth_key=" + apikey, ApiUsage.class);
+
+        if (usage == null) {
+            return null;
+        }
+
+        return usage.toString();
+    }
+
+    @GetMapping("/translate")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public String getTranslation(@RequestParam String msg , @RequestParam String target_lang) {
+        RestTemplate restTemplate = new RestTemplate();
+        String text = "&text="+msg;
+        String targetLang = "&target_lang="+target_lang;
+
+        TranslationResponse translationResponse = restTemplate.getForObject(host + "translate?auth_key=" + apikey + text + targetLang, TranslationResponse.class);
+
+        if (translationResponse == null) {
+            return null;
+        }
+
+        return translationResponse.getTranslations().get(0).getText();
     }
 
 }

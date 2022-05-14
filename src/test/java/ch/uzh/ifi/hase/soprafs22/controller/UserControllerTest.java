@@ -1,7 +1,9 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
+import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,8 +24,7 @@ import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -46,6 +47,10 @@ public class UserControllerTest {
 
   private UserPostDTO testUserPostDTO;
 
+  private UserPutDTO testUserPutDTO;
+
+  private UserRepository userRepository;
+
   @BeforeEach
   public void setup() {
       testUser = new User();
@@ -60,6 +65,13 @@ public class UserControllerTest {
       testUserPostDTO.setUsername("testUsername");
       testUserPostDTO.setName("testName");
       testUserPostDTO.setPassword("testPassword");
+
+      testUserPutDTO = new UserPutDTO();
+      testUserPutDTO.setUserId(1L);
+      testUserPutDTO.setUsername("testUsername");
+      testUserPutDTO.setPassword("testPassword");
+      testUserPutDTO.setName("testName");
+
   }
 
 
@@ -130,6 +142,25 @@ public class UserControllerTest {
               .contentType(MediaType.APPLICATION_JSON);
 
       mockMvc.perform(deleteRequest)
+              .andExpect(status().isOk());
+  }
+
+  @Test
+  void updateUserCredentials() throws Exception {
+
+      User testUser1 = new User();
+      testUser1.setId(1L);
+      testUser1.setUsername("testUsername1");
+      testUser1.setPassword("testPassword1");
+      testUser1.setName("testName1");
+
+      Mockito.when(userService.getUserByUserId(Mockito.any(),Mockito.any())).thenReturn(testUser1);
+
+      MockHttpServletRequestBuilder putRequest = put("/users/" + testUserPutDTO.getUserId())
+              .contentType(MediaType.APPLICATION_JSON)
+              .content(asJsonString(testUserPutDTO));
+
+      mockMvc.perform(putRequest)
               .andExpect(status().isOk());
   }
 

@@ -65,7 +65,7 @@ class DebateControllerInterventionTest {
 
         // Create Debate Topic
         DebateTopic debateTopic = new DebateTopic();
-        debateTopic.setCreatorUserId(1L);
+        debateTopic.setCreatorUser(testUser);
         debateTopic.setDebateTopicId(1L);
         debateTopic.setTopic("Topic 1");
         debateTopic.setTopicDescription("Topic 1' description");
