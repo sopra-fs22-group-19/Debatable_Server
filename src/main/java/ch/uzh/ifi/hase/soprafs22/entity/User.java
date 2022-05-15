@@ -39,8 +39,6 @@ public class User implements Serializable {
   @Column(nullable = false)
   private String password;
 
-  @Column(nullable = false)
-  private String encodedPw;
 
   public Long getId() {
     return id;
@@ -89,10 +87,4 @@ public class User implements Serializable {
   public void setPassword(String password) {
         this.password = password;
   }
-  public String getEncodedPw() {
-        return encodedPw;
-    }
-  public void setEncodedPw(String encodedPw) {
-        this.encodedPw = encodedPw;
-    }
 }
