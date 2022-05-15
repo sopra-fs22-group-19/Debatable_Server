@@ -53,6 +53,8 @@ public class UserService {
     newUser.setToken(UUID.randomUUID().toString());
     newUser.setCreationDate(LocalDate.now());
 
+    //System.out.println(passwordConfig.passwordEncoder().encode((newUser.getPassword())));
+
     checkIfUsernameExists(newUser);
 
     // saves the given entity but data is only persisted in the database once
