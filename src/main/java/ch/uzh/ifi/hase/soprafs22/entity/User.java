@@ -1,8 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.constant.Role;
+import org.springframework.data.repository.cdi.Eager;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Internal User Representation
@@ -16,7 +22,7 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "DEBATABLE_USER")
-public class User implements Serializable {
+public class User implements Serializable  {
 
   private static final long serialVersionUID = 1L;
 
@@ -39,6 +45,15 @@ public class User implements Serializable {
   @Column(nullable = false)
   private String password;
 
+  @Column
+  private Role role;
+
+  public Role getRole() {
+        return role;
+    }
+  public void setRole(Role role) {
+        this.role = role;
+    }
 
   public Long getId() {
     return id;
