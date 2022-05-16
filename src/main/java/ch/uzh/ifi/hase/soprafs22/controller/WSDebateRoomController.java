@@ -29,7 +29,11 @@ public class WSDebateRoomController {
     public WSMsg getMessages(@DestinationVariable Long roomId, @Payload WSMsg msg) {
 
         if (msg.getMessageContent() != null) {
+            System.out.println("outside loop");
+            System.out.println(msg.getMessageContent());
             if (!msg.getMessageContent().isEmpty() && !msg.getMessageContent().trim().isEmpty()) {
+                System.out.println("inside loop");
+                System.out.println(msg.getMessageContent());
                 // Store messages in DB
                 Intervention intervention = new Intervention();
                 intervention.setMessage(msg.getMessageContent());
