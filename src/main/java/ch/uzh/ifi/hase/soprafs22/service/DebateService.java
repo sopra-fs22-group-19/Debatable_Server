@@ -410,7 +410,7 @@ public class DebateService {
         if (debateState != null){
             userDebateRooms = debateRoomRepository.findAllByCreatorUserIdAndDebateState(userId, debateState);
         } else{
-            userDebateRooms = debateRoomRepository.findByCreatorUserId(userId);
+            userDebateRooms = debateRoomRepository.findAllByCreatorUserId(userId);
         }
 
         return userDebateRooms;

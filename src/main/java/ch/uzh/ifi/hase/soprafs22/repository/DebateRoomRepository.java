@@ -10,7 +10,7 @@ import java.util.List;
 @Repository("debateRoomRepository")
 public interface DebateRoomRepository extends JpaRepository<DebateRoom, Long> {
     DebateRoom findByRoomId(Long roomId);
-    List<DebateRoom> findByCreatorUserId(Long creatorUserId);
+    List<DebateRoom> findAllByCreatorUserId(Long creatorUserId);
 
     List<DebateRoom> findAllByCreatorUserIdAndDebateState(Long creatorUserId, DebateState debateState);
 }
