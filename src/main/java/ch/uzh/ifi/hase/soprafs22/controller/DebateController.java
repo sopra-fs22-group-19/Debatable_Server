@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
@@ -40,6 +41,28 @@ public class DebateController {
 
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(createdDebateRoom);
+    }
+
+    @GetMapping("/debates/{userId}/rooms")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<DebateRoomGetDTO> getDebateRoomsByUser(@PathVariable Long userId,
+                                                        @RequestParam(name = "state", required = false, defaultValue = "") DebateState debateState){
+
+        List<DebateRoom> debateRooms;
+        if (debateState == null){
+            debateRooms = debateService.getDebateRoomsByUserId(userId, null);
+        } else {
+            debateRooms = debateService.getDebateRoomsByUserId(userId,  debateState);
+        }
+
+        List<DebateRoomGetDTO> debateRoomGetDTOS = new ArrayList<>();
+
+        for (DebateRoom debateRoom : debateRooms) {
+            debateRoomGetDTOS.add(DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(debateRoom));
+        }
+
+        return debateRoomGetDTOS;
     }
 
 

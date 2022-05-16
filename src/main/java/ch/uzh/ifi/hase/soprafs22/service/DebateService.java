@@ -402,4 +402,17 @@ public class DebateService {
     }
 
 
+    public List<DebateRoom> getDebateRoomsByUserId(Long userId, DebateState debateState) {
+        // Make sure the creating user exists
+        userService.getUserByUserId(userId, "The userId for which you are requesting the debates does not exit");
+
+        List<DebateRoom> userDebateRooms;
+        if (debateState != null){
+            userDebateRooms = debateRoomRepository.findAllByCreatorUserIdAndDebateState(userId, debateState);
+        } else{
+            userDebateRooms = debateRoomRepository.findByCreatorUserId(userId);
+        }
+
+        return userDebateRooms;
+    }
 }
