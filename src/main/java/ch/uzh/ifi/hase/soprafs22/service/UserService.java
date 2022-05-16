@@ -20,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * User Service
@@ -215,9 +212,10 @@ public class UserService implements UserDetailsService{
           throw new UsernameNotFoundException("user not found.");
       }
 
-      SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().toString());
+      Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+      authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
 
-      return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(), Collections.singleton(authority));
+      return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(), authorities);
   }
 
 
