@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.constant.Role;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public class UserService implements UserDetailsService{
     newUser.setToken(UUID.randomUUID().toString());
     newUser.setCreationDate(LocalDate.now());
     newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
-    newUser.setRole("REGISTER");
+    newUser.setRole(Role.REGISTER);
 
 
 
@@ -84,10 +85,10 @@ public class UserService implements UserDetailsService{
       if(userRepository.findByUsername("guestuser") == null){
           newUser.setUsername("guestuser");
           newUser.setName("Guest");
-          newUser.setPassword("password");
+          newUser.setPassword(passwordEncoder.encode("password"));
           newUser.setToken(UUID.randomUUID().toString());
           newUser.setCreationDate(LocalDate.now());
-          newUser.setRole("GUEST");
+          newUser.setRole(Role.GUEST);
           newUser = userRepository.save(newUser);
           userRepository.flush();
       }else {
@@ -213,7 +214,8 @@ public class UserService implements UserDetailsService{
       if(username == null){
           throw new UsernameNotFoundException("user not found.");
       }
-      SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole());
+
+      SimpleGrantedAuthority authority = new SimpleGrantedAuthority(user.getRole().toString());
 
       return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(), Collections.singleton(authority));
   }

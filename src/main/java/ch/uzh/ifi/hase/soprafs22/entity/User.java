@@ -1,5 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import ch.uzh.ifi.hase.soprafs22.constant.Role;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -39,16 +41,15 @@ public class User {
   private String password;
 
   @Column
-  private String role;
+  @Enumerated(EnumType.STRING)
+  private Role role;
 
-  public String getRole() {
+  public Role getRole() {
         return role;
     }
-
-  public void setRole(String role) {
+  public void setRole(Role role) {
         this.role = role;
     }
-
   public Long getId() {
     return id;
   }

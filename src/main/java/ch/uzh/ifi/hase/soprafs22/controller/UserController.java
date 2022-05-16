@@ -44,6 +44,7 @@ public class UserController {
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
+  /*
   @GetMapping("/login")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
@@ -54,6 +55,8 @@ public class UserController {
 
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(verifiedUser);
   }
+
+   */
 
   @GetMapping("/login/v2")
   @ResponseStatus(HttpStatus.OK)
