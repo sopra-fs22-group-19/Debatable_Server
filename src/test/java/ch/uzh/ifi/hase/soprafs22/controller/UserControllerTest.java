@@ -121,7 +121,7 @@ public class UserControllerTest {
       UserPostDTO guestUserPostDTO = new UserPostDTO();
       guestUserPostDTO.setName("Guest");
         // given
-      doReturn(guestUser).when(userService).createGuestUser(Mockito.any());
+      doReturn(guestUser).when(userService).createGuestUser();
 
         // when/then -> do the request + validate the result
       MockHttpServletRequestBuilder postRequest = post("/users/guests")

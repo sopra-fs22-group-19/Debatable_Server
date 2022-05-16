@@ -214,8 +214,7 @@ public class DebateService {
         User checkUser;
 
         if(Objects.isNull(userToAdd.getId())){
-            User guestUser = new User();
-            checkUser = userService.createGuestUser(guestUser);
+            checkUser = userService.createGuestUser();
         }
         else{
             checkUser = userRepository.findByid(userToAdd.getId());

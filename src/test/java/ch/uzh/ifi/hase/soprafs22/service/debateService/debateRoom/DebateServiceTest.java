@@ -247,7 +247,7 @@ class DebateServiceTest {
         testUser.setToken("lajflfa");
 
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(testUser));
-        Mockito.when(userService.createGuestUser(Mockito.any())).thenReturn(testUser);
+        Mockito.when(userService.createGuestUser()).thenReturn(testUser);
 
         DebateRoom testRoom = new DebateRoom();
         testRoom.setRoomId(-1L);
@@ -303,7 +303,7 @@ class DebateServiceTest {
         DebateRoom createdDebateRoom = debateService.createDebateRoom(testDebateRoom, debateRoomPostDTO);
         Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser2);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(createdDebateRoom);
-        Mockito.when(userService.createGuestUser(Mockito.any())).thenReturn(guestUser);
+        Mockito.when(userService.createGuestUser()).thenReturn(guestUser);
 
         DebateRoom updatedRoom = debateService.addParticipantToRoom(createdDebateRoom, testUser);
 

@@ -123,7 +123,7 @@ public class UserServiceTest {
     User guestUser = new User();
     Mockito.when(userRepository.save(Mockito.any())).thenReturn(guestUser);
 
-    User createdGuestUser = userService.createGuestUser(guestUser);
+    User createdGuestUser = userService.createGuestUser();
 
     assertEquals("Guest", createdGuestUser.getName());
     assertNotNull(createdGuestUser.getCreationDate());

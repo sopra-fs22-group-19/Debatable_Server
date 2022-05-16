@@ -309,7 +309,7 @@ class DebateControllerDebateRoomTest {
         userPutDTO.setUserId(null);
 
         given(debateService.addParticipantToRoom(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
-        given(userService.createGuestUser(Mockito.any())).willReturn(guestUser);
+        given(userService.createGuestUser()).willReturn(guestUser);
 
         MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId())
                 .contentType(MediaType.APPLICATION_JSON)
