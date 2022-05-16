@@ -104,7 +104,7 @@ class DebateServiceIntegrationTest {
         interventionPostDTO.setUserId(testUser1.getId());
         interventionPostDTO.setMessageContent("Message from user 1");
         Intervention inputIntervention = DTOMapper.INSTANCE.convertInterventionPostDTOtoEntity(interventionPostDTO);
-        debateService.createIntervention(inputIntervention, interventionPostDTO);
+        debateService.createIntervention(inputIntervention, interventionPostDTO.getRoomId(), interventionPostDTO.getUserId());
         List<String> mesgsUser1 = debateService.getUserDebateInterventions(createDebateRoom.getRoomId(), testUser1.getId(), 1, 1);
         assertEquals(interventionPostDTO.getMessageContent(), mesgsUser1.get(0));
 
@@ -116,7 +116,7 @@ class DebateServiceIntegrationTest {
         interventionPostDTO.setUserId(testUser2.getId());
         interventionPostDTO.setMessageContent("Message from user 2");
         inputIntervention = DTOMapper.INSTANCE.convertInterventionPostDTOtoEntity(interventionPostDTO);
-        debateService.createIntervention(inputIntervention, interventionPostDTO);
+        debateService.createIntervention(inputIntervention, interventionPostDTO.getRoomId(), interventionPostDTO.getUserId());
         List<String> mesgsUser2 = debateService.getUserDebateInterventions(createDebateRoom.getRoomId(), testUser2.getId(), 1, 1);
         assertEquals(interventionPostDTO.getMessageContent(), mesgsUser2.get(0));
 

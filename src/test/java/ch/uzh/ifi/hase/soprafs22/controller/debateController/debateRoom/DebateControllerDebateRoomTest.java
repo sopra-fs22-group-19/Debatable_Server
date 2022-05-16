@@ -63,10 +63,12 @@ class DebateControllerDebateRoomTest {
   private DebateRoom testDebateRoom;
   private DebateRoomPostDTO debateRoomPostDTO;
 
+  private User creatingUser;
+
   @BeforeEach
   public void setup() {
     // Create first speaker (creating user)
-    User creatingUser = new User();
+    creatingUser = new User();
     creatingUser.setId(1L);
     creatingUser.setUsername("test username");
     creatingUser.setName("test user's name");
@@ -399,6 +401,86 @@ class DebateControllerDebateRoomTest {
 
       mockMvc.perform(putRequest)
               .andExpect(status().isMethodNotAllowed());
+  }
+
+  @Test
+  void getDebateRoomsOfASpecificUser_Success() throws Exception {
+      DebateRoom debateRoom1 = new DebateRoom();
+      debateRoom1.setRoomId(1L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ONE_USER_AGAINST);
+
+      DebateRoom debateRoom2 = new DebateRoom();
+      debateRoom1.setRoomId(2L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.READY_TO_START);
+
+      DebateRoom debateRoom3 = new DebateRoom();
+      debateRoom1.setRoomId(3L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ONGOING_FOR);
+
+      DebateRoom debateRoom4 = new DebateRoom();
+      debateRoom1.setRoomId(4L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ENDED);
+
+      List<DebateRoom> debateRooms = new ArrayList<>();
+      debateRooms.add(debateRoom1);
+      debateRooms.add(debateRoom2);
+      debateRooms.add(debateRoom3);
+      debateRooms.add(debateRoom4);
+
+      given(debateService.getDebateRoomsByUserId(Mockito.any(), Mockito.any())).willReturn(debateRooms);
+
+      MockHttpServletRequestBuilder getRequest = get("/debates/"+ creatingUser.getId() + "/rooms")
+              .contentType(MediaType.APPLICATION_JSON);
+      // then
+      mockMvc.perform(getRequest)
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$[0].debateStatus", is(debateRooms.get(0).getDebateState().toString())))
+              .andExpect(jsonPath("$[1].debateStatus", is(debateRooms.get(1).getDebateState().toString())))
+              .andExpect(jsonPath("$[2].debateStatus", is(debateRooms.get(2).getDebateState().toString())))
+              .andExpect(jsonPath("$[3].debateStatus", is(debateRooms.get(3).getDebateState().toString())));
+  }
+
+  @Test
+  void getDebateRoomsOfASpecificUser_SpecificState_Success() throws Exception {
+      DebateRoom debateRoom1 = new DebateRoom();
+      debateRoom1.setRoomId(1L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ONE_USER_AGAINST);
+
+      DebateRoom debateRoom2 = new DebateRoom();
+      debateRoom1.setRoomId(2L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.READY_TO_START);
+
+      DebateRoom debateRoom3 = new DebateRoom();
+      debateRoom1.setRoomId(3L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ONGOING_FOR);
+
+      DebateRoom debateRoom4 = new DebateRoom();
+      debateRoom1.setRoomId(4L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ENDED);
+
+      List<DebateRoom> debateRooms = new ArrayList<>();
+      debateRooms.add(debateRoom1);
+      debateRooms.add(debateRoom2);
+      debateRooms.add(debateRoom3);
+      debateRooms.add(debateRoom4);
+
+      given(debateService.getDebateRoomsByUserId(Mockito.any(), Mockito.any())).willReturn(debateRooms.subList(0, 1));
+
+      MockHttpServletRequestBuilder getRequest = get("/debates/"+ creatingUser.getId() + "/rooms?state=ONE_USER_AGAINST")
+              .contentType(MediaType.APPLICATION_JSON);
+        // then
+      mockMvc.perform(getRequest)
+              .andExpect(status().isOk())
+              .andExpect(jsonPath("$[0].debateStatus", is(debateRooms.get(0).getDebateState().toString())));
+
     }
 
 

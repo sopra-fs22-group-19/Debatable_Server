@@ -2,13 +2,11 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
-import ch.uzh.ifi.hase.soprafs22.constant.TopicCategory;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.exceptions.InvalidDebateStateChange;
 import ch.uzh.ifi.hase.soprafs22.exceptions.SpeakerNotAllowedToPost;
 import ch.uzh.ifi.hase.soprafs22.repository.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateRoomPostDTO;
-import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import com.opencsv.exceptions.CsvValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -282,16 +280,16 @@ public class DebateService {
     }
 
 
-    public Intervention createIntervention(Intervention inputIntervention, InterventionPostDTO interventionPostDTO) {
+    public Intervention createIntervention(Intervention inputIntervention, Long roomId, Long userId) {
 
-        DebateRoom debateRoom = getDebateRoom(interventionPostDTO.getRoomId(),
+        DebateRoom debateRoom = getDebateRoom(roomId,
                 "Cannot post message because Debate room was not found");
 
         inputIntervention.setDebateRoom(debateRoom);
 
         String baseErrorMessage = "Cannot post message because User with id: '%d' was not found";
         DebateSpeaker debateSpeaker = getDebateSpeakerByUserIdAndRoomId(
-                interventionPostDTO.getUserId(), debateRoom.getRoomId(), baseErrorMessage);
+                userId, debateRoom.getRoomId(), baseErrorMessage);
         inputIntervention.setPostingSpeaker(debateSpeaker);
 
 
@@ -403,4 +401,17 @@ public class DebateService {
     }
 
 
+    public List<DebateRoom> getDebateRoomsByUserId(Long userId, DebateState debateState) {
+        // Make sure the creating user exists
+        userService.getUserByUserId(userId, "The userId for which you are requesting the debates does not exit");
+
+        List<DebateRoom> userDebateRooms;
+        if (debateState != null){
+            userDebateRooms = debateRoomRepository.findAllByCreatorUserIdAndDebateState(userId, debateState);
+        } else{
+            userDebateRooms = debateRoomRepository.findAllByCreatorUserId(userId);
+        }
+
+        return userDebateRooms;
+    }
 }
