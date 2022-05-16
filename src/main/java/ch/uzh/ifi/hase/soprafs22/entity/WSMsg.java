@@ -12,7 +12,7 @@ public class WSMsg {
     private Long userId;
     private String userName;
     private DebateSide userSide;
-    private String message;
+    private String messageContent;
     private DebateState debateState;
 
 
@@ -41,12 +41,12 @@ public class WSMsg {
     }
 
 
-    public String getMessage() {
-        return message;
+    public String getMessageContent() {
+        return messageContent;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setMessageContent(String messageContent) {
+        this.messageContent = messageContent;
     }
 
     public DebateState getDebateState() {

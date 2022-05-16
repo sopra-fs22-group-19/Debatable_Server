@@ -97,7 +97,7 @@ class DebateControllerInterventionTest {
         interventionPostDTO.setMessageContent("test_msg");
 
 
-        doReturn(inputIntervention).when(debateService).createIntervention(Mockito.any(),Mockito.any());
+        doReturn(inputIntervention).when(debateService).createIntervention(Mockito.any(), Mockito.any(), Mockito.any());
 
         MockHttpServletRequestBuilder postRequest = post("/debates/rooms/1/msg")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -117,7 +117,7 @@ class DebateControllerInterventionTest {
 
         Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
 
-        doThrow(eConflict).when(debateService).createIntervention(Mockito.any(),Mockito.any());
+        doThrow(eConflict).when(debateService).createIntervention(Mockito.any(),Mockito.any(), Mockito.any());
 
         MockHttpServletRequestBuilder postRequest = post("/debates/rooms/1/msg")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -136,7 +136,7 @@ class DebateControllerInterventionTest {
 
         Exception eConflict = new ResponseStatusException(HttpStatus.NOT_FOUND);
 
-        doThrow(eConflict).when(debateService).createIntervention(Mockito.any(),Mockito.any());
+        doThrow(eConflict).when(debateService).createIntervention(Mockito.any(),Mockito.any(), Mockito.any());
 
         MockHttpServletRequestBuilder postRequest = post("/debates/rooms/1/msg")
                 .contentType(MediaType.APPLICATION_JSON)

@@ -21,6 +21,7 @@ public class DebateController {
 
     @Value("${api.host}")
     private String host;
+
     private final DebateService debateService;
 
     DebateController(DebateService debateService) {
@@ -121,7 +122,8 @@ public class DebateController {
         Intervention inputIntervention = DTOMapper.INSTANCE.convertInterventionPostDTOtoEntity(interventionPostDTO);
 
         // Create the intervention in the DB
-        debateService.createIntervention(inputIntervention, interventionPostDTO);
+        debateService.createIntervention(inputIntervention, interventionPostDTO.getRoomId(),
+                interventionPostDTO.getUserId());
 
         // convert internal representation of user back to API
     }
