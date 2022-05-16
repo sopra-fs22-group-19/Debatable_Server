@@ -79,10 +79,9 @@ public class UserService implements UserDetailsService{
 
 
   public User createGuestUser() {
+      User newUser = new User();
 
-      User newUser = userRepository.findByUsername("GuestUser");
-
-      if(newUser == null){
+      if(userRepository.findByUsername("guestuser") == null){
           newUser.setUsername("guestuser");
           newUser.setName("Guest");
           newUser.setPassword("password");
@@ -92,9 +91,11 @@ public class UserService implements UserDetailsService{
           newUser = userRepository.save(newUser);
           userRepository.flush();
       }else {
-          return newUser;
+          User existUser = userRepository.findByUsername("guestuser");
+          return existUser;
       }
 
+      /*
       checkIfUsernameExists(newUser);
 
       // saves the given entity but data is only persisted in the database once
@@ -102,6 +103,8 @@ public class UserService implements UserDetailsService{
       newUser = userRepository.save(newUser);
       userRepository.flush();
 
+
+       */
       log.debug("Created Information for GuestUser: {}", newUser);
       return newUser;
   }
