@@ -32,6 +32,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf().disable()
+                .logout().logoutUrl("/logout")
+                .and()
                 .authorizeRequests()
                 .antMatchers("/users/*").authenticated()
                 .anyRequest().permitAll()
