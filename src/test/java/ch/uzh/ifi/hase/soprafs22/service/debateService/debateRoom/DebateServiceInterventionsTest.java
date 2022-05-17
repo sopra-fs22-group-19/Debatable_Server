@@ -132,7 +132,7 @@ class DebateServiceInterventionsTest {
 
         Mockito.when(interventionRepository.save(Mockito.any())).thenReturn(newIntervention);
 
-        Intervention savedIntervention = debateService.createIntervention(inputIntervention, interventionPostDTO);
+        Intervention savedIntervention = debateService.createIntervention(inputIntervention, interventionPostDTO.getRoomId(), interventionPostDTO.getUserId());
 
         assertEquals(interventionPostDTO.getMessageContent(), savedIntervention.getMessage());
         assertEquals(interventionPostDTO.getUserId(), savedIntervention.getPostingSpeaker().getUserAssociated().getId());
@@ -177,8 +177,11 @@ class DebateServiceInterventionsTest {
         testDebateRoom.setDebateState(DebateState.ONGOING_FOR);
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
+        Long interventionRoomId = interventionPostDTO.getRoomId();
+        Long interventionUserId = interventionPostDTO.getUserId();
+
         assertThrows(ResponseStatusException.class,
-                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+                () -> debateService.createIntervention(inputIntervention, interventionRoomId, interventionUserId));
 
         testDebateSpeaker.setDebateSide(DebateSide.FOR);
         Mockito.when(debateSpeakerRepository.findAllByUserAssociatedIdAndDebateRoomRoomId(Mockito.any(), Mockito.any()))
@@ -188,34 +191,36 @@ class DebateServiceInterventionsTest {
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(testDebateRoom);
 
         assertThrows(ResponseStatusException.class,
-                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+                () -> debateService.createIntervention(inputIntervention, interventionRoomId, interventionUserId));
 
         assertThrows(ResponseStatusException.class,
-                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+                () -> debateService.createIntervention(inputIntervention, interventionRoomId, interventionUserId));
     }
 
     @Test
     void createIntervention_wrongRoomId_notfound() {
         // when -> setup additional mocks for UserRepository
         Intervention inputIntervention = new Intervention();
-        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+        Long interventionRoomId = 1L;
+        Long interventionUserId = 1L;
 
         Mockito.when(debateRoomRepository.findByRoomId(Mockito.any())).thenReturn(null);
 
         assertThrows(ResponseStatusException.class,
-                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+                () -> debateService.createIntervention(inputIntervention, interventionRoomId, interventionUserId));
     }
 
     @Test
     void createIntervention_wrongUserId_notfound() {
         // when -> setup additional mocks for UserRepository
         Intervention inputIntervention = new Intervention();
-        InterventionPostDTO interventionPostDTO = new InterventionPostDTO();
+        Long interventionRoomId = 1L;
+        Long interventionUserId = 1L;
 
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(null);
 
         assertThrows(ResponseStatusException.class,
-                () -> debateService.createIntervention(inputIntervention, interventionPostDTO));
+                () -> debateService.createIntervention(inputIntervention, interventionRoomId, interventionUserId));
     }
 
     @Test

@@ -19,6 +19,8 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.catchThrowable;
@@ -49,12 +51,14 @@ class DebateServiceTest {
 
   private DebateRoom testDebateRoom;
 
+  private User creatingUser;
+
   @BeforeEach
   public void setup() {
     MockitoAnnotations.openMocks(this);
 
     // given
-    User creatingUser = new User();
+    creatingUser = new User();
     creatingUser.setId(1L);
     creatingUser.setUsername("test username");
     creatingUser.setName("test user's name");
@@ -305,6 +309,85 @@ class DebateServiceTest {
 
         assertEquals(updatedRoom.getUser2().getId(), guestUser.getId());
         assertEquals(updatedRoom.getUser2().getName(), guestUser.getName());
+
+    }
+
+  @Test
+  void getAllDebateRooms_Success(){
+      DebateRoom debateRoom1 = new DebateRoom();
+      debateRoom1.setRoomId(1L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ONE_USER_AGAINST);
+
+      DebateRoom debateRoom2 = new DebateRoom();
+      debateRoom1.setRoomId(2L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.READY_TO_START);
+
+      DebateRoom debateRoom3 = new DebateRoom();
+      debateRoom1.setRoomId(3L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ONGOING_FOR);
+
+      DebateRoom debateRoom4 = new DebateRoom();
+      debateRoom1.setRoomId(4L);
+      debateRoom1.setCreatorUserId(creatingUser.getId());
+      debateRoom1.setDebateState(DebateState.ENDED);
+
+      List<DebateRoom> debateRooms = new ArrayList<>();
+      debateRooms.add(debateRoom1);
+      debateRooms.add(debateRoom2);
+      debateRooms.add(debateRoom3);
+      debateRooms.add(debateRoom4);
+
+      Mockito.when(debateRoomRepository.findAllBySpeakerUserAssociatedId(Mockito.any())).thenReturn(debateRooms);
+
+      List<DebateRoom> retrievedDebateRooms = debateService.getDebateRoomsByUserId(creatingUser.getId(), null);
+
+      assertEquals(retrievedDebateRooms.size(), debateRooms.size());
+      assertEquals(retrievedDebateRooms.get(0), debateRooms.get(0));
+      assertEquals(retrievedDebateRooms.get(1), debateRooms.get(1));
+      assertEquals(retrievedDebateRooms.get(2), debateRooms.get(2));
+      assertEquals(retrievedDebateRooms.get(3), debateRooms.get(3));
+
+  }
+
+    @Test
+    void getAllDebateRooms_SpecificState(){
+        DebateRoom debateRoom1 = new DebateRoom();
+        debateRoom1.setRoomId(1L);
+        debateRoom1.setCreatorUserId(creatingUser.getId());
+        debateRoom1.setDebateState(DebateState.ONE_USER_AGAINST);
+
+        DebateRoom debateRoom2 = new DebateRoom();
+        debateRoom1.setRoomId(2L);
+        debateRoom1.setCreatorUserId(creatingUser.getId());
+        debateRoom1.setDebateState(DebateState.READY_TO_START);
+
+        DebateRoom debateRoom3 = new DebateRoom();
+        debateRoom1.setRoomId(3L);
+        debateRoom1.setCreatorUserId(creatingUser.getId());
+        debateRoom1.setDebateState(DebateState.ONGOING_FOR);
+
+        DebateRoom debateRoom4 = new DebateRoom();
+        debateRoom1.setRoomId(4L);
+        debateRoom1.setCreatorUserId(creatingUser.getId());
+        debateRoom1.setDebateState(DebateState.ENDED);
+
+        List<DebateRoom> debateRooms = new ArrayList<>();
+        debateRooms.add(debateRoom1);
+        debateRooms.add(debateRoom2);
+        debateRooms.add(debateRoom3);
+        debateRooms.add(debateRoom4);
+
+        List<DebateRoom> testDebateRoomList = debateRooms.subList(0,1);
+        Mockito.when(debateRoomRepository.findAllBySpeakerUserAssociatedIdAndDebateState(Mockito.any(), Mockito.any()))
+                .thenReturn(testDebateRoomList);
+
+        List<DebateRoom> retrievedDebateRooms = debateService.getDebateRoomsByUserId(creatingUser.getId(), DebateState.ONE_USER_AGAINST);
+
+        assertEquals(retrievedDebateRooms.size(), testDebateRoomList.size());
+        assertEquals(retrievedDebateRooms.get(0), testDebateRoomList.get(0));
 
     }
 

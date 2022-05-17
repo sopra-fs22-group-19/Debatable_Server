@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
+import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.*;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
@@ -21,6 +22,7 @@ public class DebateController {
 
     @Value("${api.host}")
     private String host;
+
     private final DebateService debateService;
 
     DebateController(DebateService debateService) {
@@ -39,6 +41,28 @@ public class DebateController {
 
         // convert internal representation of user back to API
         return DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(createdDebateRoom);
+    }
+
+    @GetMapping("/debates/{userId}/rooms")
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    public List<DebateRoomGetDTO> getDebateRoomsByUser(@PathVariable Long userId,
+                                                        @RequestParam(name = "state", required = false, defaultValue = "") DebateState debateState){
+
+        List<DebateRoom> debateRooms;
+        if (debateState == null){
+            debateRooms = debateService.getDebateRoomsByUserId(userId, null);
+        } else {
+            debateRooms = debateService.getDebateRoomsByUserId(userId,  debateState);
+        }
+
+        List<DebateRoomGetDTO> debateRoomGetDTOS = new ArrayList<>();
+
+        for (DebateRoom debateRoom : debateRooms) {
+            debateRoomGetDTOS.add(DTOMapper.INSTANCE.convertEntityToDebateRoomGetDTO(debateRoom));
+        }
+
+        return debateRoomGetDTOS;
     }
 
 
@@ -121,7 +145,8 @@ public class DebateController {
         Intervention inputIntervention = DTOMapper.INSTANCE.convertInterventionPostDTOtoEntity(interventionPostDTO);
 
         // Create the intervention in the DB
-        debateService.createIntervention(inputIntervention, interventionPostDTO);
+        debateService.createIntervention(inputIntervention, interventionPostDTO.getRoomId(),
+                interventionPostDTO.getUserId());
 
         // convert internal representation of user back to API
     }
