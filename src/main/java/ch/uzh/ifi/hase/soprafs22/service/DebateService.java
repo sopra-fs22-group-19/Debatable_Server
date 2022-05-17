@@ -408,9 +408,10 @@ public class DebateService {
 
         List<DebateRoom> userDebateRooms;
         if (debateState != null){
-            userDebateRooms = debateRoomRepository.findAllByCreatorUserIdAndDebateState(userId, debateState);
+            userDebateRooms = debateRoomRepository.findAllBySpeakerUserAssociatedIdAndDebateState(userId, debateState.ordinal());
         } else{
-            userDebateRooms = debateRoomRepository.findAllByCreatorUserId(userId);
+
+            userDebateRooms = debateRoomRepository.findAllBySpeakerUserAssociatedId(userId);
         }
 
         return userDebateRooms;

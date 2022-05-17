@@ -340,7 +340,7 @@ class DebateServiceTest {
       debateRooms.add(debateRoom3);
       debateRooms.add(debateRoom4);
 
-      Mockito.when(debateRoomRepository.findAllByCreatorUserId(Mockito.any())).thenReturn(debateRooms);
+      Mockito.when(debateRoomRepository.findAllBySpeakerUserAssociatedId(Mockito.any())).thenReturn(debateRooms);
 
       List<DebateRoom> retrievedDebateRooms = debateService.getDebateRoomsByUserId(creatingUser.getId(), null);
 
@@ -381,7 +381,7 @@ class DebateServiceTest {
         debateRooms.add(debateRoom4);
 
         List<DebateRoom> testDebateRoomList = debateRooms.subList(0,1);
-        Mockito.when(debateRoomRepository.findAllByCreatorUserIdAndDebateState(Mockito.any(), Mockito.any()))
+        Mockito.when(debateRoomRepository.findAllBySpeakerUserAssociatedIdAndDebateState(Mockito.any(), Mockito.any()))
                 .thenReturn(testDebateRoomList);
 
         List<DebateRoom> retrievedDebateRooms = debateService.getDebateRoomsByUserId(creatingUser.getId(), DebateState.ONE_USER_AGAINST);
