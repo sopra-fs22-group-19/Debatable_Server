@@ -40,6 +40,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.DELETE,"/users/*").hasAuthority("REGISTER")
                 .antMatchers(HttpMethod.POST, "/debates/rooms").hasAuthority("REGISTER")
                 .antMatchers(HttpMethod.POST, "/debates/topics").hasAuthority("REGISTER")
+                .antMatchers(HttpMethod.GET, "/debates/*/rooms").hasAuthority("REGISTER")
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
