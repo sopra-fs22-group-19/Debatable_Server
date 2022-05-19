@@ -1,6 +1,7 @@
 package ch.uzh.ifi.hase.soprafs22.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -35,7 +36,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutUrl("/logout")
                 .and()
                 .authorizeRequests()
-                .antMatchers("/users/*").hasAuthority("REGISTER")
+                .antMatchers(HttpMethod.PUT,"/users/*").hasAuthority("REGISTER")
+                .antMatchers(HttpMethod.DELETE,"/users/*").hasAuthority("REGISTER")
+                .antMatchers(HttpMethod.POST, "/debates/rooms").hasAuthority("REGISTER")
+                .antMatchers(HttpMethod.POST, "/debates/topics").hasAuthority("REGISTER")
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();

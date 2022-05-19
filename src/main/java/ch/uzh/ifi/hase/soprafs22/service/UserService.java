@@ -79,8 +79,8 @@ public class UserService implements UserDetailsService{
   public User createGuestUser() {
       User newUser = new User();
 
-      if(userRepository.findByUsername("guestuser") == null){
-          newUser.setUsername("guestuser");
+      if(userRepository.findByUsername("GuestUser") == null){
+          newUser.setUsername("GuestUser");
           newUser.setName("Guest");
           newUser.setPassword(passwordEncoder.encode("password"));
           newUser.setToken(UUID.randomUUID().toString());
@@ -89,7 +89,7 @@ public class UserService implements UserDetailsService{
           newUser = userRepository.save(newUser);
           userRepository.flush();
       }else {
-          User existUser = userRepository.findByUsername("guestuser");
+          User existUser = userRepository.findByUsername("GuestUser");
           return existUser;
       }
 
