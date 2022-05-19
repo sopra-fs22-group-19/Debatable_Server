@@ -168,7 +168,7 @@ public class UserService implements UserDetailsService{
           }
           if(!Objects.isNull(userDetails.getPassword())){
               if(!userDetails.getPassword().isEmpty()){
-                  toUpdateUser.setPassword(userDetails.getPassword());
+                  toUpdateUser.setPassword(passwordEncoder.encode(userDetails.getPassword()));
               }
           }
           userRepository.saveAndFlush(toUpdateUser);
