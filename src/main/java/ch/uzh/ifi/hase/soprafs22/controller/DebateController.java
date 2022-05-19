@@ -95,7 +95,7 @@ public class DebateController {
         return debateGetDTOs;
     }
 
-    @PostMapping("/debates")
+    @PostMapping("/debates/topics")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
