@@ -13,7 +13,9 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
@@ -125,6 +127,10 @@ public class UserServiceTest {
   @Test
   void createGuestUser_validInputs_success() {
     User guestUser = new User();
+    guestUser.setUsername("GuestUser");
+    guestUser.setName("Guest");
+    guestUser.setToken(UUID.randomUUID().toString());
+    guestUser.setCreationDate(LocalDate.now());
     Mockito.when(userRepository.save(Mockito.any())).thenReturn(guestUser);
 
     User createdGuestUser = userService.createGuestUser();
@@ -162,6 +168,7 @@ public class UserServiceTest {
 
       Mockito.when(userRepository.findByid(Mockito.any())).thenReturn(testUser1);
       Mockito.when(userRepository.findByUsername(Mockito.any())).thenReturn(null);
+      Mockito.when(passwordEncoder.encode(Mockito.any())).thenReturn("testPassword2");
 
 
       User compareUer = userService.updateUser(testUser1.getId(), testUser2);
@@ -278,7 +285,7 @@ public class UserServiceTest {
         User compareUer = userService.updateUser(testUser2.getId(), testUser2);
 
         assertEquals(compareUer.getName(), testUser1.getName());
-        assertEquals(compareUer.getPassword(),testUser2.getPassword());
+        assertEquals(compareUer.getPassword(),testUser1.getPassword());
         assertEquals(compareUer.getUsername(), testUser1.getUsername());
 
     }
