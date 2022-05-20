@@ -26,6 +26,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // Registers the endpoint where the connection will take place
-        registry.addEndpoint("/ws-endpoint").setAllowedOrigins("http://localhost:3000").withSockJS();
+        registry.addEndpoint("/ws-endpoint")
+                .setAllowedOrigins("http://localhost:3000", "https://sopra-fs22-group19-client.herokuapp.com").withSockJS();
     }
 }
