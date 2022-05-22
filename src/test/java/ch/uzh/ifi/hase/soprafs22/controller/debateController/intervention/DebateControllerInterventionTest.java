@@ -6,6 +6,7 @@ import ch.uzh.ifi.hase.soprafs22.controller.DebateController;
 import ch.uzh.ifi.hase.soprafs22.entity.*;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.InterventionPostDTO;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,9 @@ class DebateControllerInterventionTest {
 
     @MockBean
     private DebateService debateService;
+
+    @MockBean
+    private UserService userService;
 
     private DebateSpeaker debatesSpeaker1;
     private User testUser;

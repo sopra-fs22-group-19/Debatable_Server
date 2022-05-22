@@ -51,7 +51,7 @@ class DebateControllerDebateRoomTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @Mock
+  @MockBean
   private UserService userService;
 
   @Mock

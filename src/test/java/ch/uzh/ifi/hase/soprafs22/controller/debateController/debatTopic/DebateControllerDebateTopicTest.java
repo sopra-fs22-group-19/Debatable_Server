@@ -12,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -53,6 +54,9 @@ class DebateControllerDebateTopicTest {
 
   @MockBean
   private DebateService debateService;
+
+  @MockBean
+  private UserService userService;
 
   private DebateRoom debateRoom;
 
