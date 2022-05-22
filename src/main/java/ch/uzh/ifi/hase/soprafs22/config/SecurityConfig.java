@@ -14,13 +14,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
 
 
 
-    public SecurityConfig(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+    public SecurityConfig(UserDetailsService userDetailsService) {
         this.userDetailsService = userDetailsService;
-        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -36,11 +34,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logout().logoutUrl("/logout")
                 .and()
                 .authorizeRequests()
+                /*
                 .antMatchers(HttpMethod.PUT,"/users/*").hasAuthority("REGISTER")
                 .antMatchers(HttpMethod.DELETE,"/users/*").hasAuthority("REGISTER")
                 .antMatchers(HttpMethod.POST, "/debates/rooms").hasAuthority("REGISTER")
                 .antMatchers(HttpMethod.POST, "/debates/topics").hasAuthority("REGISTER")
-                .antMatchers(HttpMethod.GET, "/debates/*/rooms").hasAuthority("REGISTER")
+                */
+                //.antMatchers(HttpMethod.GET, "/debates/*/rooms").hasAuthority("REGISTER")
                 .anyRequest().permitAll()
                 .and()
                 .httpBasic();
