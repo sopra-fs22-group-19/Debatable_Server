@@ -8,10 +8,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsPasswordService;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -58,8 +56,6 @@ public class UserService implements UserDetailsService{
     newUser.setRole(Role.REGISTER);
 
 
-
-    //newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
     //addRegisterRoleToUser(newUser);
 
     checkIfUsernameExists(newUser);
@@ -79,8 +75,10 @@ public class UserService implements UserDetailsService{
   public User createGuestUser() {
       User newUser = new User();
 
-      if(userRepository.findByUsername("GuestUser") == null){
-          newUser.setUsername("GuestUser");
+      String guestUsername = "GuestUser";
+
+      if(userRepository.findByUsername(guestUsername) == null){
+          newUser.setUsername(guestUsername);
           newUser.setName("Guest");
           newUser.setPassword(passwordEncoder.encode("password"));
           newUser.setToken(UUID.randomUUID().toString());
@@ -89,8 +87,7 @@ public class UserService implements UserDetailsService{
           newUser = userRepository.save(newUser);
           userRepository.flush();
       }else {
-          User existUser = userRepository.findByUsername("GuestUser");
-          return existUser;
+          return userRepository.findByUsername(guestUsername);
       }
 
       /*
