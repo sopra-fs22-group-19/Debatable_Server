@@ -2,6 +2,7 @@ package ch.uzh.ifi.hase.soprafs22.service;
 
 import ch.uzh.ifi.hase.soprafs22.constant.DebateSide;
 import ch.uzh.ifi.hase.soprafs22.constant.DebateState;
+import ch.uzh.ifi.hase.soprafs22.controller.DebateController;
 import ch.uzh.ifi.hase.soprafs22.entity.DebateRoom;
 import ch.uzh.ifi.hase.soprafs22.entity.Intervention;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -40,6 +42,9 @@ class DebateServiceIntegrationTest {
     @Qualifier("userRepository")
     @Autowired
     private UserRepository userRepository;
+
+    @MockBean
+    private DebateController debateController;
 
     @Autowired
     private DebateService debateService;
