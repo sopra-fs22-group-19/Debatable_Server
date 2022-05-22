@@ -185,7 +185,7 @@ class DebateControllerDebateTopicTest {
 
     doReturn(expectedDebateTopic).when(debateService).createDebateTopic(Mockito.any(), Mockito.any());
 
-    MockHttpServletRequestBuilder getRequest = post("/debates")
+    MockHttpServletRequestBuilder getRequest = post("/debates/topics")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(debateTopicPostDTO));
 
