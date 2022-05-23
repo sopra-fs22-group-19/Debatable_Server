@@ -1,5 +1,6 @@
 package ch.uzh.ifi.hase.soprafs22.service;
 
+import ch.uzh.ifi.hase.soprafs22.constant.Role;
 import ch.uzh.ifi.hase.soprafs22.entity.User;
 import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import org.slf4j.Logger;
@@ -7,14 +8,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * User Service
@@ -25,28 +29,35 @@ import java.util.UUID;
  */
 @Service
 @Transactional
-public class UserService {
+public class UserService implements UserDetailsService{
 
   private final Logger log = LoggerFactory.getLogger(UserService.class);
 
   private final UserRepository userRepository;
-
+  private final PasswordEncoder passwordEncoder;
   @Autowired
   public UserService(
-          @Qualifier("userRepository") UserRepository userRepository
-          ) {
+          @Qualifier("userRepository") UserRepository userRepository, PasswordEncoder passwordEncoder) {
     this.userRepository = userRepository;
+      this.passwordEncoder = passwordEncoder;
   }
 
   public List<User> getUsers() {
     return this.userRepository.findAll();
   }
 
+
+
   public User createUser(User newUser) {
+
     newUser.setToken(UUID.randomUUID().toString());
     newUser.setCreationDate(LocalDate.now());
+    newUser.setPassword(passwordEncoder.encode(newUser.getPassword()));
+    newUser.setRole(Role.REGISTER);
+
 
     checkIfUsernameExists(newUser);
+
 
     // saves the given entity but data is only persisted in the database once
     // flush() is called
@@ -57,19 +68,25 @@ public class UserService {
     return newUser;
   }
 
-  public User createGuestUser(User newUser) {
 
-      newUser.setUsername(UUID.randomUUID().toString());
-      newUser.setName("Guest");
-      newUser.setPassword(UUID.randomUUID().toString());
-      newUser.setToken(UUID.randomUUID().toString());
-      newUser.setCreationDate(LocalDate.now());
-      checkIfUsernameExists(newUser);
 
-      // saves the given entity but data is only persisted in the database once
-      // flush() is called
-      newUser = userRepository.save(newUser);
-      userRepository.flush();
+  public User createGuestUser() {
+      User newUser = new User();
+
+      String guestUsername = "GuestUser";
+
+      if(userRepository.findByUsername(guestUsername) == null){
+          newUser.setUsername(guestUsername);
+          newUser.setName("Guest");
+          newUser.setPassword(passwordEncoder.encode("password"));
+          newUser.setToken(UUID.randomUUID().toString());
+          newUser.setCreationDate(LocalDate.now());
+          newUser.setRole(Role.GUEST);
+          newUser = userRepository.save(newUser);
+          userRepository.flush();
+      }else {
+          return userRepository.findByUsername(guestUsername);
+      }
 
       log.debug("Created Information for GuestUser: {}", newUser);
       return newUser;
@@ -136,7 +153,7 @@ public class UserService {
           }
           if(!Objects.isNull(userDetails.getPassword())){
               if(!userDetails.getPassword().isEmpty()){
-                  toUpdateUser.setPassword(userDetails.getPassword());
+                  toUpdateUser.setPassword(passwordEncoder.encode(userDetails.getPassword()));
               }
           }
           userRepository.saveAndFlush(toUpdateUser);
@@ -170,5 +187,23 @@ public class UserService {
 
     }
   }
+
+
+
+  @Override
+  public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+      User user = userRepository.findByUsername(username);
+      if(username == null){
+          throw new UsernameNotFoundException("user not found.");
+      }
+
+      Collection<SimpleGrantedAuthority> authorities = new ArrayList<>();
+      authorities.add(new SimpleGrantedAuthority(user.getRole().toString()));
+
+      return new org.springframework.security.core.userdetails.User(user.getUsername(),user.getPassword(), authorities);
+  }
+
+
+
 
 }
