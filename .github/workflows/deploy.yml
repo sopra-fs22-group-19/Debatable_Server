@@ -41,10 +41,10 @@ jobs:
           cat >~/.netrc <<EOF
           machine api.heroku.com
               login $HEROKU_EMAIL
-              password $HEROKU_KEY
+              password $HEROKU_API_KEY
           machine git.heroku.com
               login $HEROKU_EMAIL
-              password $HEROKU_KEY
+              password $HEROKU_API_KEY
           EOF
 
     - name: login to heroku cli
@@ -54,4 +54,4 @@ jobs:
       run: heroku git:remote -a $HEROKU_APP_NAME
 
     - name: deploy project to heroku
-      run: git push heroku master
+      run: git push heroku HEAD:refs/heads/master
