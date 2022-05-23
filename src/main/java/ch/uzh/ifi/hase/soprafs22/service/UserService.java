@@ -88,16 +88,6 @@ public class UserService implements UserDetailsService{
           return userRepository.findByUsername(guestUsername);
       }
 
-      /*
-      checkIfUsernameExists(newUser);
-
-      // saves the given entity but data is only persisted in the database once
-      // flush() is called
-      newUser = userRepository.save(newUser);
-      userRepository.flush();
-
-
-       */
       log.debug("Created Information for GuestUser: {}", newUser);
       return newUser;
   }
