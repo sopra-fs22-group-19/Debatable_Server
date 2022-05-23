@@ -15,6 +15,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,6 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * This tests if the UserController works.
  */
 @WebMvcTest(UserController.class)
+@ActiveProfiles("test")
 public class UserControllerTest {
 
   @Autowired
@@ -43,13 +47,18 @@ public class UserControllerTest {
   @MockBean
   private UserService userService;
 
+
   private User testUser;
 
   private UserPostDTO testUserPostDTO;
 
   private UserPutDTO testUserPutDTO;
 
+  @MockBean
   private UserRepository userRepository;
+
+  @MockBean
+  private PasswordEncoder passwordEncoder;
 
   @BeforeEach
   public void setup() {
@@ -76,12 +85,13 @@ public class UserControllerTest {
 
 
   @Test
+
   void createUser_validInput_userCreated() throws Exception {
     // given
     doReturn(testUser).when(userService).createUser(Mockito.any());
 
     // when/then -> do the request + validate the result
-    MockHttpServletRequestBuilder postRequest = post("/users")
+    MockHttpServletRequestBuilder postRequest = post("/register")
         .contentType(MediaType.APPLICATION_JSON)
         .content(asJsonString(testUserPostDTO));
 
@@ -99,7 +109,7 @@ public class UserControllerTest {
       doThrow(eConflict).when(userService).createUser(Mockito.any());
 
       // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = post("/users")
+      MockHttpServletRequestBuilder postRequest = post("/register")
               .contentType(MediaType.APPLICATION_JSON)
               .content(asJsonString(testUserPostDTO));
 
@@ -121,10 +131,10 @@ public class UserControllerTest {
       UserPostDTO guestUserPostDTO = new UserPostDTO();
       guestUserPostDTO.setName("Guest");
         // given
-      doReturn(guestUser).when(userService).createGuestUser(Mockito.any());
+      doReturn(guestUser).when(userService).createGuestUser();
 
         // when/then -> do the request + validate the result
-      MockHttpServletRequestBuilder postRequest = post("/users/guests")
+      MockHttpServletRequestBuilder postRequest = post("/register/guests")
               .contentType(MediaType.APPLICATION_JSON);
 
         // then

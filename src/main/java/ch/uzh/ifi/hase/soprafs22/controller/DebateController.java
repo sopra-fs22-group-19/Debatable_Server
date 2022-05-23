@@ -92,7 +92,7 @@ public class DebateController {
         return debateGetDTOs;
     }
 
-    @PostMapping("/debates")
+    @PostMapping("/debates/topics")
     @ResponseStatus(HttpStatus.CREATED)
     @ResponseBody
     public DebateTopicGetDTO postDebateTopic(@RequestBody DebateTopicPostDTO debateTopicPostDTO) {
@@ -209,5 +209,6 @@ public class DebateController {
 
         return translationResponse.getTranslations().get(0).getText();
     }
+
 
 }

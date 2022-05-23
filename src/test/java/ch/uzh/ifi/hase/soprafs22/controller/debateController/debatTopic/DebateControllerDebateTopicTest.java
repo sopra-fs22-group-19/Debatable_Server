@@ -12,6 +12,7 @@ import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.DebateTopicPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.DebateService;
+import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -22,6 +23,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
@@ -53,6 +55,12 @@ class DebateControllerDebateTopicTest {
 
   @MockBean
   private DebateService debateService;
+
+  @MockBean
+  private UserService userService;
+
+  @MockBean
+  private PasswordEncoder passwordEncoder;
 
   private DebateRoom debateRoom;
 
@@ -185,7 +193,7 @@ class DebateControllerDebateTopicTest {
 
     doReturn(expectedDebateTopic).when(debateService).createDebateTopic(Mockito.any(), Mockito.any());
 
-    MockHttpServletRequestBuilder getRequest = post("/debates")
+    MockHttpServletRequestBuilder getRequest = post("/debates/topics")
             .contentType(MediaType.APPLICATION_JSON)
             .content(asJsonString(debateTopicPostDTO));
 

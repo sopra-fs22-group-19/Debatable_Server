@@ -1,7 +1,8 @@
 package ch.uzh.ifi.hase.soprafs22.entity;
 
+import ch.uzh.ifi.hase.soprafs22.constant.Role;
+
 import javax.persistence.*;
-import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -16,7 +17,7 @@ import java.time.LocalDate;
  */
 @Entity
 @Table(name = "DEBATABLE_USER")
-public class User implements Serializable {
+public class User {
 
   private static final long serialVersionUID = 1L;
 
@@ -39,6 +40,16 @@ public class User implements Serializable {
   @Column(nullable = false)
   private String password;
 
+  @Column
+  @Enumerated(EnumType.STRING)
+  private Role role;
+
+  public Role getRole() {
+        return role;
+    }
+  public void setRole(Role role) {
+        this.role = role;
+    }
   public Long getId() {
     return id;
   }
@@ -86,5 +97,4 @@ public class User implements Serializable {
   public void setPassword(String password) {
         this.password = password;
   }
-
 }

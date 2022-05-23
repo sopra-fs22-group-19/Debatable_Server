@@ -42,3 +42,6 @@ local.properties
 .context.json
 .vscode/launch.json
 bin/main/application.properties
+/node_modules/
+/package.json
+/package-lock.json

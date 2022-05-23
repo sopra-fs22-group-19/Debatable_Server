@@ -214,8 +214,7 @@ public class DebateService {
         User checkUser;
 
         if(Objects.isNull(userToAdd.getId())){
-            User guestUser = new User();
-            checkUser = userService.createGuestUser(guestUser);
+            checkUser = userService.createGuestUser();
         }
         else{
             checkUser = userRepository.findByid(userToAdd.getId());
@@ -373,6 +372,9 @@ public class DebateService {
         User user = userService.getUserByUserId(userId, errorMessage);
 
         newDebateTopic.setCreatorUser(user);
+
+        newDebateTopic = debateTopicRepository.save(newDebateTopic);
+        debateTopicRepository.flush();
 
         newDebateTopic = debateTopicRepository.save(newDebateTopic);
         debateTopicRepository.flush();
