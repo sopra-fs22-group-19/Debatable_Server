@@ -24,6 +24,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.web.server.ResponseStatusException;
@@ -51,8 +52,11 @@ class DebateControllerDebateRoomTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @Mock
+  @MockBean
   private UserService userService;
+
+  @MockBean
+  private PasswordEncoder passwordEncoder;
 
   @Mock
   private DebateRoomRepository debateRoomRepository;
@@ -309,7 +313,7 @@ class DebateControllerDebateRoomTest {
         userPutDTO.setUserId(null);
 
         given(debateService.addParticipantToRoom(Mockito.any(), Mockito.any())).willReturn(testDebateRoom);
-        given(userService.createGuestUser(Mockito.any())).willReturn(guestUser);
+        given(userService.createGuestUser()).willReturn(guestUser);
 
         MockHttpServletRequestBuilder putRequest = put("/debates/rooms/"+ testDebateRoom.getRoomId())
                 .contentType(MediaType.APPLICATION_JSON)

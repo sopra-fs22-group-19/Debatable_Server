@@ -1,12 +1,14 @@
 package ch.uzh.ifi.hase.soprafs22.controller;
 
 import ch.uzh.ifi.hase.soprafs22.entity.User;
+import ch.uzh.ifi.hase.soprafs22.repository.UserRepository;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserGetDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPostDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.dto.UserPutDTO;
 import ch.uzh.ifi.hase.soprafs22.rest.mapper.DTOMapper;
 import ch.uzh.ifi.hase.soprafs22.service.UserService;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 
@@ -22,11 +24,14 @@ public class UserController {
 
   private final UserService userService;
 
-  UserController(UserService userService) {
+  private final UserRepository userRepository;
+
+  UserController(UserService userService, UserRepository userRepository) {
     this.userService = userService;
+    this.userRepository = userRepository;
   }
 
-  @PostMapping("/users")
+  @PostMapping("/register")
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
   public UserGetDTO createUser(@RequestBody UserPostDTO userPostDTO) {
@@ -40,27 +45,26 @@ public class UserController {
     return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
 
-  @GetMapping("/login")
+
+  @GetMapping("/login/v2")
   @ResponseStatus(HttpStatus.OK)
   @ResponseBody
-  public UserGetDTO checkUserCredentials(@RequestParam(name = "username") String username,
-                                   @RequestParam(name = "password") String password){
+  public UserGetDTO checkUserAuth(Authentication authentication){
+      String username = authentication.getName();
 
-      User verifiedUser = userService.checkCredentials(username, password);
+      User verifiedUser = userRepository.findByUsername(username);
 
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(verifiedUser);
   }
 
 
   //create temp guest user
-  @PostMapping("/users/guests")
+  @PostMapping("/register/guests")
   @ResponseStatus(HttpStatus.CREATED)
   @ResponseBody
   public UserGetDTO createGuestUser() {
 
-      User guestUser = new User();
-
-      User createdUser = userService.createGuestUser(guestUser);
+      User createdUser = userService.createGuestUser();
 
       return DTOMapper.INSTANCE.convertEntityToUserGetDTO(createdUser);
   }
