@@ -56,8 +56,6 @@ public class UserService implements UserDetailsService{
     newUser.setRole(Role.REGISTER);
 
 
-    //addRegisterRoleToUser(newUser);
-
     checkIfUsernameExists(newUser);
 
 
