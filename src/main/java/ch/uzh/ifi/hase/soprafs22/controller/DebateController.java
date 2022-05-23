@@ -10,11 +10,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import javax.websocket.server.PathParam;
 import java.util.ArrayList;
 import java.util.List;
-
-import static ch.uzh.ifi.hase.soprafs22.entity.ApiUsage.getUsage;
 
 @RestController
 public class DebateController {
@@ -213,16 +210,5 @@ public class DebateController {
         return translationResponse.getTranslations().get(0).getText();
     }
 
-    @GetMapping("/translate")
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    public String getTranslation(@RequestParam String msg , @RequestParam String target_lang) {
-
-
-        String msgTranslated = msg;
-
-
-        return msgTranslated;
-    }
 
 }
