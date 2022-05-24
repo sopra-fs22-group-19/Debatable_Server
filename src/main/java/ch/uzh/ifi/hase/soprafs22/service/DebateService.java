@@ -36,7 +36,6 @@ public class DebateService {
     private final DebateTopicRepository debateTopicRepository;
     private final DebateRoomRepository debateRoomRepository;
     private final UserRepository userRepository;
-    private final TagRepository tagRepository;
     private final DebateSpeakerRepository debateSpeakerRepository;
     private final InterventionRepository interventionRepository;
     private final UserService userService;
@@ -47,7 +46,6 @@ public class DebateService {
             @Qualifier("debateRoomRepository") DebateRoomRepository debateRoomRepository,
             @Qualifier("userRepository") UserRepository userRepository,
             @Qualifier("debateSpeakerRepository") DebateSpeakerRepository debateSpeakerRepository,
-            @Qualifier("tagRepository") TagRepository tagRepository,
             @Qualifier("interventionRepository") InterventionRepository interventionRepository,
             @Qualifier("userService") UserService userService
             ) {
@@ -55,7 +53,6 @@ public class DebateService {
         this.debateTopicRepository = debateTopicRepository;
         this.debateRoomRepository = debateRoomRepository;
         this.userRepository = userRepository;
-        this.tagRepository = tagRepository;
         this.debateSpeakerRepository = debateSpeakerRepository;
         this.interventionRepository = interventionRepository;
         this.userService = userService;
