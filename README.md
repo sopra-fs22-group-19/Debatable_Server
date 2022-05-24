@@ -12,6 +12,16 @@ If second participant joined as a guest user, they do not have any access to any
 We used Java in the backend of It's debatable i.e. in this repository. The other frameworks which we used in backend are Spring, Rest, Heroku (for deployment), SonarCloud (code quality). We used Deepl api for translation. We used Javascript, HTML, CSS, SCSS and React for [It's debatable Client](https://github.com/sopra-fs22-group-19/Debatable_Client). We had weekly Scrums and the implementation period was divided into 2 sprints.
 
 ## High-level Components
+
+### Database: Postgres 
+
+### Translation API
+
+### UserService and DebateService
+
+### Class Diagram
+
+
 ## Launch & Deployment
 
 ## Illustrations
