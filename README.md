@@ -19,19 +19,77 @@ We use a Postgres Database hosted in Heroku. You can find the schema we used for
 ### Translation API
 We used the translation API from [DeepL](https://www.deepl.com/pro#developer), whose free tier for developers allowed us to translate up to 500,000 characters / month and includes a good offer of languages
 
-### UserService and DebateService
-We have to main classes 
+### UserService/Controller and DebateService/Controller
+We have two main classes to handle everything in our application:
+
+ * [UserService.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/service/UserService.java) / [UserController.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/controller/UserController.java):
+ Everything related to the handling of users like their creation/editing and authentication
+ * [DebateService.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/service/DebateService.java) / [DebateController.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/controller/DebateController.java):
+  Handle everything related to the execution of the debate as the creation of possible debate topics, debate rooms where users can discuss, and enforcing the rules of when can a user that is registered to the room intervene and post a message to it.
+
+In the Controller classes you will find how the API requests are handled and on the Service class you will find the methods of how many of these actions are implemented. 
+
+### WSMsgDebateRoomController
+
+The classes [WSMsgDebateRoomController](./src/main/java/ch/uzh/ifi/hase/soprafs22/controller/WSDebateRoomController.java).java and [WebSocketConfig](./src/main/java/ch/uzh/ifi/hase/soprafs22/config/WebsocketConfig.java).java are used to handle the messages sent during a debate. To have a faster and more functional app, we have the messages be sent and broadcast to other users via WebSockets.
+WSMsgDebateRoomController.java handles the actions taken when a message is received and before it is broadcasted (like saving it to the Database). WebSocketConfig.java handles how to subscribe to a specific channel for a debate.
 
 ### Class Diagram
-
+To have a better picture of the different classes in our system, please have a look at the [class diagram](./documentation/Class%20Diagram.pdf).
+Note that there is a good opportunity for refactoring by encapsulating better the different methods associated to the DebateService and separate/break it into different services associated to other entities like [DebateSpeaker.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/entity/DebateSpeaker.java) and [DebateTopic.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/entity/DebateTopic.java).
+In its current state, our code more or less has one master class in [DebateService.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/service/DebateService.java)
 
 ## Launch & Deployment
 
+### Building with Gradle
+
+You can use the local Gradle Wrapper to build the application.
+-   macOS: `./gradlew`
+-   Linux: `./gradlew`
+-   Windows: `./gradlew.bat`
+
+More Information about [Gradle Wrapper](https://docs.gradle.org/current/userguide/gradle_wrapper.html) and [Gradle](https://gradle.org/docs/).
+
+#### Build
+
+```bash
+./gradlew build
+```
+
+### Run
+
+```bash
+./gradlew bootRun
+```
+
+### Test
+
+```bash
+./gradlew test
+```
+
 ### Environment Variables
 
+You need to create the following environment variables in local or Github Secrets and in your Heroku instance for the app.
 #### Database
 
+| Env var name  | Value |
+|---------------|-------|
+| DB_NAME       |       |
+| DB_PWD        |       |
+| DB_SERVER_URL |       |
+| DB_USERNAME   |       |
+
+
 #### Translation API
+
+When you create an account in Deepl as a developer, it should generate for you the following to values for you to make requests to the app. 
+Again, you have to declare these as local variables, both when running from local or deploying to Heroku.
+
+| Env var name  | Value |
+|---------------|-------|
+| TRANSLATION_API_HOST       |       |
+| TRANSLATION_API_KEY        |       |
 
 ### Example requests for the backend
 We included a non-exhaustive list of requests ([Test APIs with postman.json](./documentation/Test%20APIs%20with%20postman.json)) you can import into Postman and use it to test the resources from the backend.
@@ -84,6 +142,10 @@ It would be nice if we can have a debate moderator who can try to keep the debat
 
 ### Live video mode of debating
 In the current implementation, users type their arguments in the debate room. It would be nicer to have debates with people on live video mode.
+
+### Backend Specific
+Separate/break the DebateService into different services associated to other entities like [DebateSpeaker.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/entity/DebateSpeaker.java) and [DebateTopic.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/entity/DebateTopic.java).
+This will help encapsulate better the actions of the different entities in the app (DebateRoom, DebateTopic, and DebateSpeaker). In its current state, our code more or less has one master class in [DebateService.java](./src/main/java/ch/uzh/ifi/hase/soprafs22/service/DebateService.java)
 
 ## Authors
 * [Pablo Bolaños](https://github.com/pabsbo)
