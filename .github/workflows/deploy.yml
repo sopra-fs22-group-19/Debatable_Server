@@ -15,12 +15,12 @@ jobs:
       HEROKU_KEY: ${{ secrets.HEROKU_API_KEY }}
       HEROKU_EMAIL: ${{ secrets.HEROKU_EMAIL }}
       HEROKU_APP_NAME: ${{ secrets.HEROKU_APP_NAME }}
-      #DB_SERVER_URL: ${{ secrets.DB_SERVER_URL }}
-      #DB_NAME: ${{ secrets.DB_NAME }}
-      #DB_USERNAME: ${{ secrets.DB_USERNAME }}
-      #DB_PWD: ${{ secrets.DB_PWD }}
-      #TRANSLATION_API_HOST: ${{ secrets.TRANSLATION_API_HOST }}
-      #TRANSLATION_API_KEY: ${{ secrets.TRANSLATION_API_KEY }}
+      DB_SERVER_URL: ${{ secrets.DB_SERVER_URL }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USERNAME: ${{ secrets.DB_USERNAME }}
+      DB_PWD: ${{ secrets.DB_PWD }}
+      TRANSLATION_API_HOST: ${{ secrets.TRANSLATION_API_HOST }}
+      TRANSLATION_API_KEY: ${{ secrets.TRANSLATION_API_KEY }}
 
     steps:
     - name: checkout repository code
