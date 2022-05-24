@@ -13,16 +13,28 @@ We used Java in the backend of It's debatable i.e. in this repository. The other
 
 ## High-level Components
 
-### Database: Postgres 
+### Database: Postgres
+We use a Postgres Database hosted in Heroku. You can find the schema we used for our application in [DB schema.png](./documentation/DB%20schema.png)
 
 ### Translation API
+We used the translation API from [DeepL](https://www.deepl.com/pro#developer), whose free tier for developers allowed us to translate up to 500,000 characters / month and includes a good offer of languages
 
 ### UserService and DebateService
+We have to main classes 
 
 ### Class Diagram
 
 
 ## Launch & Deployment
+
+### Environment Variables
+
+#### Database
+
+#### Translation API
+
+### Example requests for the backend
+We included a non-exhaustive list of requests ([Test APIs with postman.json](./documentation/Test%20APIs%20with%20postman.json)) you can import into Postman and use it to test the resources from the backend.
 
 ## Illustrations
 Users can either login or register to the platform. They will see a home page. Users can join the debates using exiting debate topis as shown in the image below:

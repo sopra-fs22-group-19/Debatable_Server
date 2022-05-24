@@ -1,0 +1,957 @@
+{
+	"info": {
+		"_postman_id": "5c789d48-55ac-4ce6-bb0f-a0863259d9a6",
+		"name": "Milestone 3",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Debate Flow",
+			"item": [
+				{
+					"name": "Get debate room Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/debates/rooms/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"debates",
+								"rooms",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"juano\",\n    \"name\": \"juano\",\n    \"password\": \"marrano\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/users",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create debate room Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"debateId\": 1,\n    \"side\": \"AGAINST\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/debates/rooms",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"debates",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add second user to debate room Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/debates/rooms/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"debates",
+								"rooms",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start debate Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"debateState\": \"ONGOING_AGAINST\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/debates/rooms/1/status",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Message AGAINST",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"Pitalito\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/debates/rooms/1/msg",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"msg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Message FOR",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 3,\n    \"roomId\": 1,\n    \"messageContent\": \"Otavaldo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/debates/rooms/1/msg",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"msg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get messages of a user Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"This is SPARTAAAA!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/debates/rooms/1/users/1/msgs?top_i=4&to_top_j=8",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"users",
+								"1",
+								"msgs"
+							],
+							"query": [
+								{
+									"key": "top_i",
+									"value": "4"
+								},
+								{
+									"key": "to_top_j",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Debate Flow Heroku",
+			"item": [
+				{
+					"name": "Get debate room Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/debates/rooms/1",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"debates",
+								"rooms",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create User Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"juano\",\n    \"name\": \"juano\",\n    \"password\": \"marrano\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/users",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create debate room Copy",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"debateId\": 1,\n    \"side\": \"AGAINST\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/debates/rooms",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"debates",
+								"rooms"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add second user to debate room Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": null\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/debates/rooms/1",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"debates",
+								"rooms",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start debate Copy",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"debateState\": \"ONGOING_AGAINST\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/debates/rooms/1/status",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"status"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Message AGAINST",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"Pitalito\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/debates/rooms/1/msg",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"msg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Post Message FOR",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 3,\n    \"roomId\": 1,\n    \"messageContent\": \"Otavaldo\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/debates/rooms/1/msg",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"msg"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get messages of a user Copy",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"This is SPARTAAAA!\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "https://sopra-fs22-group19-server.herokuapp.com/debates/rooms/1/users/1/msgs?top_i=4&to_top_j=8",
+							"protocol": "https",
+							"host": [
+								"sopra-fs22-group19-server",
+								"herokuapp",
+								"com"
+							],
+							"path": [
+								"debates",
+								"rooms",
+								"1",
+								"users",
+								"1",
+								"msgs"
+							],
+							"query": [
+								{
+									"key": "top_i",
+									"value": "4"
+								},
+								{
+									"key": "to_top_j",
+									"value": "8"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Create User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"juano\",\n    \"name\": \"juano\",\n    \"password\": \"marrano\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/users",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authneticate User",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/login?username=juan&password=juan",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"login"
+					],
+					"query": [
+						{
+							"key": "username",
+							"value": "juan"
+						},
+						{
+							"key": "password",
+							"value": "juan"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Guest User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:8080/users/guests",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"guests"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/users/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"users",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create debate room",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 1,\n    \"debateId\": 1,\n    \"side\": \"AGAINST\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/rooms",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"rooms"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get debate room",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/rooms/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"rooms",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete debate room",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/rooms/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"rooms",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get debate topics",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Post Message",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"This is SPARTAAAA!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/rooms/1/msg",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"rooms",
+						"1",
+						"msg"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get messages of a user",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"This is SPARTAAAA!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/rooms/1/msg",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"rooms",
+						"1",
+						"msg"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get debates rooms of a user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"This is SPARTAAAA!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/4/rooms",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"4",
+						"rooms"
+					],
+					"query": [
+						{
+							"key": "state",
+							"value": "ENDED",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add second user to debate room",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": null,\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/rooms/1",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"rooms",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Start debate",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"userId\": 1,\n    \"roomId\": 1,\n    \"messageContent\": \"This is SPARTAAAA!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/rooms/1/msg",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"rooms",
+						"1",
+						"msg"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Debate Topic",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"topic\": \"topic\",\n    \"description\": \"description\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:8080/debates/2",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"debates",
+						"2"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
