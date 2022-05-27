@@ -73,7 +73,7 @@ public class UserService implements UserDetailsService{
   public User createGuestUser() {
       User newUser = new User();
 
-      String guestUsername = "GuestUser";
+      String guestUsername = UUID.randomUUID().toString();
 
       newUser.setUsername(guestUsername);
       newUser.setName("Guest");
