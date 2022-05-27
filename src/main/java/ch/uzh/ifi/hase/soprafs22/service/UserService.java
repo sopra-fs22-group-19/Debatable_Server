@@ -75,18 +75,14 @@ public class UserService implements UserDetailsService{
 
       String guestUsername = "GuestUser";
 
-      if(userRepository.findByUsername(guestUsername) == null){
-          newUser.setUsername(guestUsername);
-          newUser.setName("Guest");
-          newUser.setPassword(passwordEncoder.encode("password"));
-          newUser.setToken(UUID.randomUUID().toString());
-          newUser.setCreationDate(LocalDate.now());
-          newUser.setRole(Role.GUEST);
-          newUser = userRepository.save(newUser);
-          userRepository.flush();
-      }else {
-          return userRepository.findByUsername(guestUsername);
-      }
+      newUser.setUsername(guestUsername);
+      newUser.setName("Guest");
+      newUser.setPassword(passwordEncoder.encode("password"));
+      newUser.setToken(UUID.randomUUID().toString());
+      newUser.setCreationDate(LocalDate.now());
+      newUser.setRole(Role.GUEST);
+      newUser = userRepository.save(newUser);
+      userRepository.flush();
 
       log.debug("Created Information for GuestUser: {}", newUser);
       return newUser;
